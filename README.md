@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-# Fine-grained-Visual-Analysis-Library
-=======
 # Fine-grained-Visual-Analysis-Library
 
 # Introduction
@@ -11,4 +8,3 @@ The currently supported algorithms include:
 Fine-grained Image Classification
 
 dsds
->>>>>>> Stashed changes
