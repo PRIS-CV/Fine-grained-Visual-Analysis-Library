@@ -1,0 +1,101 @@
+EXP_NAME: "Baseline_ResNet50"
+
+RESUME_WEIGHT: None
+
+LOGGER: 
+  NAME: "TxtLogger"
+
+DATASETS:
+  ROOT: "/data/wangxinran/dataset/Birds2"
+  TRAIN: 
+    BATCH_SIZE: 16
+    POSITIVE: None
+    PIN_MEMORY: True
+    SHUFFLE: True
+    NUM_WORKERS: 4
+  TEST: 
+    BATCH_SIZE: 16
+    POSITIVE: None
+    PIN_MEMORY: False
+    SHUFFLE: False
+    NUM_WORKERS: 4
+
+MODEL:
+  NAME: "Baseline_ResNet50"
+  CLASS_NUM: 200
+  CRITERIONS: 
+    - name: "cross_entropy_loss"
+      args: []
+      w: 1.0
+  BACKBONE:
+    NAME: "resnet50"
+  ENCODING:
+    NAME: "GlobalAvgPooling"
+  NECKS:
+    NAME: None
+  HEADS:
+    NAME: "classifier_1fc"
+    ARGS:
+      - in_dim: 
+        - 2048
+  OUTPUTS_NUM: None
+
+TRANSFORMS: 
+  TRAIN: 
+    - name: "resize"
+      size: 
+        - 600
+        - 600
+    - name: "random_crop"
+      size: 448
+      padding: 8
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+  TEST:
+    - name: "resize"
+      size: 
+        - 600
+        - 600
+    - name: "center_crop"
+      size: 448
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+
+OPTIMIZER:
+  NAME: "SGD"
+  MOMENTUM: 0.9
+  LR: 
+    backbone: 0.0002
+    encoding: 0.002
+    necks: 0.002
+    heads: 0.002
+
+ITERATION_NUM: None
+EPOCH_NUM: 10
+START_EPOCH: 0
+UPDATE_STRATEGY: "general_updating"
+
+
+# Validation details
+PER_ITERATION: None
+PER_EPOCH: None
+METRICS: 
+  - "top1-accuracy"

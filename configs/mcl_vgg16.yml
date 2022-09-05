@@ -1,0 +1,115 @@
+EXP_NAME: "Mutual-Channel-Loss"
+
+RESUME_WEIGHT: None
+
+LOGGER: 
+  NAME: "TxtLogger"
+
+DATASETS:
+  ROOT: "/data/wangxinran/dataset/Birds2"
+  TRAIN: 
+    BATCH_SIZE: 4
+    POSITIVE: None
+    PIN_MEMORY: True
+    SHUFFLE: True
+    NUM_WORKERS: 4
+  TEST: 
+    BATCH_SIZE: 4
+    POSITIVE: None
+    PIN_MEMORY: False
+    SHUFFLE: False
+    NUM_WORKERS: 4
+
+MODEL:
+  NAME: "MCL"
+  CLASS_NUM: 200
+  CRITERIONS: 
+  - name: "mutual_channel_loss"
+    args: 
+      - height: 14
+      - cnum: 3
+      - div_weight: 20
+      - dis_weight: 1.5
+    w: 1.0
+  - name: "cross_entropy_loss"
+    args: []
+    w: 1.0
+  BACKBONE:
+    NAME: "vgg16"
+  ENCODING:
+    NAME: "MaxPool2d"
+    ARGS: 
+      - kernel_size: 2
+      - stride: 2
+  NECKS:
+    NAME: None
+  HEADS:
+    NAME: "classifier_2fc"
+    ARGS:
+      - in_dim: 
+        - 29400
+      - hid_dim: 512
+  OUTPUTS_NUM: None
+
+TRANSFORMS: 
+  TRAIN: 
+    - name: "resize"
+      size: 
+        - 224
+        - 224
+    - name: "random_crop"
+      size: 224
+      padding: 4
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+  TEST:
+    - name: "resize"
+      size: 
+        - 224
+        - 224
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+
+OPTIMIZER:
+  NAME: SGD
+  MOMENTUM: 0.9
+  LR: 
+    backbone: 0.002
+    encoding: 0.002
+    necks: 0.002
+    heads: 0.002
+
+ITERATION_NUM: None
+EPOCH_NUM: 1
+START_EPOCH: 0
+TRAIN_BATCH_SIZE: 4
+UPDATE_STRATEGY: "general_updating"
+
+
+# Validation details
+PER_ITERATION: None
+PER_EPOCH: None
+VAL_BATCH_SIZE: 4
+
+# Validation details
+TEST_BATCH_SIZE: 4
+METRICS: 
+  - "top1-accuracy"
