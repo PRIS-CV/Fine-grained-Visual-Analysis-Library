@@ -2,19 +2,23 @@ EXP_NAME: "Baseline_ResNet50"
 
 RESUME_WEIGHT: None
 
+WEIGHT:
+  NAME: "baseline_resnet50.pth"
+  SAVE_DIR: "/data/wangxinran/model/fgvclib/"
+  
 LOGGER: 
   NAME: "TxtLogger"
 
 DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"
   TRAIN: 
-    BATCH_SIZE: 16
+    BATCH_SIZE: 32
     POSITIVE: None
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
-    BATCH_SIZE: 16
+    BATCH_SIZE: 32
     POSITIVE: None
     PIN_MEMORY: False
     SHUFFLE: False
@@ -29,7 +33,9 @@ MODEL:
       w: 1.0
   BACKBONE:
     NAME: "resnet50"
-    PRETRAINED: True
+    ARGS:
+      - pretrained: True
+      - del_keys: []
   ENCODING:
     NAME: "GlobalAvgPooling"
   NECKS:
@@ -90,7 +96,7 @@ OPTIMIZER:
     heads: 0.002
 
 ITERATION_NUM: None
-EPOCH_NUM: 10
+EPOCH_NUM: 1
 START_EPOCH: 0
 UPDATE_STRATEGY: "general_updating"
 

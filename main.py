@@ -3,7 +3,7 @@ import os
 import torch
 from tqdm import tqdm
 
-from fgvclib.apis import build_model, build_transforms, build_dataset, build_optimizer, update_model, evaluate_model, build_logger
+from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
 from fgvclib.utils.lr_schedules import cosine_anneal_schedule
 from fgvclib.datasets import Dataset_AnnoFolder
@@ -15,7 +15,7 @@ def main(cfg):
 
     if cfg.RESUME_WEIGHT:
         assert os.path.exists(cfg.RESUME_WEIGHT), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."
-        model.load_state_dict(torch.load(model, map_location="cpu"))
+        model.load_state_dict(torch.load(cfg.RESUME_WEIGHT, map_location="cpu"))
 
     if cfg.USE_CUDA:
         assert torch.cuda.is_available(), f"Cuda is not available."
@@ -49,14 +49,12 @@ def main(cfg):
         acc = evaluate_model(model, test_bar, metrics=cfg.METRICS, use_cuda=cfg.USE_CUDA)
         logger.record_eval_res(acc)
         print(acc)
+    
+    save_model(cfg=cfg, model=model.module, logger=logger)
+
     logger.close()
 
 
-def random_test_n_samples(cfg, n, weight):
-    model = build_model(cfg.MODEL)
-    transforms = build_transforms(cfg.TRANSFORMS.TEST)
-    dataset = Dataset_AnnoFolder(root=os.path.join(cfg.DATASETS.ROOT, 'test'), transform=transforms, positive=cfg.POSITIVE)
-    sample_num = len(dataset)
 
 if __name__ == "__main__":
 
@@ -69,3 +67,4 @@ if __name__ == "__main__":
 
     print(config.cfg)
     main(config.cfg)
+

@@ -8,14 +8,11 @@ from ..heads.classifier_2fc import Classifier_2FC
 from fgvclib.criterions.utils import LossItem
 
 class PMG_ResNet50(nn.Module):
-    def __init__(self, backbone=resnet50(pretrained=True), necks=None, encoding=None, heads=None, criterions=None):
+    def __init__(self, backbone=None, necks=None, encoding=None, heads=None, criterions=None):
         
         super(PMG_ResNet50, self).__init__()
 
         self.backbone = backbone
-        # self.necks = MultiScaleConv(3, [512, 1024, 2048], [512, 512, 512], [1024, 1024, 1024])
-        # self.encoding = GlobalMaxPooling()
-        # self.heads = Classifier_2FC([1024, 1024, 1024, 3072], 512, classes_num)
         self.necks = necks
         self.encoding = encoding
         self.heads = heads

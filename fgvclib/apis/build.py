@@ -19,7 +19,7 @@ from fgvclib.utils.logger.base_logger import BaseLogger
 def build_model(model_cfg) -> nn.Module:
 
     backbone_builder = get_backbone(model_cfg.BACKBONE.NAME)
-    backbone = backbone_builder(model_cfg.BACKBONE.PRETRAINED)
+    backbone = backbone_builder(cfg=tltd(model_cfg.BACKBONE.ARGS))
 
     if model_cfg.ENCODING.NAME:
         encoding_builder = get_encoding(model_cfg.ENCODING.NAME)

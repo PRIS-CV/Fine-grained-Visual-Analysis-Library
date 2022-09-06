@@ -13,9 +13,15 @@ class FGVCConfig(object):
         # Resume last train
         self.cfg.RESUME_WEIGHT = None
 
+        # Directory of trained weight
+        self.cfg.WEIGHT = CN()
+        self.cfg.WEIGHT.NAME = None
+        self.cfg.WEIGHT.SAVE_DIR = "./checkpoints/"
+
         # Use cuda
         self.cfg.USE_CUDA = True
 
+        # Logger
         self.cfg.LOGGER = CN()
         self.cfg.LOGGER.NAME = "WandbLogger"
         self.cfg.LOGGER.FILE_PATH = "./logs/"
@@ -55,7 +61,6 @@ class FGVCConfig(object):
         
         # Setting of backbone
         self.cfg.MODEL.BACKBONE.NAME = None
-        self.cfg.MODEL.BACKBONE.PRETRAINED = True
         self.cfg.MODEL.BACKBONE.ARGS = None
 
         # Setting of encoding

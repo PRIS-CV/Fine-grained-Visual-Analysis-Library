@@ -2,19 +2,23 @@ EXP_NAME: "Mutual-Channel-Loss"
 
 RESUME_WEIGHT: None
 
+WEIGHT:
+  NAME: "mutual_channel_loss_vgg166.pth"
+  SAVE_DIR: "/data/wangxinran/models/fgvclib/"
+
 LOGGER: 
   NAME: "TxtLogger"
 
 DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"
   TRAIN: 
-    BATCH_SIZE: 4
+    BATCH_SIZE: 32
     POSITIVE: None
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
-    BATCH_SIZE: 4
+    BATCH_SIZE: 32
     POSITIVE: None
     PIN_MEMORY: False
     SHUFFLE: False
@@ -36,7 +40,14 @@ MODEL:
     w: 1.0
   BACKBONE:
     NAME: "vgg16"
-    PRETRAINED: True
+    ARGS: 
+      - pretrained: True
+      - del_keys: 
+        - "features.21.weight"
+        - "features.21.bias"
+        - "features.24.weight"
+        - "features.28.weight"
+        - "features.28.bias"
   ENCODING:
     NAME: "MaxPool2d"
     ARGS: 
@@ -93,24 +104,18 @@ OPTIMIZER:
   NAME: SGD
   MOMENTUM: 0.9
   LR: 
-    backbone: 0.002
-    encoding: 0.002
-    necks: 0.002
-    heads: 0.002
+    backbone: 0.001
+    encoding: 0.01
+    necks: 0.01
+    heads: 0.01
 
 ITERATION_NUM: None
-EPOCH_NUM: 1
+EPOCH_NUM: 200
 START_EPOCH: 0
-TRAIN_BATCH_SIZE: 4
 UPDATE_STRATEGY: "general_updating"
-
 
 # Validation details
 PER_ITERATION: None
 PER_EPOCH: None
-VAL_BATCH_SIZE: 4
-
-# Validation details
-TEST_BATCH_SIZE: 4
 METRICS: 
   - "top1-accuracy"
