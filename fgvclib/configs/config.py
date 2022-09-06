@@ -55,7 +55,7 @@ class FGVCConfig(object):
         
         # Setting of backbone
         self.cfg.MODEL.BACKBONE.NAME = None
-        self.cfg.MODEL.BACKBONE.PRE_WEIGHT = None
+        self.cfg.MODEL.BACKBONE.PRETRAINED = True
         self.cfg.MODEL.BACKBONE.ARGS = None
 
         # Setting of encoding

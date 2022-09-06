@@ -8,7 +8,7 @@ LOGGER:
 DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"
   TRAIN: 
-    BATCH_SIZE: 4
+    BATCH_SIZE: 16
     POSITIVE: None
     PIN_MEMORY: True
     SHUFFLE: True
@@ -29,6 +29,7 @@ MODEL:
       w: 1.0
   BACKBONE:
     NAME: "resnet50"
+    PRETRAINED: True
   ENCODING:
     NAME: "GlobalMaxPooling"
     ARGS: 
@@ -123,16 +124,11 @@ OPTIMIZER:
 ITERATION_NUM: None
 EPOCH_NUM: 10
 START_EPOCH: 0
-TRAIN_BATCH_SIZE: 4
 UPDATE_STRATEGY: "progressive_updating_with_jigsaw"
 
 
 # Validation details
 PER_ITERATION: None
 PER_EPOCH: None
-VAL_BATCH_SIZE: 4
-
-# Validation details
-TEST_BATCH_SIZE: 4
 METRICS: 
   - "top1-accuracy"

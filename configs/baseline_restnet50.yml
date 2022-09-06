@@ -29,6 +29,7 @@ MODEL:
       w: 1.0
   BACKBONE:
     NAME: "resnet50"
+    PRETRAINED: True
   ENCODING:
     NAME: "GlobalAvgPooling"
   NECKS:

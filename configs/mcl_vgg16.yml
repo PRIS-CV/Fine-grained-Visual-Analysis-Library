@@ -36,6 +36,7 @@ MODEL:
     w: 1.0
   BACKBONE:
     NAME: "vgg16"
+    PRETRAINED: True
   ENCODING:
     NAME: "MaxPool2d"
     ARGS: 

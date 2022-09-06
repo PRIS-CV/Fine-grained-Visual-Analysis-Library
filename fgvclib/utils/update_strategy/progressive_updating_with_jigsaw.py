@@ -9,7 +9,8 @@ def progressive_updating_with_jigsaw(model, train_data, optimizer, use_cuda=True
     if use_cuda:
         inputs, targets = inputs.cuda(), targets.cuda()
     inputs, targets = Variable(inputs), Variable(targets)
-    loss_v = list()
+    losses_info = {}
+    total_loss = 0.
     try:
         step_num = model.outputs_num
     except Exception:
@@ -17,13 +18,16 @@ def progressive_updating_with_jigsaw(model, train_data, optimizer, use_cuda=True
     for step in range(step_num):
         inputs_ = jigsaw_generator(inputs, 2 ** (step_num - (step + 1)))
         _, losses = model(inputs_, targets, step)
-        logger.record_loss(detach_loss_value(losses))
-        losses = compute_loss_value(losses)
-        loss_v.append(losses.item())
-        losses.backward()
+        step_loss = compute_loss_value(losses)
+        total_loss += step_loss.item()
+        losses_info.update(detach_loss_value(losses))
+        logger.record_loss(losses_info)
+        step_loss.backward()
         optimizer.step()
         optimizer.zero_grad()
-    return sum(loss_v)
+    
+    losses_info.update({"iter_loss": total_loss / step_num})
+    return losses_info
 
     
 def jigsaw_generator(images, n):
