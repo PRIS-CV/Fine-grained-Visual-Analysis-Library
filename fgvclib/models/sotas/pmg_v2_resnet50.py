@@ -2,7 +2,7 @@ import torch.nn as nn
 
 from ..backbones import resnet50_bc
 from ..necks.multi_scale_conv import MultiScaleConv
-from ..encoding import GlobalMaxPooling
+from ..encoders import GlobalMaxPooling
 from ..heads.classifier_2fc import Classifier_2FC
 
 class PMG_V2_ResNet50(nn.Module):

@@ -2,7 +2,7 @@ import torch.nn as nn
 
 from fgvclib.criterions.utils import LossItem
 from ..backbones import resnet50
-from ..encoding import GlobalAvgPooling
+from ..encoders import GlobalAvgPooling
 from ..heads.classifier_1fc import Classifier_1FC
 
 class Baseline_ResNet50(nn.Module):

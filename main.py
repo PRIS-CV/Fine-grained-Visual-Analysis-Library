@@ -7,6 +7,7 @@ from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
 from fgvclib.utils.lr_schedules import cosine_anneal_schedule
 from fgvclib.datasets import Dataset_AnnoFolder
+from fgvclib.utils.visualization import VOXEL
 
 
 def main(cfg):
@@ -66,5 +67,11 @@ if __name__ == "__main__":
     config.load(args.config)
 
     print(config.cfg)
-    main(config.cfg)
+    # main(config.cfg)
 
+    cfg = config.cfg
+
+    dataset = Dataset_AnnoFolder(root=cfg.DATASETS.ROOT, transform=None)
+    voxel = VOXEL(dataset=dataset, name="first_try")
+    voxel.load()
+    voxel.launch()

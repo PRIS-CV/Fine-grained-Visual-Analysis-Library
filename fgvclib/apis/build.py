@@ -8,7 +8,7 @@ from fgvclib.criterions import get_criterion
 from fgvclib.datasets import Dataset_AnnoFolder
 from fgvclib.models.sotas import get_model
 from fgvclib.models.backbones import get_backbone
-from fgvclib.models.encoding import get_encoding
+from fgvclib.models.encoders import get_encoding
 from fgvclib.models.necks import get_neck
 from fgvclib.models.heads import get_head
 from fgvclib.transforms import get_transform

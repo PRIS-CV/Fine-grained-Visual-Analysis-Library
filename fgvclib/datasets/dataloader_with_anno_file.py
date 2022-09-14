@@ -32,6 +32,11 @@ class Dataset_AnnoFile(Dataset):
             positive_image = self.fetch_positive(self.positive, label, self.image_names[item])
             return image, positive_image, label
         return image, label
+    
+    def get_imgpath_anno_pair(self, idx):
+        img_path = os.path.join(self.dir_path, self.image_names[idx])
+        label = self.labels[idx]
+        return img_path, label
 
     def pil_loader(self, imgpath):
         with open(imgpath, 'rb') as f:

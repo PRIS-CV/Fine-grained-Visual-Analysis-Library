@@ -190,12 +190,11 @@ class Dataset_AnnoFolder(VisionDataset):
         other_img = [self.loader(img) for img in other_img_path]
         positive_img = [self.transform(img) for img in other_img]
         return positive_img
-
-    def random_return_n_samples(self, n):
-        N = range(self.__len__())
-        selected_idx = random.sample(N, n)
-        selected_samples = [self.__getitem__(index=idx) for idx in selected_idx]
-        return selected_samples
+        
+    def get_imgpath_anno_pair(self, idx):
+        path, _ = self.samples[idx]
+        label = " ".join(os.path.basename(path).split("_")[:-2])
+        return path, label
 
 
 def pil_loader(path):
