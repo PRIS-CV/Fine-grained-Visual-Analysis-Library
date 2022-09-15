@@ -9,6 +9,6 @@ class Logger(object):
     def _record(self, item):
         raise NotImplementedError
 
-    def finish():
+    def finish(self):
         print("Finish!")
 

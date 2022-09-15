@@ -54,6 +54,32 @@ def main(cfg):
     save_model(cfg=cfg, model=model.module, logger=logger)
     logger.finish()
 
+def predict(cfg):
+
+    model = build_model(cfg.MODEL)
+
+    if cfg.RESUME_WEIGHT:
+        assert os.path.exists(cfg.RESUME_WEIGHT), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."
+        model.load_state_dict(torch.load(cfg.RESUME_WEIGHT, map_location="cpu"))
+
+    if cfg.USE_CUDA:
+        assert torch.cuda.is_available(), f"Cuda is not available."
+        model = torch.nn.DataParallel(model)
+
+    transforms = build_transforms(cfg.TRANSFORMS.TEST)
+    loader = build_dataset(root=os.path.join(cfg.DATASETS.ROOT, 'test'), cfg=cfg.DATASETS.TEST, transforms=transforms)
+    dataset = loader.dataset
+
+    voxel = VOXEL(dataset=dataset, name=cfg.FIFTYONE.NAME)
+    voxel.load()
+    voxel.predict(model, transforms, 100, cfg.MODEL.NAME)
+    voxel.launch()
+    
+    
+
+    
+    
+
 
 
 if __name__ == "__main__":
@@ -67,9 +93,7 @@ if __name__ == "__main__":
     cfg = config.cfg
 
     print(cfg)
-    main(cfg)
+    # main(cfg)
+    predict(cfg)
 
-    # dataset = Dataset_AnnoFolder(root=cfg.DATASETS.ROOT, transform=None)
-    # voxel = VOXEL(dataset=dataset, name="first_try")
-    # voxel.load()
-    # voxel.launch()
+    

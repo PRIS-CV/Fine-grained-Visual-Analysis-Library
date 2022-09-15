@@ -110,6 +110,7 @@ class FGVCConfig(object):
 
         # Inference
         self.cfg.FIFTYONE = CN()
+        self.cfg.FIFTYONE.NAME = "BirdsTest"
         self.cfg.FIFTYONE.STORE = True
     
     def get_cfg(self):
