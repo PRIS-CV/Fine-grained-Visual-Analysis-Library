@@ -7,18 +7,18 @@ WEIGHT:
   SAVE_DIR: "/data/wangxinran/model/fgvclib/"
   
 LOGGER: 
-  NAME: "TxtLogger"
+  NAME: "txt_logger"
 
 DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"
   TRAIN: 
-    BATCH_SIZE: 32
+    BATCH_SIZE: 16
     POSITIVE: None
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
-    BATCH_SIZE: 32
+    BATCH_SIZE: 16
     POSITIVE: None
     PIN_MEMORY: False
     SHUFFLE: False

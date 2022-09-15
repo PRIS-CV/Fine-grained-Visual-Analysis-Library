@@ -13,7 +13,7 @@ def compute_loss_value(items: t.List[LossItem]) -> Tensor:
         """
         Should return the value that will be used later for backward propagation
         """
-        total = 0
+        total = 0.
         for item in items:
             total = total + item.weight * item.value
         return total

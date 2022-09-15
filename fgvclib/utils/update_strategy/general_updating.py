@@ -4,7 +4,7 @@ import typing as t
 from fgvclib.criterions import compute_loss_value, detach_loss_value
 
 
-def general_updating(model, train_data, optimizer, use_cuda=True, logger=None) -> t.Dict:
+def general_updating(model, train_data, optimizer, use_cuda=True) -> t.Dict:
     inputs, targets = train_data
     if use_cuda:
         inputs, targets = inputs.cuda(), targets.cuda()
@@ -14,7 +14,6 @@ def general_updating(model, train_data, optimizer, use_cuda=True, logger=None) -
     total_loss.backward()
     optimizer.step()
     optimizer.zero_grad()
-    
     losses_info = detach_loss_value(losses)
     losses_info.update({"iter_loss": total_loss.item()})
     

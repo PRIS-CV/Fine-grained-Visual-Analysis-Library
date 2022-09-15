@@ -2,9 +2,8 @@ import random
 from torch.autograd import Variable
 
 from fgvclib.criterions import compute_loss_value, LossItem, detach_loss_value
-from fgvclib.utils.logger.base_logger import BaseLogger
 
-def progressive_updating_with_jigsaw(model, train_data, optimizer, use_cuda=True, logger:BaseLogger=None):
+def progressive_updating_with_jigsaw(model, train_data, optimizer, use_cuda=True):
     inputs, targets = train_data
     if use_cuda:
         inputs, targets = inputs.cuda(), targets.cuda()
@@ -21,7 +20,6 @@ def progressive_updating_with_jigsaw(model, train_data, optimizer, use_cuda=True
         step_loss = compute_loss_value(losses)
         total_loss += step_loss.item()
         losses_info.update(detach_loss_value(losses))
-        logger.record_loss(losses_info)
         step_loss.backward()
         optimizer.step()
         optimizer.zero_grad()

@@ -37,7 +37,7 @@ def main(cfg):
         train_bar = tqdm(train_loader)
         train_bar.set_description(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Training')
 
-        logger.add_log_item(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Training')
+        logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Training')
 
         cosine_anneal_schedule(optimizer, epoch, cfg.EPOCH_NUM)
         update_model(model, optimizer, train_bar, strategy=cfg.UPDATE_STRATEGY, use_cuda=cfg.USE_CUDA, logger=logger)
@@ -45,15 +45,14 @@ def main(cfg):
         test_bar = tqdm(test_loader)
         test_bar.set_description(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Testing ')
         
-        logger.add_log_item(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Testing ')
+        logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Testing ')
 
         acc = evaluate_model(model, test_bar, metrics=cfg.METRICS, use_cuda=cfg.USE_CUDA)
-        logger.record_eval_res(acc)
-        print(acc)
+        logger("Evalution Result:")
+        logger(acc)
     
     save_model(cfg=cfg, model=model.module, logger=logger)
-
-    logger.close()
+    logger.finish()
 
 
 
@@ -65,13 +64,12 @@ if __name__ == "__main__":
 
     config = FGVCConfig()
     config.load(args.config)
-
-    print(config.cfg)
-    # main(config.cfg)
-
     cfg = config.cfg
 
-    dataset = Dataset_AnnoFolder(root=cfg.DATASETS.ROOT, transform=None)
-    voxel = VOXEL(dataset=dataset, name="first_try")
-    voxel.load()
-    voxel.launch()
+    print(cfg)
+    main(cfg)
+
+    # dataset = Dataset_AnnoFolder(root=cfg.DATASETS.ROOT, transform=None)
+    # voxel = VOXEL(dataset=dataset, name="first_try")
+    # voxel.load()
+    # voxel.launch()

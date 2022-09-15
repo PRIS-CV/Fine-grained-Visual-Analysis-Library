@@ -7,6 +7,9 @@ class FGVCConfig(object):
         
         self.cfg = CN()
 
+        # Name of Project
+        self.cfg.PROJ_NAME = "FGVC"
+
         # Name of experiment
         self.cfg.EXP_NAME = None
 
@@ -23,8 +26,9 @@ class FGVCConfig(object):
 
         # Logger
         self.cfg.LOGGER = CN()
-        self.cfg.LOGGER.NAME = "WandbLogger"
+        self.cfg.LOGGER.NAME = "wandb_logger"
         self.cfg.LOGGER.FILE_PATH = "./logs/"
+        self.cfg.LOGGER.PRINT_FRE = 50
 
         # Datasets and data loader
         self.cfg.DATASETS = CN()
@@ -102,6 +106,11 @@ class FGVCConfig(object):
         self.cfg.PER_ITERATION = None
         self.cfg.PER_EPOCH = None
         self.cfg.METRICS = None
+
+
+        # Inference
+        self.cfg.FIFTYONE = CN()
+        self.cfg.FIFTYONE.STORE = True
     
     def get_cfg(self):
         return  self.cfg.clone()

@@ -1,30 +1,35 @@
 import wandb
 import typing as t
-from .base_logger import BaseLogger
+from .logger import Logger
 
 
-class WandbLogger(BaseLogger):
+class WandbLogger(Logger):
 
-    def __init__(self, cfg) -> None:
-        super().__init__(cfg)
-        wandb.init(project=cfg.EXP_NAME)
+    def __init__(self, exp_name, project, path) -> None:
+        super().__init__(exp_name)
+        wandb.init(project=project, name=self.exp_name, dir=path)
         wandb.config = self.convert_to_dict(self.cfg)
-        self.loss_values = dict()
-        
-    def record_loss(self, losses: t.Dict) -> None:
-        wandb.log(losses)
 
-    def record_eval_res(self, res: t.Dict) -> None:
-        wandb.log(res)
+    def __call__(self, item):
+        return super().__call__(item)
 
-    def plot_line(self, x_values: t.Sequence, y_values: t.Sequence, graph_name: str):
-        data = [[x, y] for (x, y) in zip(x_values, y_values)]
-        table = wandb.Table(data=data, columns = ["x", "y"])
-        wandb.log({graph_name : wandb.plot.line(table, "x", "y", title=graph_name)})
+    def _record(self, item: t.Union[dict, str], step:t.Optional[int]=0, acc:t.Optional[bool]=False):
+        if isinstance(item, dict):
+            wandb.log(item)
+            info = self._sum_info(item, acc)
+        else:
+            info = item
+            wandb.config.update({
+                step: info
+            })
 
-    def close(self):
+    def finish(self):
         wandb.config.update({
             "End-Time": self.get_time_point()
         })
+        wandb.finish()
+
+def wandb_logger(cfg) -> Logger:
+    return WandbLogger(exp_name=cfg.EXP_NAME, dir=cfg.LOGGER.FILE_PATH, project=cfg.LOGGER.PROJ_NAME)
     
 

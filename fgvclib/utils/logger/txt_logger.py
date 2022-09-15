@@ -1,37 +1,56 @@
 import os
 import typing as t
+import time
 
-from .base_logger import BaseLogger
+from .logger import Logger
 
 
-class TxtLogger(BaseLogger):
+class TxtLogger(Logger):
     
-    def __init__(self, cfg):
-        super().__init__(cfg)
-        self.file_path = self.cfg.LOGGER.FILE_PATH
-        self.log_str = [self.convert_to_jsonstr(self.convert_to_dict(self.cfg)), "Start Time: " + self.start_time_point]
-        self.file_name = os.path.join(self.cfg.LOGGER.FILE_PATH, self.cfg.EXP_NAME + self.start_time_point + ".txt")
-        if not os.path.exists(self.file_path):
-            os.mkdir(self.file_path)
+    def __init__(self, exp_name, path, show_frequence:t.Optional[int]=50):
+        start_point = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
+        super(TxtLogger, self).__init__(exp_name + "_" + start_point)
+        assert os.path.exists(path), 'The path for logger doesn\'t exist'
+        self.path = path
+        self.buffer = ""
+        assert show_frequence >= 0, 'The logger\'s print freqence should larger than or equal 0'
+        self.show_frequence = show_frequence 
 
-    def record_loss(self, losses: t.Dict) -> None:
-        self.add_log_item(self.convert_to_jsonstr(losses))
-    
-    def record_eval_res(self, res: t.Dict) -> None:
-        self.add_log_item(self.convert_to_jsonstr(res))
-
-    def add_log_item(self, item: str) -> None:
-        self.log_str.append(item)
-    
-    def write_log_file(self) -> None:
-        with open(self.file_name,'w') as f:
-            for item in self.log_str:
-                f.write(item + "\n")
+        with open(os.path.join(self.path, self.exp_name + ".txt"), 'w') as f:
+            f.write("Start: " + start_point + "\n")
             f.close()
     
-    def close(self):
-        self.end_time_point = self.get_time_point()
-        self.add_log_item("End Time: " + self.end_time_point)
-        self.add_log_item("Finish")
-        self.write_log_file()
-    
+    def __call__(self, item: t.Union[dict, str], step:t.Optional[int]=0, acc:t.Optional[bool]=False):
+        return self._record(item, step, acc)
+
+    def _record(self, item: t.Union[dict, str], step:t.Optional[int]=0, acc:t.Optional[bool]=False):
+        if isinstance(item, dict):
+            info = self._sum_info(item, acc)
+        else:
+            info = item
+        if step % self.show_frequence == 0:
+            self.buffer += info + "\n"
+            self.write_to_file()
+
+    def write_to_file(self):
+        with open(os.path.join(self.path, self.exp_name + ".txt"), 'a') as f:
+            f.write(self.buffer)
+            f.close()
+        self._clear_buffer()
+        
+    def _add_buffer(self, info: str):
+        self.buffer += info + "\n"
+
+    def _clear_buffer(self):
+        self.buffer = ""
+
+    def _sum_info(self, item: dict, acc=False):
+        info = ""
+        for k, v in item.items():
+            info += k
+            info += ": "
+            info += f"{v:.2f} " if isinstance(v, float) and not acc else f"{v} "
+        return info
+
+def txt_logger(cfg) -> Logger:
+    return TxtLogger(cfg.EXP_NAME, path=cfg.LOGGER.FILE_PATH, show_frequence=cfg.LOGGER.PRINT_FRE)

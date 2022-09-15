@@ -2,6 +2,7 @@ import torch
 from torch import nn
 import torch.optim as optim
 from torchvision import transforms
+from yacs.config import CfgNode
 
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
@@ -13,10 +14,10 @@ from fgvclib.models.necks import get_neck
 from fgvclib.models.heads import get_head
 from fgvclib.transforms import get_transform
 from fgvclib.utils.logger import get_logger
-from fgvclib.utils.logger.base_logger import BaseLogger
+from fgvclib.utils.logger import Logger
 
 
-def build_model(model_cfg) -> nn.Module:
+def build_model(model_cfg: CfgNode) -> nn.Module:
 
     backbone_builder = get_backbone(model_cfg.BACKBONE.NAME)
     backbone = backbone_builder(cfg=tltd(model_cfg.BACKBONE.ARGS))
@@ -45,7 +46,7 @@ def build_model(model_cfg) -> nn.Module:
     
     return model
 
-def build_logger(cfg) -> BaseLogger:
+def build_logger(cfg) -> Logger:
     return get_logger(cfg.LOGGER.NAME)(cfg)
 
 def build_transforms(transforms_cfg):

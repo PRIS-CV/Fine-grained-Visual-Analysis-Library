@@ -1,8 +1,9 @@
-from .wandb_logger import WandbLogger
-from .txt_logger import TxtLogger
+from .logger import Logger
+from .wandb_logger import wandb_logger
+from .txt_logger import txt_logger
 
 
-__all__ = ["WandbLogger", "TxtLogger"]
+__all__ = ["wandb_logger", "txt_logger"]
 
 def get_logger(logger_name):
     """Return the update strategy with the given name."""
