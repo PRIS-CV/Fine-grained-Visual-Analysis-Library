@@ -101,17 +101,20 @@ class FGVCConfig(object):
         self.cfg.START_EPOCH = None
         self.cfg.UPDATE_STRATEGY = None
         
-        
         # Validation
         self.cfg.PER_ITERATION = None
         self.cfg.PER_EPOCH = None
         self.cfg.METRICS = None
 
-
         # Inference
         self.cfg.FIFTYONE = CN()
         self.cfg.FIFTYONE.NAME = "BirdsTest"
         self.cfg.FIFTYONE.STORE = True
+
+        self.cfg.INTERPRETER = CN()
+        self.cfg.INTERPRETER.NAME = "cam"
+        self.cfg.INTERPRETER.METHOD = "gradcam"
+        self.cfg.INTERPRETER.TARGET_LAYERS = []
     
     def get_cfg(self):
         return  self.cfg.clone()

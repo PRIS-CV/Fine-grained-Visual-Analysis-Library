@@ -1,33 +1,37 @@
+from math import inf
 import typing as t
 import fiftyone as fo
 from tqdm import tqdm
 from PIL import Image
-from torchvision.transforms import functional as func
 import torch.nn as nn
 import torch
 
-from fgvclib.datasets import Dataset_AnnoFolder
-from fgvclib.configs import FGVCConfig
+from fgvclib.utils.interpreter import Interpreter
 
-class VOXEL():
+class VOXEL:
 
-    def __init__(self, dataset, name:str, persistent:bool=False, cuda:bool=True) -> None:
+    def __init__(self, dataset, name:str, persistent:bool=False, cuda:bool=True, interpreter:Interpreter=None) -> None:
         self.dataset = dataset
         self.name = name
-        if self.name not in self.loaded_datasets():
-            self.fo_dataset = self.create_dataset()
-        else:
-            self.fo_dataset = fo.load_dataset(self.name)
         self.persistent = persistent
         self.cuda = cuda
+        self.interpreter = interpreter
 
-    def create_dataset(self, ):
+        if self.name not in self.loaded_datasets():
+            self.fo_dataset = self.create_dataset()
+            self.load()
+        else:
+            self.fo_dataset = fo.load_dataset(self.name)
+
+        self.view = self.fo_dataset.view() 
+
+    def create_dataset(self) -> fo.Dataset:
         return fo.Dataset(self.name)
 
-    def loaded_datasets(self):
+    def loaded_datasets(self) -> t.List:
         return fo.list_datasets()
 
-    def load(self, ):
+    def load(self):
         
         samples = []
 
@@ -46,15 +50,18 @@ class VOXEL():
         self.fo_dataset.add_samples(samples)
         self.fo_dataset.persistent = self.persistent
 
-    def predict(self, model:nn.Module, transforms, n, name="prediction", seed=51):
+    def predict(self, model:nn.Module, transforms, n:int=inf, name="prediction", seed=51):
         model.eval()
-        predictions_view = self.fo_dataset.take(n, seed=seed)
+        if n < inf:
+            self.view = self.fo_dataset.take(n, seed=seed)
 
         with fo.ProgressBar() as pb:
-            for sample in pb(predictions_view):
+            for sample in pb(self.view):
                 image = Image.open(sample.filepath)
+                image = transforms(image).unsqueeze(0)
+                
                 if self.cuda:
-                    image = transforms(image).cuda().unsqueeze(0)
+                    image = image.cuda()
                     pred = model(image)
                     index = torch.argmax(pred).item()
                     confidence = pred[:, index].item()
@@ -65,15 +72,23 @@ class VOXEL():
                     confidence=confidence
                 )
 
+                if self.interpreter:
+                    heatmap = self.interpreter(image_path=sample.filepath, image_tensor=image, transforms=transforms)
+                    sample["heatmap"] = fo.Heatmap(map=heatmap)
+
                 sample.save()
         print("Finished adding predictions")
 
+    
+    def delete_field(self, field_name: str):
+        self.fo_dataset.delete_frame_field(field_name=field_name)
 
-    def launch(self, ):
-        session = fo.launch_app()
+
+    def launch(self) -> None:
+        session = fo.launch_app(self.view)
         session.wait()
 
-    def del_dataset(self, ):
+    def del_dataset(self):
         assert self.name in fo.list_datasets(), f"The dataset {self.name} does not exists"
 
 

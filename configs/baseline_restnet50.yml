@@ -106,3 +106,9 @@ PER_ITERATION: None
 PER_EPOCH: None
 METRICS: 
   - "top1-accuracy"
+
+INTERPRETER:
+  NAME: "cam"
+  METHOD: "gradcam"
+  TARGET_LAYERS: 
+    - "layer4"

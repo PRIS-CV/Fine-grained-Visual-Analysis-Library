@@ -69,17 +69,11 @@ def predict(cfg):
     transforms = build_transforms(cfg.TRANSFORMS.TEST)
     loader = build_dataset(root=os.path.join(cfg.DATASETS.ROOT, 'test'), cfg=cfg.DATASETS.TEST, transforms=transforms)
     dataset = loader.dataset
+    interpreter = build_interpreter(model, cfg)
 
-    voxel = VOXEL(dataset=dataset, name=cfg.FIFTYONE.NAME)
-    voxel.load()
+    voxel = VOXEL(dataset=dataset, name=cfg.FIFTYONE.NAME, interpreter=interpreter)
     voxel.predict(model, transforms, 100, cfg.MODEL.NAME)
     voxel.launch()
-    
-    
-
-    
-    
-
 
 
 if __name__ == "__main__":

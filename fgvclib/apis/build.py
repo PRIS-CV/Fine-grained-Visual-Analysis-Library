@@ -13,8 +13,8 @@ from fgvclib.models.encoders import get_encoding
 from fgvclib.models.necks import get_neck
 from fgvclib.models.heads import get_head
 from fgvclib.transforms import get_transform
-from fgvclib.utils.logger import get_logger
-from fgvclib.utils.logger import Logger
+from fgvclib.utils.logger import get_logger, Logger
+from fgvclib.utils.interpreter import get_interpreter, Interpreter
 
 
 def build_model(model_cfg: CfgNode) -> nn.Module:
@@ -46,20 +46,20 @@ def build_model(model_cfg: CfgNode) -> nn.Module:
     
     return model
 
-def build_logger(cfg) -> Logger:
+def build_logger(cfg: CfgNode) -> Logger:
     return get_logger(cfg.LOGGER.NAME)(cfg)
 
-def build_transforms(transforms_cfg):
+def build_transforms(transforms_cfg: CfgNode):
     return transforms.Compose([get_transform(item['name'])(item) for item in transforms_cfg])
 
-def build_dataset(root, cfg, transforms):
+def build_dataset(root:str, cfg: CfgNode, transforms):
 
     dataset = Dataset_AnnoFolder(root=root, transform=transforms)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=cfg.BATCH_SIZE, shuffle=cfg.SHUFFLE, num_workers=cfg.NUM_WORKERS)
 
     return data_loader
 
-def build_optimizer(optim_cfg, model):
+def build_optimizer(optim_cfg: CfgNode, model):
 
     params= list()
     model_attrs = ["backbone", "encoding", "necks", "heads"]
@@ -83,7 +83,12 @@ def build_optimizer(optim_cfg, model):
     
     return optimizer
 
-def build_criterion(criterion_cfg):
+def build_criterion(criterion_cfg: CfgNode):
     criterion_builder = get_criterion(criterion_cfg['name'])
     criterion = criterion_builder(cfg=tltd(criterion_cfg['args']))
     return criterion
+
+
+def build_interpreter(model, cfg: CfgNode) -> Interpreter:
+    return get_interpreter(cfg.INTERPRETER.NAME)(model, cfg)
+
