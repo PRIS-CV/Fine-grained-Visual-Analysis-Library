@@ -57,7 +57,7 @@ def main(cfg):
 def predict(cfg):
 
     model = build_model(cfg.MODEL)
-    weight_path = os.path.join(cfg.WEIGHT.DIR, cfg.WEIGHT_NAME)
+    weight_path = os.path.join(cfg.WEIGHT.SAVE_DIR, cfg.WEIGHT.NAME)
     assert os.path.exists(weight_path), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."
     state_dict = torch.load(weight_path, map_location="cpu")
     model.load_state_dict(state_dict=state_dict)
@@ -68,12 +68,16 @@ def predict(cfg):
 
     transforms = build_transforms(cfg.TRANSFORMS.TEST)
     loader = build_dataset(root=os.path.join(cfg.DATASETS.ROOT, 'test'), cfg=cfg.DATASETS.TEST, transforms=transforms)
-    dataset = loader.dataset
-    interpreter = build_interpreter(model, cfg)
+    
+    pbar = tqdm(loader)
+    acc = evaluate_model(model, pbar, metrics=cfg.METRICS, use_cuda=cfg.USE_CUDA)
 
-    voxel = VOXEL(dataset=dataset, name=cfg.FIFTYONE.NAME, interpreter=interpreter)
-    voxel.predict(model, transforms, 10, cfg.MODEL.NAME)
-    voxel.launch()
+    print(acc)
+
+    # interpreter = build_interpreter(model, cfg)
+    # voxel = VOXEL(dataset=loader.dataset, name=cfg.FIFTYONE.NAME, interpreter=interpreter)
+    # voxel.predict(model, transforms, 10, cfg.MODEL.NAME)
+    # voxel.launch()
 
 
 if __name__ == "__main__":
