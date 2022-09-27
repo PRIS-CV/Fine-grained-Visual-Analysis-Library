@@ -1,10 +1,11 @@
 import torch
 from torch.autograd import Variable
 import typing as t
+from fgvclib.metrics.metrics import NamedMetric
 
 from ..utils.metrics import *
 
-def evaluate_model(model, p_bar, metrics=["top1-accuracy"], use_cuda=True) -> t.Dict:
+def evaluate_model(model, p_bar:t.Iterator, metrics:t.List[NamedMetric], use_cuda:bool=True) -> t.Dict:
     
     model.eval()
     targets_all = []
@@ -15,18 +16,24 @@ def evaluate_model(model, p_bar, metrics=["top1-accuracy"], use_cuda=True) -> t.
         for batch_idx, (inputs, targets) in enumerate(p_bar):
             if use_cuda:
                 inputs, targets = inputs.cuda(), targets.cuda()
-            inputs, targets = Variable(inputs), Variable(targets).view(-1, 1)
+            inputs, targets = Variable(inputs), Variable(targets)
+            # outputs_all.append(model(inputs, None))
+            # targets_all.append(targets)
+            for metric in metrics:
+                _ = metric.update(model(inputs), targets) 
 
-            outputs_all.append(model(inputs, None))
-            targets_all.append(targets)
-
-    targets_all, outputs_all = torch.cat(targets_all, 0), torch.cat(outputs_all, 0)
+    # targets_all, outputs_all = torch.cat(targets_all, 0), torch.cat(outputs_all, 0)
     
     for metric in metrics:
-        result = get_result(outputs_all, targets_all, metric)
+        result = metric.compute()
         results.update({
-            metric: round(result.item(), 3)
+            metric.name: round(result.item(), 3)
         })
+        
+        # result = get_result(outputs_all, targets_all, metric)
+        # results.update({
+        #     metric: round(result.item(), 3)
+        # })
 
     return results
 

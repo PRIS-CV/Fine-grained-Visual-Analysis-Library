@@ -100,25 +100,22 @@ EPOCH_NUM: 1
 START_EPOCH: 0
 UPDATE_STRATEGY: "general_updating"
 
-
 # Validation details
 PER_ITERATION: None
 PER_EPOCH: None
 METRICS: 
   - name: "accuracy(topk=1)"
-    metirc: "accuracy"
-    args: 
-      - topk: 1
-      - threshold: None
+    metric: "accuracy"
+    top_k: 1
+    threshold: ~
   - name: "recall(threshold=0.5)"
-    metirc: "recall"
-    args:
-      - topk: None
-      - threshold: 0.5
+    metric: "recall"
+    top_k: ~
+    threshold: 0.5
   - name: "precision(threshold=0.5)"
-    args:
-      - topk: None
-      - threshold: 0.5
+    metric: "precision"
+    top_k: ~
+    threshold: 0.5
 
 INTERPRETER:
   NAME: "cam"

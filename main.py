@@ -6,7 +6,6 @@ from tqdm import tqdm
 from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
 from fgvclib.utils.lr_schedules import cosine_anneal_schedule
-from fgvclib.datasets import Dataset_AnnoFolder
 from fgvclib.utils.visualization import VOXEL
 
 
@@ -70,7 +69,8 @@ def predict(cfg):
     loader = build_dataset(root=os.path.join(cfg.DATASETS.ROOT, 'test'), cfg=cfg.DATASETS.TEST, transforms=transforms)
     
     pbar = tqdm(loader)
-    acc = evaluate_model(model, pbar, metrics=cfg.METRICS, use_cuda=cfg.USE_CUDA)
+    metrics = build_metrics(cfg.METRICS)
+    acc = evaluate_model(model, pbar, metrics=metrics, use_cuda=cfg.USE_CUDA)
 
     print(acc)
 

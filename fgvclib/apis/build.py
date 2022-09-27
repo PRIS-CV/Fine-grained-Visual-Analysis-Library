@@ -2,8 +2,9 @@ import torch
 from torch import nn
 import torch.optim as optim
 from torchvision import transforms
+import typing as t
 from yacs.config import CfgNode
-from torchmetrics import Metric
+
 
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
@@ -15,8 +16,10 @@ from fgvclib.models.encoders import get_encoding
 from fgvclib.models.necks import get_neck
 from fgvclib.models.heads import get_head
 from fgvclib.transforms import get_transform
+from fgvclib.utils import metrics
 from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
+from fgvclib.metrics import NamedMetric
 
 
 def build_model(model_cfg: CfgNode) -> nn.Module:
@@ -93,7 +96,13 @@ def build_criterion(criterion_cfg: CfgNode):
 def build_interpreter(model, cfg: CfgNode) -> Interpreter:
     return get_interpreter(cfg.INTERPRETER.NAME)(model, cfg)
 
-def build_metrics(metrics_cfg: CfgNode) -> Metric:
-    return [get_metric(metrics_cfg)]
+def build_metrics(metrics_cfg: CfgNode, use_cuda:bool=True) -> t.List[NamedMetric]:
+    metrics = []
+    for cfg in metrics_cfg:
+        metric = get_metric(cfg["metric"])(name=cfg["name"], top_k=cfg["top_k"], threshold=cfg["threshold"])
+        if use_cuda:
+            metric = metric.cuda()
+        metrics.append(metric)
+    return metrics
 
 
