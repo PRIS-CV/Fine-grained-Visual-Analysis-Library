@@ -50,7 +50,7 @@ class VOXEL:
         self.fo_dataset.add_samples(samples)
         self.fo_dataset.persistent = self.persistent
 
-    def predict(self, model:nn.Module, transforms, n:int=inf, name="prediction", seed=51):
+    def predict(self, model:nn.Module, transforms, n:int=inf, name="prediction", seed=51, explain:bool=False):
         model.eval()
         if n < inf:
             self.view = self.fo_dataset.take(n, seed=seed)

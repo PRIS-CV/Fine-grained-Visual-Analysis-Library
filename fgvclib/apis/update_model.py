@@ -10,3 +10,4 @@ def update_model(model, optimizer, pbar, strategy:str="general_updating", use_cu
         losses_info.update({"mean_loss": mean_loss})
         logger(losses_info, step=batch_idx)
         pbar.set_postfix(losses_info)
+    

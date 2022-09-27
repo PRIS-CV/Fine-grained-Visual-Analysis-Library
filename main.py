@@ -57,10 +57,10 @@ def main(cfg):
 def predict(cfg):
 
     model = build_model(cfg.MODEL)
-
-    if cfg.RESUME_WEIGHT:
-        assert os.path.exists(cfg.RESUME_WEIGHT), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."
-        model.load_state_dict(torch.load(cfg.RESUME_WEIGHT, map_location="cpu"))
+    weight_path = os.path.join(cfg.WEIGHT.DIR, cfg.WEIGHT_NAME)
+    assert os.path.exists(weight_path), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."
+    state_dict = torch.load(weight_path, map_location="cpu")
+    model.load_state_dict(state_dict=state_dict)
 
     if cfg.USE_CUDA:
         assert torch.cuda.is_available(), f"Cuda is not available."
@@ -72,7 +72,7 @@ def predict(cfg):
     interpreter = build_interpreter(model, cfg)
 
     voxel = VOXEL(dataset=dataset, name=cfg.FIFTYONE.NAME, interpreter=interpreter)
-    voxel.predict(model, transforms, 100, cfg.MODEL.NAME)
+    voxel.predict(model, transforms, 10, cfg.MODEL.NAME)
     voxel.launch()
 
 
