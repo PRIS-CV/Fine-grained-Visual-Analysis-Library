@@ -105,7 +105,20 @@ UPDATE_STRATEGY: "general_updating"
 PER_ITERATION: None
 PER_EPOCH: None
 METRICS: 
-  - "top1-accuracy"
+  - name: "accuracy(topk=1)"
+    metirc: "accuracy"
+    args: 
+      - topk: 1
+      - threshold: None
+  - name: "recall(threshold=0.5)"
+    metirc: "recall"
+    args:
+      - topk: None
+      - threshold: 0.5
+  - name: "precision(threshold=0.5)"
+    args:
+      - topk: None
+      - threshold: 0.5
 
 INTERPRETER:
   NAME: "cam"

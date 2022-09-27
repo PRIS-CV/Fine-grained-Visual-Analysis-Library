@@ -3,10 +3,12 @@ from torch import nn
 import torch.optim as optim
 from torchvision import transforms
 from yacs.config import CfgNode
+from torchmetrics import Metric
 
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
 from fgvclib.datasets import Dataset_AnnoFolder
+from fgvclib.metrics import get_metric
 from fgvclib.models.sotas import get_model
 from fgvclib.models.backbones import get_backbone
 from fgvclib.models.encoders import get_encoding
@@ -88,7 +90,10 @@ def build_criterion(criterion_cfg: CfgNode):
     criterion = criterion_builder(cfg=tltd(criterion_cfg['args']))
     return criterion
 
-
 def build_interpreter(model, cfg: CfgNode) -> Interpreter:
     return get_interpreter(cfg.INTERPRETER.NAME)(model, cfg)
+
+def build_metrics(metrics_cfg: CfgNode) -> Metric:
+    return [get_metric(metrics_cfg)]
+
 
