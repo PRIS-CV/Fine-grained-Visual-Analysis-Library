@@ -1,6 +1,6 @@
 EXP_NAME: "PMG-ResNet50"
 
-RESUME_WEIGHT: None
+RESUME_WEIGHT: ~
 
 LOGGER: 
   NAME: "TxtLogger"
@@ -9,13 +9,13 @@ DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"
   TRAIN: 
     BATCH_SIZE: 16
-    POSITIVE: None
+    POSITIVE: ~
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
     BATCH_SIZE: 4
-    POSITIVE: None
+    POSITIVE: ~
     PIN_MEMORY: False
     SHUFFLE: False
     NUM_WORKERS: 4
@@ -71,7 +71,7 @@ MODEL:
         - 1024
         - 3072
       - hid_dim: 512
-  OUTPUTS_NUM: None
+  OUTPUTS_NUM: ~
 
 TRANSFORMS: 
   TRAIN: 
@@ -121,15 +121,15 @@ OPTIMIZER:
     necks: 0.002
     heads: 0.002
 
-ITERATION_NUM: None
+ITERATION_NUM: ~
 EPOCH_NUM: 10
 START_EPOCH: 0
 UPDATE_STRATEGY: "progressive_updating_with_jigsaw"
 
 
 # Validation details
-PER_ITERATION: None
-PER_EPOCH: None
+PER_ITERATION: ~
+PER_EPOCH: ~
 METRICS: 
   - name: "accuracy(topk=1)"
     metric: "accuracy"

@@ -1,10 +1,6 @@
-EXP_NAME: "Mutual-Channel-Loss"
+EXP_NAME: "PMG_V2_ResNet50"
 
 RESUME_WEIGHT: ~
-
-WEIGHT:
-  NAME: "mutual_channel_loss_vgg166.pth"
-  SAVE_DIR: "/data/wangxinran/models/fgvclib/"
 
 LOGGER: 
   NAME: "TxtLogger"
@@ -12,66 +8,80 @@ LOGGER:
 DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"
   TRAIN: 
-    BATCH_SIZE: 32
+    BATCH_SIZE: 16
     POSITIVE: ~
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
-    BATCH_SIZE: 32
+    BATCH_SIZE: 4
     POSITIVE: ~
     PIN_MEMORY: False
     SHUFFLE: False
     NUM_WORKERS: 4
 
 MODEL:
-  NAME: "MCL"
+  NAME: "PMG_V2_ResNet50"
   CLASS_NUM: 200
   CRITERIONS: 
-  - name: "mutual_channel_loss"
-    args: 
-      - height: 14
-      - cnum: 3
-      - div_weight: 20
-      - dis_weight: 1.5
-    w: 1.0
-  - name: "cross_entropy_loss"
-    args: []
-    w: 1.0
+    - name: "cross_entropy_loss"
+      args: []
+      w: 1.0
   BACKBONE:
-    NAME: "vgg16"
-    ARGS: 
-      - pretrained: True
-      - del_keys: 
-        - "features.21.weight"
-        - "features.21.bias"
-        - "features.24.weight"
-        - "features.28.weight"
-        - "features.28.bias"
+    NAME: "resnet50_bc"
+    PRETRAINED: True
   ENCODING:
-    NAME: "MaxPool2d"
+    NAME: "GlobalMaxPooling"
     ARGS: 
-      - kernel_size: 2
-      - stride: 2
+      - scale_num: 3
+      - in_dim: 
+        - 512
+        - 1024
+        - 2048
+      - hid_dim: 
+        - 512
+        - 512
+        - 512
+      - out_dim: 
+        - 1024
+        - 1024
+        - 1024
   NECKS:
-    NAME: ~
+    NAME: "multi_scale_conv"
+    ARGS:
+      - scale_num: 3
+      - in_dim: 
+        - 512
+        - 1024
+        - 2048
+      - hid_dim:
+        - 512
+        - 512
+        - 512
+      - out_dim:
+        - 1024
+        - 1024
+        - 1024
   HEADS:
     NAME: "classifier_2fc"
     ARGS:
       - in_dim: 
-        - 29400
+        - 1024
+        - 1024
+        - 1024
+        - 3072
       - hid_dim: 512
-  OUTPUTS_NUM: ~
+  OUTPUTS_NUM: 3
 
 TRANSFORMS: 
   TRAIN: 
     - name: "resize"
       size: 
-        - 224
-        - 224
+        - 600
+        - 600
     - name: "random_crop"
-      size: 224
-      padding: 4
+      size: 448
+      padding: 8
     - name: "random_horizontal_flip"
       prob: 0.5
     - name: "to_tensor"
@@ -87,8 +97,10 @@ TRANSFORMS:
   TEST:
     - name: "resize"
       size: 
-        - 224
-        - 224
+        - 600
+        - 600
+    - name: "center_crop"
+      size: 448
     - name: "to_tensor"
     - name: "normalize"
       mean: 
@@ -101,18 +113,18 @@ TRANSFORMS:
         - 0.5
 
 OPTIMIZER:
-  NAME: SGD
+  NAME: "SGD"
   MOMENTUM: 0.9
   LR: 
-    backbone: 0.001
-    encoding: 0.01
-    necks: 0.01
-    heads: 0.01
+    backbone: 0.0005
+    encoding: ~
+    necks: 0.005
+    heads: 0.005
 
 ITERATION_NUM: ~
-EPOCH_NUM: 200
+EPOCH_NUM: 10
 START_EPOCH: 0
-UPDATE_STRATEGY: "general_updating"
+UPDATE_STRATEGY: "progressive_updating_consistency_constraint"
 
 # Validation details
 PER_ITERATION: ~
@@ -134,7 +146,7 @@ METRICS:
     metric: "precision"
     top_k: ~
     threshold: 0.5
-    
+
 INTERPRETER:
   NAME: "cam"
   METHOD: "gradcam"
