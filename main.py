@@ -2,6 +2,7 @@ import argparse
 import os
 import torch
 from tqdm import tqdm
+from yacs.config import CfgNode
 
 from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
@@ -9,7 +10,7 @@ from fgvclib.utils.lr_schedules import cosine_anneal_schedule
 from fgvclib.utils.visualization import VOXEL
 
 
-def main(cfg):
+def train(cfg: CfgNode):
     
     model = build_model(cfg.MODEL)
 
@@ -53,7 +54,7 @@ def main(cfg):
     save_model(cfg=cfg, model=model.module, logger=logger)
     logger.finish()
 
-def predict(cfg):
+def predict(cfg: CfgNode):
 
     model = build_model(cfg.MODEL)
     weight_path = os.path.join(cfg.WEIGHT.SAVE_DIR, cfg.WEIGHT.NAME)
@@ -74,24 +75,20 @@ def predict(cfg):
 
     print(acc)
 
-    # interpreter = build_interpreter(model, cfg)
-    # voxel = VOXEL(dataset=loader.dataset, name=cfg.FIFTYONE.NAME, interpreter=interpreter)
-    # voxel.predict(model, transforms, 10, cfg.MODEL.NAME)
-    # voxel.launch()
-
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=str, help='the path of configuration file')
+    parser.add_argument('--task', type=str, help='the path of configuration file', default="train")
     args = parser.parse_args()
 
     config = FGVCConfig()
     config.load(args.config)
     cfg = config.cfg
-
     print(cfg)
-    # main(cfg)
-    predict(cfg)
-
-    
+    if args.task == "train":
+        train(cfg)
+    else:
+        predict(cfg)
+        
