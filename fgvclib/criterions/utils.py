@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import typing as t
 from torch import Tensor
-from decimal import Decimal
 
 @dataclass
 class LossItem:
