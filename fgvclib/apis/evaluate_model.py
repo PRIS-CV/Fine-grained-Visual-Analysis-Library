@@ -1,10 +1,11 @@
 import torch
+import torch.nn as nn
 from torch.autograd import Variable
 import typing as t
 from fgvclib.metrics.metrics import NamedMetric
 
 
-def evaluate_model(model, p_bar:t.Iterator, metrics:t.List[NamedMetric], use_cuda:bool=True) -> t.Dict:
+def evaluate_model(model:nn.Module, p_bar:t.Iterator, metrics:t.List[NamedMetric], use_cuda:bool=True) -> t.Dict:
     
     model.eval()
     results = dict()
