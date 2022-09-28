@@ -38,20 +38,6 @@ MODEL:
       - del_keys: []
   ENCODING:
     NAME: "GlobalMaxPooling"
-    ARGS: 
-      - scale_num: 3
-      - in_dim: 
-        - 512
-        - 1024
-        - 2048
-      - hid_dim: 
-        - 512
-        - 512
-        - 512
-      - out_dim: 
-        - 1024
-        - 1024
-        - 1024
   NECKS:
     NAME: "multi_scale_conv"
     ARGS:
@@ -75,7 +61,6 @@ MODEL:
         - 1024
         - 1024
         - 1024
-        - 3072
       - hid_dim: 512
   OUTPUTS_NUM: 3
 

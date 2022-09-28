@@ -11,8 +11,8 @@ class PMG_V2_ResNet50(nn.Module):
 
         self.backbone = backbone
         self.necks = necks
-        self.encoding = GlobalMaxPooling()
-        self.heads = Classifier_2FC([1024, 1024, 1024], 512, classes_num)
+        self.encoding = encoding
+        self.heads = heads
         self.outputs_num = 3
         
 
