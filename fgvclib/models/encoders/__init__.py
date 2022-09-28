@@ -1,7 +1,7 @@
-from .pooling import global_max_pooling, global_avg_pooling, max_pool_2d
+from .pooling import global_max_pooling, global_avg_pooling, max_pooling_2d
 
 __all__ = [
-    'global_avg_pooling', 'global_max_pooling', 'max_pool_2d'
+    'global_avg_pooling', 'global_max_pooling', 'max_pooling_2d'
 ]
 
 def get_encoding(encoding_name):

@@ -37,7 +37,7 @@ MODEL:
       - pretrained: True
       - del_keys: []
   ENCODING:
-    NAME: "GlobalAvgPooling"
+    NAME: "global_avg_pooling"
   NECKS:
     NAME: ~
   HEADS:

@@ -37,7 +37,7 @@ MODEL:
       - pretrained: True
       - del_keys: []
   ENCODING:
-    NAME: "GlobalMaxPooling"
+    NAME: "global_max_pooling"
   NECKS:
     NAME: "multi_scale_conv"
     ARGS:

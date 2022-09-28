@@ -76,7 +76,7 @@ def global_avg_pooling(cfg):
 def global_max_pooling(cfg):
     return GlobalMaxPooling()
 
-def max_pool_2d(cfg):
+def max_pooling_2d(cfg):
     assert 'kernel_size' in cfg.keys()
     assert isinstance(cfg['kernel_size'], int) 
     assert 'stride' in cfg.keys()

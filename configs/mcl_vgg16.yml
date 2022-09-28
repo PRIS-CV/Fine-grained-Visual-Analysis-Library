@@ -49,7 +49,7 @@ MODEL:
         - "features.28.weight"
         - "features.28.bias"
   ENCODING:
-    NAME: "MaxPool2d"
+    NAME: "max_pooling_2d"
     ARGS: 
       - kernel_size: 2
       - stride: 2
