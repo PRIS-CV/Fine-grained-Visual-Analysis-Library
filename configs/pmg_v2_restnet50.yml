@@ -2,8 +2,12 @@ EXP_NAME: "PMG_V2_ResNet50"
 
 RESUME_WEIGHT: ~
 
+WEIGHT:
+  NAME: "pmg_v2_resnet50.pth"
+  SAVE_DIR: "/data/wangxinran/model/fgvclib/"
+
 LOGGER: 
-  NAME: "TxtLogger"
+  NAME: "txt_logger"
 
 DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"
@@ -29,7 +33,9 @@ MODEL:
       w: 1.0
   BACKBONE:
     NAME: "resnet50_bc"
-    PRETRAINED: True
+    ARGS: 
+      - pretrained: True
+      - del_keys: []
   ENCODING:
     NAME: "GlobalMaxPooling"
     ARGS: 

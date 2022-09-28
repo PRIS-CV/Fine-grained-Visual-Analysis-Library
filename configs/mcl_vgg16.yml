@@ -3,11 +3,11 @@ EXP_NAME: "Mutual-Channel-Loss"
 RESUME_WEIGHT: ~
 
 WEIGHT:
-  NAME: "mutual_channel_loss_vgg166.pth"
+  NAME: "mutual_channel_loss_vgg16.pth"
   SAVE_DIR: "/data/wangxinran/models/fgvclib/"
 
 LOGGER: 
-  NAME: "TxtLogger"
+  NAME: "txt_logger"
 
 DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"

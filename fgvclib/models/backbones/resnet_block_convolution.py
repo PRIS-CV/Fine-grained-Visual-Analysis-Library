@@ -260,22 +260,27 @@ class ResNet(nn.Module):
         return tuple([x1, x2, x3, x4, x5, f1, f2, f3])
 
 
-def _resnet(arch, inplanes, planes, pretrained, progress, **kwargs):
+def _resnet(arch, inplanes, planes, cfg, progress, **kwargs):
+    
+    pretrained = False if "pretrained" not in cfg.keys() else cfg['pretrained']
+    del_keys = [] if "del_keys" not in cfg.keys() else cfg['del_keys']
     model = ResNet(inplanes, planes, **kwargs)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
-        model.load_state_dict(state_dict)
+        for key in del_keys:
+            del state_dict[key]        
+        missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
     return model
 
 
-def resnet50_bc(pretrained=False, progress=True, **kwargs):
+def resnet50_bc(cfg, progress=True, **kwargs):
     """Constructs a ResNet-50 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress,
+    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], cfg, progress,
                    **kwargs)
 
 

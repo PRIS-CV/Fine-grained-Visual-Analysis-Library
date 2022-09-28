@@ -6,11 +6,11 @@ from ..encoders import GlobalMaxPooling
 from ..heads.classifier_2fc import Classifier_2FC
 
 class PMG_V2_ResNet50(nn.Module):
-    def __init__(self, pretrain=True, classes_num=200):
+    def __init__(self, backbone, encoding, necks, heads, criterions):
         super(PMG_V2_ResNet50, self).__init__()
 
-        self.backbone = resnet50_bc(pretrained=pretrain)
-        self.necks = MultiScaleConv(3, [512, 1024, 2048], [512, 512, 512], [1024, 1024, 1024])
+        self.backbone = backbone
+        self.necks = necks
         self.encoding = GlobalMaxPooling()
         self.heads = Classifier_2FC([1024, 1024, 1024], 512, classes_num)
         self.outputs_num = 3

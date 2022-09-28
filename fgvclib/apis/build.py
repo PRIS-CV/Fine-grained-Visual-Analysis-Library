@@ -16,7 +16,6 @@ from fgvclib.models.encoders import get_encoding
 from fgvclib.models.necks import get_neck
 from fgvclib.models.heads import get_head
 from fgvclib.transforms import get_transform
-from fgvclib.utils import metrics
 from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
 from fgvclib.metrics import NamedMetric

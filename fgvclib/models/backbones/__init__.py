@@ -3,8 +3,8 @@ from .vgg import vgg11, vgg13, vgg16, vgg19
 from .resnet_block_convolution import resnet50_bc, resnet101_bc
 
 __all__ = [
-    'resnet18, resnet34, resnet50, resnet101, resnet152, resnext50_32x4d, resnext101_32x8d, resnet50_bc, resnet101_bc',
-    'vgg11', 'vgg13', 'vgg16', 'vgg19'
+    'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'resnext50_32x4d', 'resnext101_32x8d', 'resnet50_bc', 'resnet101_bc',
+    'vgg11', 'vgg13', 'vgg16', 'vgg19',
 ]
 
 
