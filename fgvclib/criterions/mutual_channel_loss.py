@@ -3,13 +3,14 @@ import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import Tensor
 from torch.nn.modules.utils import _pair
 
 from .utils import LossItem
 
 class MutualChannelLoss(nn.Module):
     
-    def __init__(self, height=None, cnum=None, div_weight=None, dis_weight=None):
+    def __init__(self, height:int=None, cnum:int=None, div_weight:float=None, dis_weight:float=None):
         super(MutualChannelLoss, self).__init__()
         
         self.height = height
@@ -117,7 +118,7 @@ class _AvgPool2d(nn.Module):
         self.ceil_mode = ceil_mode
         self.count_include_pad = count_include_pad
 
-    def forward(self, input):
+    def forward(self, input) -> Tensor:
         input = input.transpose(3,1)
         input = F.avg_pool2d(input, self.kernel_size, self.stride,
                             self.padding, self.ceil_mode, self.count_include_pad)
@@ -126,7 +127,7 @@ class _AvgPool2d(nn.Module):
         return input
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__class__.__name__ + '(' \
             + 'kernel_size=' + str(self.kernel_size) \
             + ', stride=' + str(self.stride) \
@@ -142,3 +143,4 @@ def mutual_channel_loss(cfg=None):
     assert 'div_weight' in cfg.keys(),       'div_weight must exist in parameters'
     assert 'dis_weight' in cfg.keys(),       'dis_weight must exist in parameters'
     return MutualChannelLoss(height=cfg['height'], cnum=cfg['cnum'], div_weight=cfg['div_weight'], dis_weight=cfg['dis_weight'])
+    

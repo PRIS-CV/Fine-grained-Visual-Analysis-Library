@@ -11,6 +11,11 @@ from fgvclib.utils.visualization import VOXEL
 
 
 def train(cfg: CfgNode):
+    r"""Train and validate a FGVC algorithm.
+
+    Args:
+        cfg (CfgNode): The root config loaded by FGVCConfig object 
+    """
     
     model = build_model(cfg.MODEL)
 
@@ -55,6 +60,11 @@ def train(cfg: CfgNode):
     logger.finish()
 
 def predict(cfg: CfgNode):
+    r"""Evaluate a FGVC algorithm.
+
+    Args:
+        cfg (CfgNode): The root config loaded by FGVCConfig object 
+    """
 
     model = build_model(cfg.MODEL)
     weight_path = os.path.join(cfg.WEIGHT.SAVE_DIR, cfg.WEIGHT.NAME)
@@ -83,10 +93,13 @@ if __name__ == "__main__":
     parser.add_argument('--task', type=str, help='the path of configuration file', default="train")
     args = parser.parse_args()
 
+    # load config
     config = FGVCConfig()
     config.load(args.config)
     cfg = config.cfg
     print(cfg)
+
+    # start task
     if args.task == "train":
         train(cfg)
     else:

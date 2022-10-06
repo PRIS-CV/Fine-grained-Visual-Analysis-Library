@@ -1,10 +1,6 @@
 import torch.nn as nn
 import random
 
-from ..backbones import resnet50
-from ..necks.multi_scale_conv import MultiScaleConv
-from ..encoders import GlobalMaxPooling
-from ..heads.classifier_2fc import Classifier_2FC
 from fgvclib.criterions.utils import LossItem
 
 class PMG_ResNet50(nn.Module):

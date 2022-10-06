@@ -1,8 +1,8 @@
-from .base_loss import cross_entropy_loss, binary_cross_entropy_loss
+from .base_loss import *
 from .mutual_channel_loss import mutual_channel_loss
 from .utils import LossItem, compute_loss_value, detach_loss_value
 
-__all__ = ['cross_entropy_loss', 'binary_cross_entropy_loss', 'mutual_channel_loss']
+__all__ = ['cross_entropy_loss', 'binary_cross_entropy_loss', 'mean_square_error_loss', 'mutual_channel_loss', 'LossItem', 'compute_loss_value', 'detach_loss_value']
 
 def get_criterion(criterion_name):
     """Return the criterion with the given name."""

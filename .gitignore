@@ -2,4 +2,6 @@ logs/
 wandb/
 Task.md
 __pycache__
+.ipynb_checkpoints
+cam_images/
 

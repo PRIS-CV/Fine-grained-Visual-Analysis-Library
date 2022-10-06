@@ -1,3 +1,10 @@
+# Copyright (c) 2022-present, BUPT-PRIS.
+
+"""
+    This file provides a api for evaluating FGVC algorithms.
+"""
+
+
 import torch
 import torch.nn as nn
 from torch.autograd import Variable

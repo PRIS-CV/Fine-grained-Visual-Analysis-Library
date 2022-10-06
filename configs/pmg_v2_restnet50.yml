@@ -12,8 +12,8 @@ LOGGER:
 DATASETS:
   ROOT: "/data/wangxinran/dataset/Birds2"
   TRAIN: 
-    BATCH_SIZE: 16
-    POSITIVE: ~
+    BATCH_SIZE: 4
+    POSITIVE: 1
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
@@ -30,7 +30,10 @@ MODEL:
   CRITERIONS: 
     - name: "cross_entropy_loss"
       args: []
-      w: 1.0
+      w: ~
+    - name: "mean_square_error_loss"
+      args: []
+      w: ~
   BACKBONE:
     NAME: "resnet50_bc"
     ARGS: 

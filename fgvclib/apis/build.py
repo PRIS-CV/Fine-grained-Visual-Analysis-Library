@@ -1,10 +1,15 @@
+# Copyright (c) 2022-present, BUPT-PRIS.
+
+"""
+    build.py provides various apis for building a training or evaluation system fast.
+"""
+
 import torch
 from torch import nn
 import torch.optim as optim
 from torchvision import transforms
 import typing as t
 from yacs.config import CfgNode
-
 
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
@@ -58,7 +63,7 @@ def build_transforms(transforms_cfg: CfgNode):
 
 def build_dataset(root:str, cfg: CfgNode, transforms):
 
-    dataset = Dataset_AnnoFolder(root=root, transform=transforms)
+    dataset = Dataset_AnnoFolder(root=root, transform=transforms, positive=cfg.POSITIVE)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=cfg.BATCH_SIZE, shuffle=cfg.SHUFFLE, num_workers=cfg.NUM_WORKERS)
 
     return data_loader
@@ -70,7 +75,7 @@ def build_optimizer(optim_cfg: CfgNode, model):
 
     if isinstance(model, torch.nn.DataParallel):
         for attr in model_attrs:
-            if getattr(model.module, attr):
+            if getattr(model.module, attr) and optim_cfg.LR[attr]:
                 params.append({
                     'params': getattr(model.module, attr).parameters(), 
                     'lr': optim_cfg.LR[attr]
@@ -78,7 +83,7 @@ def build_optimizer(optim_cfg: CfgNode, model):
                 print(attr, optim_cfg.LR[attr])
     else:
         for attr in model_attrs:
-            if getattr(model, attr):
+            if getattr(model, attr) and optim_cfg.LR[attr]:
                 params.append({
                     'params': getattr(model, attr).parameters(), 
                     'lr': optim_cfg.LR[attr]
