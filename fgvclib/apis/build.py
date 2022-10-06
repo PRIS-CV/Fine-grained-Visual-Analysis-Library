@@ -160,7 +160,7 @@ def build_metrics(metrics_cfg: CfgNode, use_cuda:bool=True) -> t.List[NamedMetri
     r"""Build metrics for evaluation.
 
     Args:
-        metrics_cfg (CfgNode): The criterion config node of root config node.
+        metrics_cfg (CfgNode): The metric config node of root config node.
     Returns:
         t.List[NamedMetric]: A List of NamedMetric.
     """
