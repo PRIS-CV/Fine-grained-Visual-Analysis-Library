@@ -2,6 +2,10 @@ from yacs.config import CfgNode as CN
 
 
 class FGVCConfig(object):
+    r"""
+        The config class for loading and storing FGVCLib config parameters.
+        
+    """
 
     def __init__(self):
         
