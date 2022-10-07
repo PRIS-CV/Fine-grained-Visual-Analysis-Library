@@ -9,8 +9,19 @@ from torch.nn.modules.utils import _pair
 from .utils import LossItem
 
 class MutualChannelLoss(nn.Module):
+
+    r"""The mutual channel loss function.
+    """
     
     def __init__(self, height:int=None, cnum:int=None, div_weight:float=None, dis_weight:float=None):
+        r"""The mutual channel loss function.
+            Args:
+                height (int): The kernel size of average pooling.
+                cnum (int): Channel numbers per class.
+                div_weight (float): The weight for diversity part loss.
+                dis_weight (float): The weight for discriminality part loss.
+        """
+
         super(MutualChannelLoss, self).__init__()
         
         self.height = height
