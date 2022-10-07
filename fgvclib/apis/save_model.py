@@ -1,8 +1,21 @@
 import torch
+import torch.nn as nn
 import os
+from yacs.config import CfgNode
+
 from fgvclib.utils.logger.logger import Logger
 
-def save_model(cfg, model, logger: Logger):
+
+
+def save_model(cfg: CfgNode, model: nn.Module, logger: Logger):
+    r"""Save the trained FGVC model.
+
+    Args:
+        cfg (CfgNode): The root config node.
+        model (nn.Module): The FGVC model.
+        logger (Logger): The Logger object.
+    """
+    
     if cfg.WEIGHT.NAME:
         
         if not os.path.exists(cfg.WEIGHT.SAVE_DIR):

@@ -12,7 +12,17 @@ import typing as t
 from fgvclib.metrics.metrics import NamedMetric
 
 
-def evaluate_model(model:nn.Module, p_bar:t.Iterator, metrics:t.List[NamedMetric], use_cuda:bool=True) -> t.Dict:
+def evaluate_model(model:nn.Module, p_bar:t.Iterable, metrics:t.List[NamedMetric], use_cuda:bool=True) -> t.Dict:
+    r"""Evaluate the FGVC model.
+
+    Args:
+        model (nn.Module): The FGVC model.
+        p_bar (iterable): A iterator provide test data.
+        metrics (List[NamedMetric]): List of metrics. 
+        use_cuda (boolean, optional): Whether to use gpu. 
+    Returns:
+        dict: The result dict.
+    """
     
     model.eval()
     results = dict()
