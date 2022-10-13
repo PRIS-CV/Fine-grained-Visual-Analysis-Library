@@ -75,15 +75,37 @@ class CUB_200_2011(FGVCDataset):
     annotation_file: str = "CUB_200_2011/CUB_200_2011/classes.txt"
     image_dir: str = "CUB_200_2011/CUB_200_2011/images/"
     split_file: str = "CUB_200_2011/CUB_200_2011/train_test_split.txt"
+    images_list_file: str = "CUB_200_2011/CUB_200_2011/images.txt" 
 
     def __init__(self, root:str, mode:str):
         assert mode in ["train", "test"], "The train"
         self.root = root
         self.category2index, self.index2category = self._load_categories()
-        self.train_samples, test_samples = self._load_samples(split=mode)
+        self.samples = self._load_samples(split=mode)
 
     def __getitem__(self, index:int):
         return 
+
+    def _load_samples(self, split) -> t.List[str]:
+        image_ids = []
+        samples = []
+        mode = '1' if split == "train" else '0'
+        with open(op.join(self.root, self.split_file)) as f:
+            lines = f.readlines()
+        for line in lines:
+            image_id, is_train = line.split()
+            if mode == is_train:
+                image_ids.append(image_id)
+
+        with open(op.join(self.root, self.split_file)) as f:
+            lines = f.readlines()
+        
+        for line in lines:
+            image_id, image_path = line.split()
+            if image_id in image_ids:
+                samples.append(op.join(self.root, self.image_dir, image_path))
+        
+        return samples
 
     def _load_categories(self) -> t.Union[dict, dict]:
         category2index = dict()
@@ -107,7 +129,5 @@ class CUB_200_2011(FGVCDataset):
         
 
 if __name__ == "__main__":
-    dataset = CUB_200_2011("/data/wangxinran/dataset/")
-    dataset.download()
-    print(dataset.get_categories())
-    print(dataset.encode_category('Least_Flycatcher'))
+    dataset = CUB_200_2011("/data/wangxinran/dataset/", mode="train")
+    dataset.load_samples()
