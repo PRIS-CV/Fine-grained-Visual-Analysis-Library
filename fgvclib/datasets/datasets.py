@@ -17,14 +17,18 @@ class FGVCDataset(Dataset):
 
     def __init__(self, root:str):
         self.root = root
+        self.samples = self._load_samples()
 
     def __getitem__(self, index:int):
         return 
+    
+    def __len__(self):
+        return len(self.samples)
 
     def _reverse_key_value(self, d:dict) -> dict:
         return {v:k for k, v in d.items()}
 
-    def load_samples(self, ):
+    def _load_samples(self, ):
         pass
 
     def _load_categories(self) -> t.Union[dict, dict]:
@@ -77,14 +81,16 @@ class CUB_200_2011(FGVCDataset):
     split_file: str = "CUB_200_2011/CUB_200_2011/train_test_split.txt"
     images_list_file: str = "CUB_200_2011/CUB_200_2011/images.txt" 
 
-    def __init__(self, root:str, mode:str):
+    def __init__(self, root:str, mode:str, download:bool=False):
         assert mode in ["train", "test"], "The train"
         self.root = root
+        if download:
+            self.download()
         self.category2index, self.index2category = self._load_categories()
         self.samples = self._load_samples(split=mode)
 
     def __getitem__(self, index:int):
-        return 
+        return self.samples[index]
 
     def _load_samples(self, split) -> t.List[str]:
         image_ids = []
@@ -104,7 +110,6 @@ class CUB_200_2011(FGVCDataset):
             image_id, image_path = line.split()
             if image_id in image_ids:
                 samples.append(op.join(self.root, self.image_dir, image_path))
-        
         return samples
 
     def _load_categories(self) -> t.Union[dict, dict]:
@@ -129,5 +134,5 @@ class CUB_200_2011(FGVCDataset):
         
 
 if __name__ == "__main__":
-    dataset = CUB_200_2011("/data/wangxinran/dataset/", mode="train")
-    dataset.load_samples()
+    dataset = CUB_200_2011("/data/wangxinran/dataset/", mode="test", download=True)
+    print(len(dataset))
