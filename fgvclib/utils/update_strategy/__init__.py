@@ -7,7 +7,16 @@ __all__ = [
 ]
 
 def get_update_strategy(strategy_name):
-    """Return the update strategy with the given name."""
+    r"""Return the learning rate schedule with the given name.
+
+        Args: 
+            strategy_name (str): 
+                The name of the update strategy.
+        
+        Return: 
+            The update strategy contructor method.
+    """
+
     if strategy_name not in globals():
         raise NotImplementedError(f"Strategy not found: {strategy_name}\nAvailable strategy: {__all__}")
     return globals()[strategy_name]
