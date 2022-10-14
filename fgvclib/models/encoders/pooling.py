@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 class GlobalMaxPooling(nn.Module):
-    """Global max pooling encoding.
+    r"""Global max pooling encoding.
 
     Note that ...
 
@@ -37,11 +37,9 @@ class GlobalMaxPooling(nn.Module):
         return outs
 
 class GlobalAvgPooling(nn.Module):
-    """Global average pooling encoding.
+    r"""Global average pooling encoding.
 
-    Note that ...
-
-    Args:
+        Args:
         
     """
 
