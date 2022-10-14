@@ -9,7 +9,16 @@ __all__ = [
 
 
 def get_model(model_name):
-    """Return the model class with the given name."""
+    r"""Return the FGVC model with the given name.
+
+        Args: 
+            model_name (str): 
+                The name of model.
+        
+        Return: 
+            The model contructor method.
+    """
+    
     if model_name not in globals():
         raise NotImplementedError(f"Model {model_name} not found!\nAvailable models: {__all__}")
     return globals()[model_name]

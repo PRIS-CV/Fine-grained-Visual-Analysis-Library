@@ -15,7 +15,7 @@ class MCL(nn.Module):
 
     def forward(self, x, targets):
         x = self.backbone(x)       
-        
+        # TODO: change 200
         if self.training:
             losses = list()
             losses.extend(self.criterions['mutual_channel_loss']['fn'](x, targets, 200))
