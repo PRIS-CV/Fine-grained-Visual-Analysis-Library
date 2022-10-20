@@ -18,4 +18,3 @@ def to_tensor(cfg: dict):
 
 def normalize(cfg: dict):
     return transforms.Normalize(mean=cfg['mean'], std=cfg['std'])
-    

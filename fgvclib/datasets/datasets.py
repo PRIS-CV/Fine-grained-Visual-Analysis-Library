@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import os
 import os.path as op
 from PIL import Image
@@ -6,6 +7,7 @@ import typing as t
 from torch.utils.data.dataset import Dataset
 import torchvision.transforms as T
 import wget
+
 
 
 def available_datasets():
@@ -36,12 +38,15 @@ class FGVCDataset(Dataset):
     def _reverse_key_value(self, d:dict) -> dict:
         return {v:k for k, v in d.items()}
 
+    def _load_annotations(self):
+        pass
+
     def _load_samples(self, ):
         pass
 
-    def _load_categories(self) -> t.Union[dict, dict]:
+    def _load_categories(self) -> t.Union[dict, list]:
         category2index = dict()
-        index2category = dict()
+        index2category = list()
         return category2index, index2category
 
     def _pil_loader(self, imgpath):
@@ -50,6 +55,9 @@ class FGVCDataset(Dataset):
                 return img.convert('RGB')
     
     def _download(self):
+        pass
+
+    def _get_sample_by_category(self, catrgory, path):
         pass
     
     def encode_category(self, category:str):
@@ -61,7 +69,7 @@ class FGVCDataset(Dataset):
     def get_categories(self, ):
         return list(self.category2index.keys())
 
-    def _extract_file(self, package:str):
+    def _extract_file(self, package:str, delete:bool=True):
         if package.endswith('.gz'):
             self._un_gz(package)
         elif package.endswith('.tar'):
@@ -91,12 +99,37 @@ class CUB_200_2011(FGVCDataset):
     name: str = "Caltech-UCSD Birds-200-2011"
     link: str = "http://www.vision.caltech.edu/datasets/cub_200_2011/"
     download_link: str = "https://data.caltech.edu/records/65de6-vp158/files/CUB_200_2011.tgz?download=1"
-    annotation_file: str = "CUB_200_2011/CUB_200_2011/classes.txt"
+    category_file: str = "CUB_200_2011/CUB_200_2011/classes.txt"
+    annotation_file: str = "CUB_200_2011/CUB_200_2011/image_class_labels.txt"
     image_dir: str = "CUB_200_2011/CUB_200_2011/images/"
     split_file: str = "CUB_200_2011/CUB_200_2011/train_test_split.txt"
     images_list_file: str = "CUB_200_2011/CUB_200_2011/images.txt" 
 
-    def __init__(self, root:str, mode:str, download:bool=False, transforms:T.Compose=None, positive:int=None):
+    def __init__(self, root:str, mode:str, download:bool=False, transforms:T.Compose=None, positive:int=0):
+        r"""
+            The Caltech-UCSD Birds-200-2011 dataset class.
+
+            Args:
+                root (str): 
+                    The root directory of CUB dataset.
+                
+                mode (str):
+                    The split of CUB dataset. If you want split the dataset by yourself, 
+                    you can create a new class inheriting this class, and rewrite the 
+                    split method.
+                
+                download (bool):
+                    Directly downloading CUB dataset by setting download=True. Default 
+                    is False.
+                
+                transforms (torchvision.transforms.Compose):
+                    The PyTorch transforms Compose class used to preprocessing the data.
+                
+                positive (int):
+                    If positive = n > 0, the __getitem__ will an extra list of n images
+                    of same category.
+        """
+
         assert mode in ["train", "test"], "The mode of CUB datasets should be train or test"
         self.root = root
         if download:
@@ -104,19 +137,33 @@ class CUB_200_2011(FGVCDataset):
         assert op.exists(op.join(self.root, "CUB_200_2011")), "Please download the dataset by setting download=True."
         self.category2index, self.index2category = self._load_categories()
         self.samples = self._load_samples(split=mode)
+        self.annotations = self._load_annotations()
 
     def __getitem__(self, index:int):
 
         image = self.samples[index]
         label = image.split()[1]
+        
         if self.transforms:
             image = self.transforms(image)
+        
         if self.positive != None:
             positive_image = self._fetch_positive(self.positive, label, self.image_names[index])
             return image, positive_image, label
         
         return image, label
 
+    def _load_annotations(self) -> dict:
+        # TODO: Finish
+
+        annotations = OrderedDict()
+        with open(op.join(self.root, self.annotation_file)) as f:
+            lines = f.readlines()
+        for line in lines:
+            image_id, label = line.split()
+            annotations[image_id] = label
+        return annotations
+            
     def _load_samples(self, split) -> t.List[str]:
         image_ids = []
         samples = []
@@ -137,15 +184,16 @@ class CUB_200_2011(FGVCDataset):
                 samples.append(op.join(self.root, self.image_dir, image_path))
         return samples
 
-    def _load_categories(self) -> t.Union[dict, dict]:
+    def _load_categories(self) -> t.Union[dict, list]:
         category2index = dict()
-        index2category = dict()
-        image_dir = op.join(self.root, self.image_dir) 
-        sub_dirs = os.listdir(image_dir)
-        for name in sub_dirs:
-            index, category = name.split('.')
-            category2index.update({category: int(index) - 1})
-            index2category.update({int(index) - 1: category})
+        index2category = list()
+        with open(op.join(self.root, self.category_file)) as f:
+            lines = f.readlines()
+        for line in lines:
+            index, category = line.split()
+            category2index[category] = int(index) - 1
+            index2category.append(category)
+        
         return category2index, index2category
     
     def _download(self, overwrite=False):
