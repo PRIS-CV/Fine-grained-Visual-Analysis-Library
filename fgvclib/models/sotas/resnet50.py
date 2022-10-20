@@ -2,10 +2,10 @@ import torch.nn as nn
 
 from fgvclib.criterions.utils import LossItem
 
-class Baseline_ResNet50(nn.Module):
+class ResNet50(nn.Module):
     
     def __init__(self, backbone, necks=None, encoding=None, heads=None, criterions=None):
-        super(Baseline_ResNet50, self).__init__()
+        super(ResNet50, self).__init__()
 
         self.backbone = backbone
         self.necks = necks

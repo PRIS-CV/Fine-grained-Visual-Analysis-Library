@@ -3,10 +3,10 @@ import random
 
 from fgvclib.criterions.utils import LossItem
 
-class PMG_ResNet50(nn.Module):
+class PMG(nn.Module):
     def __init__(self, backbone=None, necks=None, encoding=None, heads=None, criterions=None):
         
-        super(PMG_ResNet50, self).__init__()
+        super(PMG, self).__init__()
 
         self.backbone = backbone
         self.necks = necks
@@ -51,3 +51,4 @@ class PMG_ResNet50(nn.Module):
             jigsaws[..., x * block_size:(x + 1) * block_size, y * block_size:(y + 1) * block_size] = temp
 
         return jigsaws
+    

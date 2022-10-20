@@ -1,13 +1,13 @@
 import torch.nn as nn
 from fgvclib.criterions import LossItem
 
-class PMG_V2_ResNet50(nn.Module):
+class PMG_V2(nn.Module):
 
     BLOCKS = [[8, 8, 0, 0], [4, 4, 4, 0], [2, 2, 2, 2]]
     alpha = [0.01, 0.05, 0.1]
     
     def __init__(self, backbone:nn.Module, encoding:nn.Module, necks:nn.Module, heads:nn.Module, criterions:nn.Module):
-        super(PMG_V2_ResNet50, self).__init__()
+        super(PMG_V2, self).__init__()
 
         self.backbone = backbone
         self.necks = necks
