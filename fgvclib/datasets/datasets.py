@@ -97,7 +97,7 @@ class CUB_200_2011(FGVCDataset):
     images_list_file: str = "CUB_200_2011/CUB_200_2011/images.txt" 
 
     def __init__(self, root:str, mode:str, download:bool=False, transforms:T.Compose=None, positive:int=None):
-        assert mode in ["train", "test"], "The train"
+        assert mode in ["train", "test"], "The mode of CUB datasets should be train or test"
         self.root = root
         if download:
             self._download()
@@ -153,6 +153,7 @@ class CUB_200_2011(FGVCDataset):
             print("The dataset already exist!")
             return 
         if not op.exists(op.join(self.root, "CUB_200_2011.tgz")):
+            print(f"Downloading {self.name} into {self.root} ...")
             wget.download(self.download_link, op.join(self.root, "CUB_200_2011.tgz"))
         self._extract_file(op.join(self.root, "CUB_200_2011.tgz"))
         print(f"{self.name} dataset is ready.")

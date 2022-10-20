@@ -25,7 +25,7 @@ DATASETS:
     NUM_WORKERS: 4
 
 MODEL:
-  NAME: "PMG_ResNet50"
+  NAME: "PMG"
   CLASS_NUM: 200
   CRITERIONS: 
     - name: "cross_entropy_loss"
@@ -63,7 +63,6 @@ MODEL:
         - 1024
         - 3072
       - hid_dim: 512
-  OUTPUTS_NUM: ~
 
 TRANSFORMS: 
   TRAIN: 

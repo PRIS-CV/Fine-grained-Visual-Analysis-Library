@@ -61,7 +61,6 @@ MODEL:
       - in_dim: 
         - 29400
       - hid_dim: 512
-  OUTPUTS_NUM: ~
 
 TRANSFORMS: 
   TRAIN: 

@@ -25,7 +25,7 @@ DATASETS:
     NUM_WORKERS: 4
 
 MODEL:
-  NAME: "Baseline_ResNet50"
+  NAME: "ResNet50"
   CLASS_NUM: 200
   CRITERIONS: 
     - name: "cross_entropy_loss"
@@ -45,7 +45,6 @@ MODEL:
     ARGS:
       - in_dim: 
         - 2048
-  OUTPUTS_NUM: ~
 
 TRANSFORMS: 
   TRAIN: 

@@ -13,7 +13,7 @@ class Classifier_1FC(nn.Module):
 
     def __init__(self, in_dim:list=[2048,], class_num:int=None):
         super(Classifier_1FC, self).__init__()
-
+        self.class_num = class_num
         self.classifier_num = len(in_dim)
         self.classifiers = nn.ModuleList()
         for s in range(self.classifier_num):
@@ -30,6 +30,9 @@ class Classifier_1FC(nn.Module):
             return tuple(outputs)
         else:
             return outputs[0]
+
+    def get_class_num(self):
+        return self.class_num
 
 def classifier_1fc(class_num: int, cfg: dict) -> Classifier_1FC:
     assert 'in_dim' in cfg.keys()

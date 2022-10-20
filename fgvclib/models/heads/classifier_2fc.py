@@ -12,7 +12,7 @@ class Classifier_2FC(nn.Module):
 
     def __init__(self, in_dim, hid_dim, class_num):
         super(Classifier_2FC, self).__init__()
-        
+        self.class_num = class_num
         self.classifier_num = len(in_dim)
         self.classifiers = nn.ModuleList()
         for s in range(self.classifier_num):
@@ -35,6 +35,10 @@ class Classifier_2FC(nn.Module):
             return tuple(outputs)
         else:
             return outputs[0]
+
+    def get_class_num(self):
+        return self.class_num
+
 
 
 def classifier_2fc(class_num: int, cfg: dict) -> Classifier_2FC:

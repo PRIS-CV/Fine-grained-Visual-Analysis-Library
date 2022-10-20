@@ -58,7 +58,6 @@ class FGVCConfig(object):
         self.cfg.MODEL = CN()
         self.cfg.MODEL.NAME = None
         self.cfg.MODEL.CLASS_NUM = None
-        self.cfg.MODEL.OUTPUTS_NUM = None
         self.cfg.MODEL.CRITERIONS = None
 
         # Standard modulars of each model
