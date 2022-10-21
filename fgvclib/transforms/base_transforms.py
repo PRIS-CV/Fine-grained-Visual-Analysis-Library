@@ -1,5 +1,42 @@
+import typing as t
 from torchvision import transforms
 from PIL import Image
+import torch.nn as nn
+
+class BaseAugmentation(nn.Module):
+    
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self):
+        pass
+
+class ImageLevelAugmentation(BaseAugmentation):
+    
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, input):
+        pass
+
+class FeatureLevelAugmentation(BaseAugmentation):
+    
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, feature):
+        pass
+
+
+class LabelLevelAugmentation(BaseAugmentation):
+    
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, target):
+        pass
+
+    
 
 def resize(cfg: dict):
     return transforms.Resize(size=cfg['size'], interpolation=Image.BILINEAR)
@@ -18,3 +55,5 @@ def to_tensor(cfg: dict):
 
 def normalize(cfg: dict):
     return transforms.Normalize(mean=cfg['mean'], std=cfg['std'])
+
+

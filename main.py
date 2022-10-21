@@ -30,8 +30,21 @@ def train(cfg: CfgNode):
     train_transforms = build_transforms(cfg.TRANSFORMS.TRAIN)
     test_transforms = build_transforms(cfg.TRANSFORMS.TEST)
 
-    train_loader = build_dataset(root=os.path.join(cfg.DATASETS.ROOT, 'train'), cfg=cfg.DATASETS.TRAIN, transforms=train_transforms)
-    test_loader = build_dataset(root=os.path.join(cfg.DATASETS.ROOT, 'test'), cfg=cfg.DATASETS.TEST, transforms=test_transforms)
+    train_loader = build_dataset(
+        name=cfg.DATASET.NAME, 
+        root=cfg.DATASET.ROOT, 
+        mode="train", 
+        mode_cfg=cfg.DATASET.TRAIN, 
+        transforms=train_transforms
+    )
+
+    test_loader = build_dataset(
+        name=cfg.DATASET.NAME, 
+        root=cfg.DATASET.ROOT, 
+        mode="test", 
+        mode_cfg=cfg.DATASET.TEST, 
+        transforms=test_transforms
+    )
 
     optimizer = build_optimizer(cfg.OPTIMIZER, model)
 

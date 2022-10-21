@@ -1,6 +1,6 @@
-from .pmg import PMG_ResNet50
-from .pmg_v2 import PMG_V2_ResNet50
-from .resnet50 import Baseline_ResNet50
+from .pmg import PMG
+from .pmg_v2 import PMG_V2
+from .resnet50 import ResNet50
 from .mcl import MCL
 
 __all__ = [

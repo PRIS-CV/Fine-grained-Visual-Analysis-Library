@@ -9,8 +9,9 @@ WEIGHT:
 LOGGER: 
   NAME: "txt_logger"
 
-DATASETS:
-  ROOT: "/data/wangxinran/dataset/Birds2"
+DATASET:
+  ROOT: "/data/wangxinran/dataset/CUB_200_2011"
+  NAME: "CUB_200_2011"
   TRAIN: 
     BATCH_SIZE: 32
     POSITIVE: ~

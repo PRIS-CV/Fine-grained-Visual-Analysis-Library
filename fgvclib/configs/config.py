@@ -35,24 +35,25 @@ class FGVCConfig(object):
         self.cfg.LOGGER.PRINT_FRE = 50
 
         # Datasets and data loader
-        self.cfg.DATASETS = CN()
-        self.cfg.DATASETS.ROOT = None 
-        self.cfg.DATASETS.TRAIN = CN()
-        self.cfg.DATASETS.TEST = CN()
+        self.cfg.DATASET = CN()
+        self.cfg.DATASET.NAME = None
+        self.cfg.DATASET.ROOT = None 
+        self.cfg.DATASET.TRAIN = CN()
+        self.cfg.DATASET.TEST = CN()
 
         # train dataset and data loder
-        self.cfg.DATASETS.TRAIN.BATCH_SIZE = 32
-        self.cfg.DATASETS.TRAIN.POSITIVE = None
-        self.cfg.DATASETS.TRAIN.PIN_MEMORY = True
-        self.cfg.DATASETS.TRAIN.SHUFFLE = True
-        self.cfg.DATASETS.TRAIN.NUM_WORKERS = 0
+        self.cfg.DATASET.TRAIN.BATCH_SIZE = 32
+        self.cfg.DATASET.TRAIN.POSITIVE = None
+        self.cfg.DATASET.TRAIN.PIN_MEMORY = True
+        self.cfg.DATASET.TRAIN.SHUFFLE = True
+        self.cfg.DATASET.TRAIN.NUM_WORKERS = 0
         
         # test dataset and data loder
-        self.cfg.DATASETS.TEST.BATCH_SIZE = 32
-        self.cfg.DATASETS.TEST.POSITIVE = None
-        self.cfg.DATASETS.TEST.PIN_MEMORY = False
-        self.cfg.DATASETS.TEST.SHUFFLE = False
-        self.cfg.DATASETS.TEST.NUM_WORKERS = 0
+        self.cfg.DATASET.TEST.BATCH_SIZE = 32
+        self.cfg.DATASET.TEST.POSITIVE = None
+        self.cfg.DATASET.TEST.PIN_MEMORY = False
+        self.cfg.DATASET.TEST.SHUFFLE = False
+        self.cfg.DATASET.TEST.NUM_WORKERS = 0
 
         # Model architecture
         self.cfg.MODEL = CN()

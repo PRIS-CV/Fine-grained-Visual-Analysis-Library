@@ -8,14 +8,14 @@ import torch
 from torch import nn
 import torch.optim as optim
 from torch.optim.optimizer import Optimizer
-from torchvision import transforms
+import torchvision.transforms as T
 from torch.utils.data import DataLoader
 import typing as t
 from yacs.config import CfgNode
 
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
-from fgvclib.datasets import Dataset_AnnoFolder
+from fgvclib.datasets import get_dataset
 from fgvclib.metrics import get_metric
 from fgvclib.models.sotas import get_model
 from fgvclib.models.backbones import get_backbone
@@ -75,29 +75,32 @@ def build_logger(cfg: CfgNode) -> Logger:
 
     return get_logger(cfg.LOGGER.NAME)(cfg)
 
-def build_transforms(transforms_cfg: CfgNode) -> transforms.Compose:
+def build_transforms(transforms_cfg: CfgNode) -> T.Compose:
     r"""Build transforms for train or test dataset according to config.
 
     Args:
         transforms_cfg (CfgNode): The root config node.
     Returns:
-        transforms.Compose: The transforms.Compose object in Pytorch.
+        PyTorch transforms.Compose: The transforms.Compose object in Pytorch.
     """
 
-    return transforms.Compose([get_transform(item['name'])(item) for item in transforms_cfg])
+    return T.Compose([get_transform(item['name'])(item) for item in transforms_cfg])
 
-def build_dataset(root:str, cfg: CfgNode, transforms) -> DataLoader:
+def build_dataset(name:str, root:str, mode_cfg: CfgNode, mode:str, transforms:T.Compose) -> DataLoader:
     r"""Build a dataloader for training or evaluation.
 
     Args:
+        name (str): The dataset name.
         root (str): The directory of dataset.
-        cfg (CfgNode): The root config node.
+        cfg (CfgNode): The mode config of the dataset config.
+        mode (str): The split of the dataset.
+        transforms: Pytorch Transformer Compose.
     Returns:
         DataLoader: A Pytorch Dataloader.
     """
 
-    dataset = Dataset_AnnoFolder(root=root, transform=transforms, positive=cfg.POSITIVE)
-    data_loader = torch.utils.data.DataLoader(dataset, batch_size=cfg.BATCH_SIZE, shuffle=cfg.SHUFFLE, num_workers=cfg.NUM_WORKERS)
+    dataset = get_dataset(name)(root=root, transforms=transforms, positive=mode_cfg.POSITIVE, mode=mode)
+    data_loader = torch.utils.data.DataLoader(dataset, batch_size=mode_cfg.BATCH_SIZE, shuffle=mode_cfg.SHUFFLE, num_workers=mode_cfg.NUM_WORKERS)
 
     return data_loader
 

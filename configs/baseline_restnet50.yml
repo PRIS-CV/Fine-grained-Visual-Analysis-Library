@@ -9,16 +9,17 @@ WEIGHT:
 LOGGER: 
   NAME: "txt_logger"
 
-DATASETS:
-  ROOT: "/data/wangxinran/dataset/Birds2"
+DATASET:
+  NAME: "CUB_200_2011"
+  ROOT: "/data/wangxinran/dataset/CUB_200_2011"
   TRAIN: 
-    BATCH_SIZE: 16
+    BATCH_SIZE: 2
     POSITIVE: ~
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
-    BATCH_SIZE: 16
+    BATCH_SIZE: 2
     POSITIVE: ~
     PIN_MEMORY: False
     SHUFFLE: False

@@ -9,7 +9,7 @@ WEIGHT:
 LOGGER: 
   NAME: "txt_logger"
 
-DATASETS:
+DATASET:
   ROOT: "/data/wangxinran/dataset/Birds2"
   TRAIN: 
     BATCH_SIZE: 16
