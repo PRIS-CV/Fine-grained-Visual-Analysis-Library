@@ -10,16 +10,16 @@ LOGGER:
   NAME: "txt_logger"
 
 DATASET:
-  ROOT: "/data/wangxinran/dataset/Birds2"
+  ROOT: "/data/wangxinran/dataset/"
   TRAIN: 
     BATCH_SIZE: 16
-    POSITIVE: ~
+    POSITIVE: 0
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
     BATCH_SIZE: 4
-    POSITIVE: ~
+    POSITIVE: 0
     PIN_MEMORY: False
     SHUFFLE: False
     NUM_WORKERS: 4

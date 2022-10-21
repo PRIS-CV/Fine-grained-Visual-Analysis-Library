@@ -37,20 +37,20 @@ class FGVCConfig(object):
         # Datasets and data loader
         self.cfg.DATASET = CN()
         self.cfg.DATASET.NAME = None
-        self.cfg.DATASET.ROOT = None 
+        self.cfg.DATASET.ROOT = None
         self.cfg.DATASET.TRAIN = CN()
         self.cfg.DATASET.TEST = CN()
 
         # train dataset and data loder
         self.cfg.DATASET.TRAIN.BATCH_SIZE = 32
-        self.cfg.DATASET.TRAIN.POSITIVE = None
+        self.cfg.DATASET.TRAIN.POSITIVE = 0
         self.cfg.DATASET.TRAIN.PIN_MEMORY = True
         self.cfg.DATASET.TRAIN.SHUFFLE = True
         self.cfg.DATASET.TRAIN.NUM_WORKERS = 0
         
         # test dataset and data loder
         self.cfg.DATASET.TEST.BATCH_SIZE = 32
-        self.cfg.DATASET.TEST.POSITIVE = None
+        self.cfg.DATASET.TEST.POSITIVE = 0
         self.cfg.DATASET.TEST.PIN_MEMORY = False
         self.cfg.DATASET.TEST.SHUFFLE = False
         self.cfg.DATASET.TEST.NUM_WORKERS = 0

@@ -11,16 +11,16 @@ LOGGER:
 
 DATASET:
   NAME: "CUB_200_2011"
-  ROOT: "/data/wangxinran/dataset/CUB_200_2011"
+  ROOT: "/data/wangxinran/dataset/"
   TRAIN: 
     BATCH_SIZE: 2
-    POSITIVE: ~
+    POSITIVE: 0
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
     BATCH_SIZE: 2
-    POSITIVE: ~
+    POSITIVE: 0
     PIN_MEMORY: False
     SHUFFLE: False
     NUM_WORKERS: 4

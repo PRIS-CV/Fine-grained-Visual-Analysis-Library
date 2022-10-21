@@ -205,7 +205,7 @@ class CUB_200_2011(FGVCDataset):
     
     def _download(self, overwrite=False):
         if op.exists(op.join(self.root, "CUB_200_2011")) and not overwrite:
-            print("The dataset already exist!")
+            print("Loading From Pre-download Dataset ...")
             return 
         if not op.exists(op.join(self.root, "CUB_200_2011.tgz")):
             print(f"Downloading {self.name} into {self.root} ...")

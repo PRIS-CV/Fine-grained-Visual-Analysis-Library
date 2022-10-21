@@ -10,17 +10,17 @@ LOGGER:
   NAME: "txt_logger"
 
 DATASET:
-  ROOT: "/data/wangxinran/dataset/CUB_200_2011"
+  ROOT: "/data/wangxinran/dataset/"
   NAME: "CUB_200_2011"
   TRAIN: 
     BATCH_SIZE: 32
-    POSITIVE: ~
+    POSITIVE: 0
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
     BATCH_SIZE: 32
-    POSITIVE: ~
+    POSITIVE: 0
     PIN_MEMORY: False
     SHUFFLE: False
     NUM_WORKERS: 4
