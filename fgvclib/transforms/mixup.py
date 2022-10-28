@@ -7,25 +7,19 @@ class MixUp(nn.Module):
     r"""The mixup data augmentation 
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, beta:float=1.0, prob:float=0.5):
 
-    def mixup_data(x, y, alpha=1.0, use_cuda=True):
-        '''Returns mixed inputs, pairs of targets, and lambda'''
-        if alpha > 0:
-            lam = np.random.beta(alpha, alpha)
-        else:
-            lam = 1
+        self.prob = prob
+        assert beta > 0, "The beta of MixUp Augmentation Should Large than 0"
+        self.beta = beta
 
-        batch_size = x.size()[0]
-        if use_cuda:
-            index = torch.randperm(batch_size).cuda()
-        else:
-            index = torch.randperm(batch_size)
+    def aug_data(self, input, target):
+        
+        lam = np.random.beta(self.beta, self.beta)
+        index = torch.randperm(input.size()[0]).to(input.device)
+        input = lam * input + (1 - lam) * input[index, :]
+        target_a, target_b = target, target[index]
+        return input, target_a, target_b, lam
 
-        mixed_x = lam * x + (1 - lam) * x[index, :]
-        y_a, y_b = y, y[index]
-        return mixed_x, y_a, y_b, lam
-
-    def mixup_criterion(criterion, pred, y_a, y_b, lam):
-        return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
+    def aug_criterion(criterion, pred, target_a, target_b, lam):
+        return lam * criterion(pred, target_a) + (1 - lam) * criterion(pred, target_b)

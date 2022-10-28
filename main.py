@@ -18,14 +18,13 @@ def train(cfg: CfgNode):
     """
     
     model = build_model(cfg.MODEL)
-    
+
     if cfg.RESUME_WEIGHT:
         assert os.path.exists(cfg.RESUME_WEIGHT), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."
         model.load_state_dict(torch.load(cfg.RESUME_WEIGHT, map_location="cpu"))
 
     if cfg.USE_CUDA:
         assert torch.cuda.is_available(), f"Cuda is not available."
-        model = model.cuda()
         model = torch.nn.DataParallel(model)
     
     train_transforms = build_transforms(cfg.TRANSFORMS.TRAIN)
