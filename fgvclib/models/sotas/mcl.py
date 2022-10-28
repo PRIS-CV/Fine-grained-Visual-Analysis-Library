@@ -14,11 +14,10 @@ class MCL(nn.Module):
         self.criterions = criterions
 
     def forward(self, x, targets):
-        x = self.backbone(x)       
-        # TODO: change 200
+        x = self.backbone(x)
         if self.training:
             losses = list()
-            losses.extend(self.criterions['mutual_channel_loss']['fn'](x, targets, 200))
+            losses.extend(self.criterions['mutual_channel_loss']['fn'](x, targets, self.heads.get_class_num()))
         
         x = self.encoding(x)
         x = x.view(x.size(0), -1)
