@@ -21,8 +21,8 @@ class CutMix(nn.Module):
         
         return input, target_a, target_b, lam
 
-    def aug_criterion(self, criterion, pred, y_a, y_b, lam):
-        return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
+    def aug_criterion(criterion, pred, target_a, target_b, lam):
+        return lam * criterion(pred, target_a) + (1 - lam) * criterion(pred, target_b)
     
     def rand_bbox(size, lam):
         
