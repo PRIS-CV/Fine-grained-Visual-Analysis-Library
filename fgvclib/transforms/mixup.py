@@ -8,9 +8,9 @@ class MixUp(nn.Module):
     """
 
     def __init__(self, beta:float=1.0, prob:float=0.5):
+        assert beta > 0, "The beta of MixUp Augmentation Should Large than 0"
 
         self.prob = prob
-        assert beta > 0, "The beta of MixUp Augmentation Should Large than 0"
         self.beta = beta
 
     def aug_data(self, input, target):

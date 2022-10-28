@@ -6,17 +6,18 @@ import torch.nn as nn
 class CutMix(nn.Module):
 
     def __init__(self, beta:float=1.0, prob:float=0.5):
+        assert beta > 0, "The beta of MixUp Augmentation Should Large than 0"
+
         self.prob = prob
         self.beta = beta
     
     def aug_data(self, input, target):
         lam = np.random.beta(self.beta, self.beta)
-        rand_index = torch.randperm(input.size()[0]).to(input.device)
-        target_a = target
-        target_b = target[rand_index]
-        input[:, :, bbx1:bbx2, bby1:bby2] = input[rand_index, :, bbx1:bbx2, bby1:bby2]
-        lam = 1 - ((bbx2 - bbx1) * (bby2 - bby1) / (input.size()[-1] * input.size()[-2]))
+        index = torch.randperm(input.size()[0]).to(input.device)
         bbx1, bby1, bbx2, bby2 = self.rand_bbox(input.size(), lam)
+        lam = 1 - ((bbx2 - bbx1) * (bby2 - bby1) / (input.size()[-1] * input.size()[-2]))
+        input[:, :, bbx1:bbx2, bby1:bby2] = input[index, :, bbx1:bbx2, bby1:bby2]
+        target_a, target_b = target, target[index]
         
         return input, target_a, target_b, lam
 
