@@ -79,10 +79,8 @@ class VOXEL:
                 sample.save()
         print("Finished adding predictions")
 
-    
     def delete_field(self, field_name: str):
         self.fo_dataset.delete_frame_field(field_name=field_name)
-
 
     def launch(self) -> None:
         session = fo.launch_app(self.view)
@@ -90,6 +88,3 @@ class VOXEL:
 
     def del_dataset(self):
         assert self.name in fo.list_datasets(), f"The dataset {self.name} does not exists"
-
-
-    

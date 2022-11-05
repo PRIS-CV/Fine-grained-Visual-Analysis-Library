@@ -7,7 +7,16 @@ from .logger import Logger
 
 class TxtLogger(Logger):
     
-    def __init__(self, exp_name, path, show_frequence:t.Optional[int]=50):
+    def __init__(self, exp_name:str, path:str, show_frequence:t.Optional[int]=50):
+        r"""The text logger for record loss and other data.
+            Args:
+                exp_name (str): 
+                    The experiment name used to named the record file.
+                path (str): 
+                    The file directory used to store the log files.
+                show_freqence (str): 
+                    Print the data per n steps.
+        """
         start_point = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
         super(TxtLogger, self).__init__(exp_name + "_" + start_point)
         assert os.path.exists(path), 'The path for logger doesn\'t exist'

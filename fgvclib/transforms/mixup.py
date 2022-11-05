@@ -23,3 +23,6 @@ class MixUp(nn.Module):
 
     def aug_criterion(criterion, pred, target_a, target_b, lam):
         return lam * criterion(pred, target_a) + (1 - lam) * criterion(pred, target_b)
+
+def mix_up():
+    return MixUp()

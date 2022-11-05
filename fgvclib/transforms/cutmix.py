@@ -42,3 +42,7 @@ class CutMix(nn.Module):
         bby2 = np.clip(cy + cut_h // 2, 0, H)
 
         return bbx1, bby1, bbx2, bby2
+
+
+def cut_mix():
+    return CutMix()

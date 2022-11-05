@@ -81,7 +81,7 @@ def predict(cfg: CfgNode):
 
     model = build_model(cfg.MODEL)
     weight_path = os.path.join(cfg.WEIGHT.SAVE_DIR, cfg.WEIGHT.NAME)
-    assert os.path.exists(weight_path), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."
+    assert os.path.exists(weight_path), f"The weight {weight_path} dosn't exists."
     state_dict = torch.load(weight_path, map_location="cpu")
     model.load_state_dict(state_dict=state_dict)
 
@@ -100,7 +100,7 @@ def predict(cfg: CfgNode):
 
 
 if __name__ == "__main__":
-
+    
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=str, help='the path of configuration file')
     parser.add_argument('--task', type=str, help='the path of configuration file', default="train")
@@ -117,4 +117,4 @@ if __name__ == "__main__":
         train(cfg)
     else:
         predict(cfg)
-        
+    
