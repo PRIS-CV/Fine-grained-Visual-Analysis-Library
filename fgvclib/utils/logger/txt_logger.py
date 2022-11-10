@@ -19,7 +19,9 @@ class TxtLogger(Logger):
         """
         start_point = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
         super(TxtLogger, self).__init__(exp_name + "_" + start_point)
-        assert os.path.exists(path), 'The path for logger doesn\'t exist'
+        if not os.path.exists(path):
+            os.mkdir(path)
+        print(f"Experiment log recorded in {path}.")
         self.path = path
         self.buffer = ""
         assert show_frequence >= 0, 'The logger\'s print freqence should larger than or equal 0'

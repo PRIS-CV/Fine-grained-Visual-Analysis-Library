@@ -16,10 +16,15 @@ def evaluate_model(model:nn.Module, p_bar:t.Iterable, metrics:t.List[NamedMetric
     r"""Evaluate the FGVC model.
 
     Args:
-        model (nn.Module): The FGVC model.
-        p_bar (iterable): A iterator provide test data.
-        metrics (List[NamedMetric]): List of metrics. 
-        use_cuda (boolean, optional): Whether to use gpu. 
+        model (nn.Module): 
+            The FGVC model.
+        p_bar (iterable): 
+            A iterator provide test data.
+        metrics (List[NamedMetric]): 
+            List of metrics. 
+        use_cuda (boolean, optional): 
+            Whether to use gpu. 
+            
     Returns:
         dict: The result dict.
     """

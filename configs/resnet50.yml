@@ -1,9 +1,9 @@
-EXP_NAME: "Baseline_ResNet50"
+EXP_NAME: "ResNet50"
 
 RESUME_WEIGHT: ~
 
 WEIGHT:
-  NAME: "baseline_resnet50.pth"
+  NAME: "resnet50.pth"
   SAVE_DIR: "/data/wangxinran/model/fgvclib/"
   
 LOGGER: 
@@ -11,15 +11,15 @@ LOGGER:
 
 DATASET:
   NAME: "CUB_200_2011"
-  ROOT: "/data/wangxinran/dataset/"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
   TRAIN: 
-    BATCH_SIZE: 2
+    BATCH_SIZE: 64
     POSITIVE: 0
     PIN_MEMORY: True
     SHUFFLE: True
     NUM_WORKERS: 4
   TEST: 
-    BATCH_SIZE: 2
+    BATCH_SIZE: 64
     POSITIVE: 0
     PIN_MEMORY: False
     SHUFFLE: False

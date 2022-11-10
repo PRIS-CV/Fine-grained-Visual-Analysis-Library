@@ -7,10 +7,12 @@ class NamedMetric(Metric):
     """
     
     def __init__(self, name:str, metric:Metric):
-        r"""The initalization of NamedMetirc object.
+        r"""The initalization of A NamedMetirc object.
             Args:
-                name (str): The name of metric, e.g. accuracy(top-1)
-                metric (Metric): The Metric object of torchmetrics
+                name (str): 
+                    The name of metric, e.g. accuracy(top-1)
+                metric (Metric): 
+                    The Metric object of torchmetrics
         """
         super(NamedMetric, self).__init__()
         self.name = name
