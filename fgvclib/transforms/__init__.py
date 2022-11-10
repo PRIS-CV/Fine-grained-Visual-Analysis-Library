@@ -1,8 +1,8 @@
 from .base_transforms import *
-from .mixup import mix_up
-from .cutmix import cut_mix
+from .mixup import MixUp
+from .cutmix import CutMix
 
-__all__ = ["resize", "center_crop", "random_crop", "random_horizontal_flip", "to_tensor", "normalize", "mix_up", "cut_mix"]
+__all__ = ["resize", "center_crop", "random_crop", "random_horizontal_flip", "to_tensor", "normalize"]
 
 
 def get_transform(transform_name):

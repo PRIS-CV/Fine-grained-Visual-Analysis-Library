@@ -1,6 +1,6 @@
 from .pmg import PMG
 from .pmg_v2 import PMG_V2
-from .resnet50 import ResNet50
+from .resnet50 import ResNet50, ResNet50_CutMix, ResNet50_MixUp
 from .mcl import MCL
 
 __all__ = [

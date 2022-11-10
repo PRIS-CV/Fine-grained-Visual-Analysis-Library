@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 
-class CutMix(nn.Module):
+class CutMix:
 
     def __init__(self, beta:float=1.0, prob:float=0.5):
         assert beta > 0, "The beta of MixUp Augmentation Should Large than 0"
@@ -21,10 +21,10 @@ class CutMix(nn.Module):
         
         return input, target_a, target_b, lam
 
-    def aug_criterion(criterion, pred, target_a, target_b, lam):
+    def aug_criterion(self, criterion, pred, target_a, target_b, lam):
         return lam * criterion(pred, target_a) + (1 - lam) * criterion(pred, target_b)
     
-    def rand_bbox(size, lam):
+    def rand_bbox(self, size, lam):
         
         W = size[2]
         H = size[3]
@@ -42,7 +42,3 @@ class CutMix(nn.Module):
         bby2 = np.clip(cy + cut_h // 2, 0, H)
 
         return bbx1, bby1, bbx2, bby2
-
-
-def cut_mix():
-    return CutMix()

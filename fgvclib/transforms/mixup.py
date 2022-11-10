@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 
-class MixUp(nn.Module):
+class MixUp:
     r"""The mixup data augmentation 
     """
 
@@ -21,8 +21,6 @@ class MixUp(nn.Module):
         target_a, target_b = target, target[index]
         return input, target_a, target_b, lam
 
-    def aug_criterion(criterion, pred, target_a, target_b, lam):
+    def aug_criterion(self, criterion, pred, target_a, target_b, lam):
         return lam * criterion(pred, target_a) + (1 - lam) * criterion(pred, target_b)
 
-def mix_up():
-    return MixUp()

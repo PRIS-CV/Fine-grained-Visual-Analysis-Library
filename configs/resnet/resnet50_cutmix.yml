@@ -1,10 +1,10 @@
-EXP_NAME: "ResNet50"
+EXP_NAME: "ResNet50_CutMix"
 
 RESUME_WEIGHT: ~
 
 WEIGHT:
   NAME: "resnet50.pth"
-  SAVE_DIR: "/mnt/sdb/data/wangxinran/model/fgvclib/"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib/"
   
 LOGGER: 
   NAME: "txt_logger"
@@ -26,7 +26,7 @@ DATASET:
     NUM_WORKERS: 4
 
 MODEL:
-  NAME: "ResNet50"
+  NAME: "ResNet50_CutMix"
   CLASS_NUM: 200
   CRITERIONS: 
     - name: "cross_entropy_loss"
