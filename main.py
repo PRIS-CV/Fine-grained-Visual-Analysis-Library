@@ -50,6 +50,8 @@ def train(cfg: CfgNode):
 
     logger = build_logger(cfg)
 
+    metrics = build_metrics(cfg.METRICS)
+
     for epoch in range(cfg.START_EPOCH, cfg.EPOCH_NUM):
         
         train_bar = tqdm(train_loader)
@@ -65,7 +67,8 @@ def train(cfg: CfgNode):
         
         logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Testing ')
 
-        acc = evaluate_model(model, test_bar, metrics=cfg.METRICS, use_cuda=cfg.USE_CUDA)
+        acc = evaluate_model(model, test_bar, metrics=metrics, use_cuda=cfg.USE_CUDA)
+        print(acc)
         logger("Evalution Result:")
         logger(acc)
     

@@ -4,7 +4,7 @@ RESUME_WEIGHT: ~
 
 WEIGHT:
   NAME: "resnet50.pth"
-  SAVE_DIR: "/data/wangxinran/model/fgvclib/"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/model/fgvclib/"
   
 LOGGER: 
   NAME: "txt_logger"
