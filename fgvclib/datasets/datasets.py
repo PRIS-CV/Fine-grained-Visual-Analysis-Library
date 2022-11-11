@@ -109,6 +109,7 @@ class CUB_200_2011(FGVCDataset):
     def __init__(self, root:str, mode:str, download:bool=False, transforms:T.Compose=None, positive:int=0):
         r"""
             The Caltech-UCSD Birds-200-2011 dataset class.
+            Link: http://www.vision.caltech.edu/datasets/cub_200_2011/
 
             Args:
                 root (str): 
