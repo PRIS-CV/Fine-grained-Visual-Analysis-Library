@@ -1,5 +1,7 @@
 from .resnet import resnet18, resnet34, resnet50, resnet101, resnet152, resnext50_32x4d, resnext101_32x8d
+from .resnet_bc import resnet50_bc, resnet101_bc
 from .vgg import vgg11, vgg13, vgg16, vgg19
+
 
 __all__ = [
     'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'resnext50_32x4d', 'resnext101_32x8d', 'resnet50_bc', 'resnet101_bc',

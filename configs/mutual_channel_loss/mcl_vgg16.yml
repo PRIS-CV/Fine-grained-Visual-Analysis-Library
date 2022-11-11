@@ -4,7 +4,7 @@ RESUME_WEIGHT: ~
 
 WEIGHT:
   NAME: "mutual_channel_loss_vgg16.pth"
-  SAVE_DIR: "/data/wangxinran/models/fgvclib/"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib/"
 
 LOGGER: 
   NAME: "txt_logger"

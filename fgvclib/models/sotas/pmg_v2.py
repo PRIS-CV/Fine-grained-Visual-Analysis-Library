@@ -33,3 +33,6 @@ class PMG_V2(nn.Module):
             return x, losses
         else:
             return sum(x) / len(x)
+
+    def infer(self, x):
+        pass
