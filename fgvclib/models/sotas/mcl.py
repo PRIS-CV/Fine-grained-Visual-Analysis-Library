@@ -1,17 +1,17 @@
-import numpy as np
+
 from torch import nn
-from fgvclib.criterions import LossItem, compute_loss_value
 
-class MCL(nn.Module):
-    def __init__(self, backbone=None, necks=None, encoding=None, heads=None, criterions=None):
+from .sota import FGVCSOTA
+from fgvclib.criterions import LossItem
 
-        super(MCL, self).__init__() 
+class MCL(FGVCSOTA):
+    r"""
+        Code of "The Devil is in the Channels: Mutual-Channel Loss for Fine-Grained Image Classification".
+        Link: https://github.com/PRIS-CV/Mutual-Channel-Loss
+    """
 
-        self.backbone = backbone
-        self.necks = necks
-        self.encoding = encoding
-        self.heads = heads
-        self.criterions = criterions
+    def __init__(self, backbone: nn.Module, encoding: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+        super().__init__(backbone, encoding, necks, heads, criterions)
 
     def forward(self, x, targets):
         x = self.backbone(x)

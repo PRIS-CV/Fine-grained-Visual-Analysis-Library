@@ -25,7 +25,7 @@ def progressive_updating_consistency_constraint(model:nn.Module, train_data:t.Tu
     except Exception:
         step_num = model.module.outputs_num
     for step in range(step_num):
-        _, losses = model(inputs, targets, step)
+        _, losses = model(inputs, targets, step, batch_size)
         
         step_loss = compute_loss_value(losses)
         total_loss += step_loss.item()

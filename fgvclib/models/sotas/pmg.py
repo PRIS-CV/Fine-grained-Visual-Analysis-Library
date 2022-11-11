@@ -1,22 +1,22 @@
 import torch.nn as nn
 import random
 
+from .sota import FGVCSOTA
 from fgvclib.criterions.utils import LossItem
 
-class PMG(nn.Module):
-    def __init__(self, backbone=None, necks=None, encoding=None, heads=None, criterions=None):
-        
-        super(PMG, self).__init__()
-
-        self.backbone = backbone
-        self.necks = necks
-        self.encoding = encoding
-        self.heads = heads
-        self.criterions = criterions
+class PMG(FGVCSOTA):
+    r"""
+        Code of Fine-Grained Visual Classiﬁcation via Progressive Multi-Granularity Training of Jigsaw Patches (ECCV2020).
+        Link: https://github.com/PRIS-CV/PMG-Progressive-Multi-Granularity-Training
+    """
+    
+    
+    def __init__(self, backbone: nn.Module, encoding: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+        super().__init__(backbone, encoding, necks, heads, criterions)
         self.outputs_num = 4
     
     def infer(self, x):
-        f1, f2, f3, f4, f5 = self.backbone(x)
+        _, _, f3, f4, f5 = self.backbone(x)
         x = tuple([f3, f4, f5])
         x = self.necks(x)
         x = self.encoding(x, concat=True)

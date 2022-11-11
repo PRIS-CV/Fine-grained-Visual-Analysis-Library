@@ -153,7 +153,7 @@ class ResNetBC(nn.Module):
         f2 = self.get_dis_block(x4)
         f3 = self.get_dis_block(x5)
 
-        return tuple([x1, x2, x3, x4, x5, f1, f2, f3])
+        return x1, x2, x3, x4, x5, f1, f2, f3
 
 
 def _resnet_bc(arch, inplanes, planes, cfg, progress, **kwargs):
