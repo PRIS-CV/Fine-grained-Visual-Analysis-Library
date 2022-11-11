@@ -3,15 +3,15 @@ from  torch.utils.model_zoo import load_url as load_state_dict_from_url
 import torch
 
 
-from .resnet import BasicBlock, Bottleneck, conv1x1, conv3x3, model_urls
+from .resnet import BasicBlock, Bottleneck, conv1x1, model_urls
 
 
-class ResNet(nn.Module):
+class ResNetBC(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
                  norm_layer=None):
-        super(ResNet, self).__init__()
+        super(ResNetBC, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
@@ -156,11 +156,11 @@ class ResNet(nn.Module):
         return tuple([x1, x2, x3, x4, x5, f1, f2, f3])
 
 
-def _resnet(arch, inplanes, planes, cfg, progress, **kwargs):
+def _resnet_bc(arch, inplanes, planes, cfg, progress, **kwargs):
     
     pretrained = False if "pretrained" not in cfg.keys() else cfg['pretrained']
     del_keys = [] if "del_keys" not in cfg.keys() else cfg['del_keys']
-    model = ResNet(inplanes, planes, **kwargs)
+    model = ResNetBC(inplanes, planes, **kwargs)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
@@ -177,7 +177,7 @@ def resnet50_bc(cfg, progress=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], cfg, progress,
+    return _resnet_bc('resnet50', Bottleneck, [3, 4, 6, 3], cfg, progress,
                    **kwargs)
 
 
@@ -188,6 +188,6 @@ def resnet101_bc(cfg, progress=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _resnet('resnet101', Bottleneck, [3, 4, 23, 3], cfg, progress,
+    return _resnet_bc('resnet101', Bottleneck, [3, 4, 23, 3], cfg, progress,
                    **kwargs)
 

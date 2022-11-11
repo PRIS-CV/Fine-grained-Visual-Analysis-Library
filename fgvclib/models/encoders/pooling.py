@@ -3,20 +3,10 @@ import torch
 import torch.nn as nn
 
 class GlobalMaxPooling(nn.Module):
-    r"""Global max pooling encoding.
-
-    Note that ...
-
-    Args:
-        
-    """
 
     def __init__(self):
         super(GlobalMaxPooling, self).__init__()
         self.gmp = nn.AdaptiveMaxPool2d((1, 1))
-
-    def init_weights(self):
-        pass
 
     def forward(self, inputs, concat=False):
         if isinstance(inputs, tuple):
@@ -37,11 +27,6 @@ class GlobalMaxPooling(nn.Module):
         return outs
 
 class GlobalAvgPooling(nn.Module):
-    r"""Global average pooling encoding.
-
-        Args:
-        
-    """
 
     def __init__(self):
         super(GlobalAvgPooling, self).__init__()
@@ -68,16 +53,23 @@ class GlobalAvgPooling(nn.Module):
         
         return outs
 
-def global_avg_pooling(cfg):
+def global_avg_pooling(cfg:dict=None):
     return GlobalAvgPooling()
 
-def global_max_pooling(cfg):
+def global_max_pooling(cfg:dict=None):
     return GlobalMaxPooling()
 
-def max_pooling_2d(cfg):
+def max_pooling_2d(cfg:dict):
     assert 'kernel_size' in cfg.keys()
     assert isinstance(cfg['kernel_size'], int) 
     assert 'stride' in cfg.keys()
     assert isinstance(cfg['stride'], int)
     return nn.MaxPool2d(kernel_size=cfg['kernel_size'], stride=cfg['stride'])
+
+def max_pooling_2d(cfg:dict):
+    assert 'kernel_size' in cfg.keys()
+    assert isinstance(cfg['kernel_size'], int) 
+    assert 'stride' in cfg.keys()
+    assert isinstance(cfg['stride'], int)
+    return nn.AvgPool2d(kernel_size=cfg['kernel_size'], stride=cfg['stride'])
             

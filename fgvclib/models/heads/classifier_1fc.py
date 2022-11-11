@@ -3,15 +3,16 @@ import torch
 import torch.nn as nn
 
 class Classifier_1FC(nn.Module):
-    """Classifier with one fully connected layer.
+    r"""Classifier with one fully connected layer.
 
-    Note that ...
-
-    Args:
-        
+        Args: 
+            in_dim (List[int]):
+                Input dimension, the number of classifiers is decided by the length of in_dim list.
+            class_num (int):
+                Output dimension.
     """
 
-    def __init__(self, in_dim:list=[2048,], class_num:int=None):
+    def __init__(self, in_dim:list, class_num:int):
         super(Classifier_1FC, self).__init__()
         self.class_num = class_num
         self.classifier_num = len(in_dim)
@@ -34,9 +35,9 @@ class Classifier_1FC(nn.Module):
     def get_class_num(self):
         return self.class_num
 
-def classifier_1fc(class_num: int, cfg: dict) -> Classifier_1FC:
+def classifier_1fc(cfg: dict, class_num: int) -> Classifier_1FC:
+    
     assert 'in_dim' in cfg.keys()
     assert isinstance(cfg['in_dim'], list)
-
     return Classifier_1FC(in_dim=cfg['in_dim'], class_num=class_num)
             

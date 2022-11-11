@@ -2,12 +2,15 @@
 import torch.nn as nn
 
 class Classifier_2FC(nn.Module):
-    """Classifier with two fully connected layer.
+    r"""Classifier with one fully connected layer.
 
-    Note that ...
-
-    Args:
-        
+        Args: 
+            in_dim (List[int]):
+                Input dimension, the number of classifiers is decided by the length of in_dim list.
+            hid_dim (List[int]):
+                Hidden dimension, should has same length with the input dimension list.
+            class_num (int):
+                Output dimension.
     """
 
     def __init__(self, in_dim, hid_dim, class_num):
@@ -23,9 +26,6 @@ class Classifier_2FC(nn.Module):
             nn.ReLU(),
             nn.Linear(hid_dim, class_num),
         ))
-
-    def init_weights(self):
-        pass
     
     def forward(self, inputs):
         
@@ -40,8 +40,7 @@ class Classifier_2FC(nn.Module):
         return self.class_num
 
 
-
-def classifier_2fc(class_num: int, cfg: dict) -> Classifier_2FC:
+def classifier_2fc(cfg: dict, class_num: int) -> Classifier_2FC:
     assert 'in_dim' in cfg.keys()
     assert isinstance(cfg['in_dim'], list)
     assert 'hid_dim' in cfg.keys()
