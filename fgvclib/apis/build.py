@@ -26,7 +26,7 @@ from fgvclib.models.heads import get_head
 from fgvclib.transforms import get_transform
 from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
-from fgvclib.metrics import NamedMetric
+from fgvclib.metrics.metrics import NamedMetric
 
 
 def build_model(model_cfg: CfgNode) -> FGVCSOTA:
@@ -176,5 +176,3 @@ def build_metrics(metrics_cfg: CfgNode, use_cuda:bool=True) -> t.List[NamedMetri
             metric = metric.cuda()
         metrics.append(metric)
     return metrics
-
-

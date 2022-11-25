@@ -1,20 +1,39 @@
-from .metrics import NamedMetric
-from .metrics import accuracy, precision, recall
+__all__ = ["get_metric"]
+
+import os
+import importlib
 
 
-__all__ = ["accuracy", "precision", "recall"]
+__METRIC_DICT__ = {}
 
-def get_metric(metric_name) -> NamedMetric:
+
+def get_metric(name):
     r"""Return the metric with the given name.
 
         Args: 
-            metric_name (str): 
+            name (str): 
                 The name of metric.
         
         Return: 
             The metric contructor method.
     """
 
-    if metric_name not in globals():
-        raise NotImplementedError(f"Metric {metric_name} not found!\nAvailable metrics: {__all__}")
-    return globals()[metric_name]
+    return __METRIC_DICT__[name]
+
+def get_metric(name):
+    return __METRIC_DICT__[name]
+
+def metric(name):
+    
+    def register_function_fn(cls):
+        if name in __METRIC_DICT__:
+            raise ValueError("Name %s already registered!" % name)
+        __METRIC_DICT__[name] = cls
+        return cls
+
+    return register_function_fn
+
+for file in os.listdir(os.path.dirname(__file__)):
+    if file.endswith('.py') and not file.startswith('_'):
+        module_name = file[:file.find('.py')]
+        module = importlib.import_module('fgvclib.metrics.' + module_name)  

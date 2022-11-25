@@ -1,6 +1,8 @@
 from torch import nn, Tensor
 from torchmetrics import Metric, Accuracy, Precision, Recall
 
+from fgvclib.metrics import metric 
+
 
 class NamedMetric(Metric):
     r"""Metric item with name, used for evaluation.  
@@ -27,6 +29,8 @@ class NamedMetric(Metric):
     def forward(self, preds, targets) -> Tensor:
         return self.metric(preds, targets)
 
+
+@metric("accuracy")
 def accuracy(name:str="accuracy(top-1)", top_k:int=1, threshold:float=None) -> Metric:
     r"""The accuracy metric constructor, for details about the meanings of the parameters, see torchmetrics.Accuracy object.
             Args:
@@ -47,6 +51,8 @@ def accuracy(name:str="accuracy(top-1)", top_k:int=1, threshold:float=None) -> M
     metric = Accuracy(top_k=top_k, threshold=threshold)
     return NamedMetric(name=name, metric=metric)
 
+
+@metric("precision")
 def precision(name:str="precision(threshold=0.5)", top_k:int=None, threshold:float=0.5) -> Metric:
     r"""The precision metric constructor, for details about the meanings of the parameters, see torchmetrics.Precision object.
             Args:
@@ -67,6 +73,8 @@ def precision(name:str="precision(threshold=0.5)", top_k:int=None, threshold:flo
     metric = Precision(top_k=top_k, threshold=threshold)
     return NamedMetric(name=name, metric=metric)
 
+
+@metric("recall")
 def recall(name:str="recall(threshold=0.5)", top_k:int=None, threshold:float=0.5) -> Metric:
     r"""The recall metric constructor, for details about the meanings of the parameters, see torchmetrics.Recall object.
             Args:
