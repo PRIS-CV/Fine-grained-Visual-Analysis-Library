@@ -1,17 +1,26 @@
-from .resnet import resnet18, resnet34, resnet50, resnet101, resnet152, resnext50_32x4d, resnext101_32x8d
-from .resnet_bc import resnet50_bc, resnet101_bc
-from .vgg import vgg11, vgg13, vgg16, vgg19
+__all__ = ["get_backbone"]
 
 
-__all__ = [
-    'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'resnext50_32x4d', 'resnext101_32x8d', 'resnet50_bc', 'resnet101_bc',
-    'vgg11', 'vgg13', 'vgg16', 'vgg19',
-]
+import importlib
+import os
 
 
-def get_backbone(backbone_name):
-    """Return the backbone with the given name."""
-    if backbone_name not in globals():
-        raise NotImplementedError(f"Backbone {backbone_name} not found!\nAvailable backbones: {__all__}")
-    return globals()[backbone_name]
+__BACKBONE_DICT__ = {}
 
+
+def get_backbone(name):
+    return __BACKBONE_DICT__[name]
+
+def backbone(name):
+    
+    def register_function_fn(cls):
+        if name in __BACKBONE_DICT__:
+            raise ValueError("Name %s already registered!" % name)
+        __BACKBONE_DICT__[name] = cls
+        return cls
+    return register_function_fn
+
+for file in os.listdir(os.path.dirname(__file__)):
+    if file.endswith('.py') and not file.startswith('_'):
+        module_name = file[:file.find('.py')]
+        module = importlib.import_module('fgvclib.models.backbones.' + module_name)

@@ -2,6 +2,8 @@ import torch.nn as nn
 from  torch.utils.model_zoo import load_url as load_state_dict_from_url
 
 
+from fgvclib.models.backbones import backbone
+
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152', 'resnext50_32x4d', 'resnext101_32x8d']
 
@@ -211,9 +213,12 @@ def _resnet(arch, inplanes, planes, cfg, progress, **kwargs):
         for key in del_keys:
             del state_dict[key]        
         missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
+    print(f"Missing keys: {missing_keys}")
+    print(f"Unexpected keys: {unexpected_keys}")
     return model
 
 
+@backbone("resnet18")
 def resnet18(cfg, progress=True, **kwargs):
     """Constructs a ResNet-18 model.
     Args:
@@ -224,6 +229,7 @@ def resnet18(cfg, progress=True, **kwargs):
                    **kwargs)
 
 
+@backbone("resnet34")
 def resnet34(cfg, progress=True, **kwargs):
     """Constructs a ResNet-34 model.
     Args:
@@ -234,6 +240,7 @@ def resnet34(cfg, progress=True, **kwargs):
                    **kwargs)
 
 
+@backbone("resnet50")
 def resnet50(cfg, progress=True, **kwargs):
     """Constructs a ResNet-50 model.
     Args:
@@ -244,6 +251,7 @@ def resnet50(cfg, progress=True, **kwargs):
                    **kwargs)
 
 
+@backbone("resnet101")
 def resnet101(cfg, progress=True, **kwargs):
     """Constructs a ResNet-101 model.
     Args:
@@ -254,6 +262,7 @@ def resnet101(cfg, progress=True, **kwargs):
                    **kwargs)
 
 
+@backbone("resnet152")
 def resnet152(cfg, progress=True, **kwargs):
     """Constructs a ResNet-152 model.
     Args:
@@ -264,6 +273,7 @@ def resnet152(cfg, progress=True, **kwargs):
                    **kwargs)
 
 
+@backbone("resnext50_32x4d")
 def resnext50_32x4d(cfg, **kwargs):
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 4
@@ -271,6 +281,7 @@ def resnext50_32x4d(cfg, **kwargs):
                    cfg, progress=True, **kwargs)
 
 
+@backbone("resnext101_32x8d")
 def resnext101_32x8d(cfg, **kwargs):
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 8

@@ -37,7 +37,7 @@ MODEL:
     ARGS: 
       - pretrained: True
       - del_keys: []
-  ENCODING:
+  ENCODER:
     NAME: "global_max_pooling"
   NECKS:
     NAME: "multi_scale_conv"
@@ -109,7 +109,7 @@ OPTIMIZER:
   MOMENTUM: 0.9
   LR: 
     backbone: 0.0002
-    encoding: 0.002
+    encoder: 0.002
     necks: 0.002
     heads: 0.002
 

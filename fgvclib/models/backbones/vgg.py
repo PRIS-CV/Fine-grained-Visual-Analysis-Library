@@ -2,6 +2,8 @@ from torch import nn
 from  torch.utils.model_zoo import load_url as load_state_dict_from_url
 
 
+from fgvclib.models.backbones import backbone
+
 # official pretrain weights
 model_urls = {
     'vgg11': 'https://download.pytorch.org/models/vgg11-bbd30ac9.pth',
@@ -65,28 +67,32 @@ def make_features(cfg: list):
 
 
 def _vgg(model_name="vgg16", cfg={"pretrained": True}, progress=True, **kwargs):
-    
     assert model_name in cfgs, "Warning: model number {} not in cfgs dict!".format(model_name)
     pretrained = False if "pretrained" not in cfg.keys() else cfg['pretrained']
     del_keys = [] if "del_keys" not in cfg.keys() else cfg['del_keys']
 
-    model = VGG(make_features(cfg), **kwargs)
+    model = VGG(make_features(cfgs[model_name]), **kwargs)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[model_name], progress=progress)
         for key in del_keys:
             del state_dict[key]        
         missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
+    print(f"Missing keys: {missing_keys}")
+    print(f"Unexpected keys: {unexpected_keys}")
     return model
 
-
+@backbone("vgg11")
 def vgg11(cfg, progress=True):
     return _vgg("vgg11", cfg, progress)
 
+@backbone("vgg13")
 def vgg13(cfg, progress=True):
     return _vgg("vgg13", cfg, progress)
 
+@backbone("vgg16")
 def vgg16(cfg, progress=True):
     return _vgg("vgg16", cfg, progress)
 
+@backbone("vgg19")
 def vgg19(cfg, progress=True):
     return _vgg("vgg19", cfg, progress)

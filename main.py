@@ -18,8 +18,7 @@ def train(cfg: CfgNode):
     """
 
     model = build_model(cfg.MODEL)
-    print(model.get_structure())
-
+    print(model.get_structure)
 
     if cfg.RESUME_WEIGHT:
         assert os.path.exists(cfg.RESUME_WEIGHT), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."

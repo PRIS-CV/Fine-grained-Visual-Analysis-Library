@@ -63,7 +63,7 @@ class FGVCConfig(object):
 
         # Standard modulars of each model
         self.cfg.MODEL.BACKBONE = CN()
-        self.cfg.MODEL.ENCODING = CN()
+        self.cfg.MODEL.ENCODER = CN()
         self.cfg.MODEL.NECKS = CN()
         self.cfg.MODEL.HEADS = CN()
         
@@ -72,8 +72,8 @@ class FGVCConfig(object):
         self.cfg.MODEL.BACKBONE.ARGS = None
 
         # Setting of encoding
-        self.cfg.MODEL.ENCODING.NAME = None
-        self.cfg.MODEL.ENCODING.ARGS = None
+        self.cfg.MODEL.ENCODER.NAME = None
+        self.cfg.MODEL.ENCODER.ARGS = None
 
         # Setting of neck
         self.cfg.MODEL.NECKS.NAME = None
@@ -95,7 +95,7 @@ class FGVCConfig(object):
         self.cfg.OPTIMIZER.WEIGHT_DECAY = 5e-4
         self.cfg.OPTIMIZER.LR = CN()
         self.cfg.OPTIMIZER.LR.backbone = None
-        self.cfg.OPTIMIZER.LR.encoding = None
+        self.cfg.OPTIMIZER.LR.encoder = None
         self.cfg.OPTIMIZER.LR.necks = None
         self.cfg.OPTIMIZER.LR.heads = None
 

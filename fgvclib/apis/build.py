@@ -18,8 +18,9 @@ from fgvclib.criterions import get_criterion
 from fgvclib.datasets import get_dataset
 from fgvclib.metrics import get_metric
 from fgvclib.models.sotas import get_model
+from fgvclib.models.sotas.sota import FGVCSOTA
 from fgvclib.models.backbones import get_backbone
-from fgvclib.models.encoders import get_encoding
+from fgvclib.models.encoders import get_encoder
 from fgvclib.models.necks import get_neck
 from fgvclib.models.heads import get_head
 from fgvclib.transforms import get_transform
@@ -28,23 +29,23 @@ from fgvclib.utils.interpreter import get_interpreter, Interpreter
 from fgvclib.metrics import NamedMetric
 
 
-def build_model(model_cfg: CfgNode) -> nn.Module:
+def build_model(model_cfg: CfgNode) -> FGVCSOTA:
     r"""Build a FGVC model according to config.
 
     Args:
         model_cfg (CfgNode): The model config node of root config.
     Returns:
-        nn.Module: The FGVC model.
+        fgvclib.models.sota.FGVCSOTA: The FGVC model.
     """
 
     backbone_builder = get_backbone(model_cfg.BACKBONE.NAME)
     backbone = backbone_builder(cfg=tltd(model_cfg.BACKBONE.ARGS))
 
     if model_cfg.ENCODING.NAME:
-        encoding_builder = get_encoding(model_cfg.ENCODING.NAME)
-        encoding = encoding_builder(cfg=tltd(model_cfg.ENCODING.ARGS))
+        encoder_builder = get_encoder(model_cfg.ENCODING.NAME)
+        encoder = encoder_builder(cfg=tltd(model_cfg.ENCODING.ARGS))
     else:
-        encoding = None
+        encoder = None
 
     if model_cfg.NECKS.NAME:
         neck_builder = get_neck(model_cfg.NECKS.NAME)
@@ -60,7 +61,7 @@ def build_model(model_cfg: CfgNode) -> nn.Module:
         criterions.update({item["name"]: {"fn": build_criterion(item), "w": item["w"]}})
     
     model_builder = get_model(model_cfg.NAME)
-    model = model_builder(backbone=backbone, encoding=encoding, necks=necks, heads=heads, criterions=criterions)
+    model = model_builder(backbone=backbone, encoder=encoder, necks=necks, heads=heads, criterions=criterions)
     
     return model
 
@@ -114,7 +115,7 @@ def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel
     """
 
     params= list()
-    model_attrs = ["backbone", "encoding", "necks", "heads"]
+    model_attrs = ["backbone", "encoder", "necks", "heads"]
 
     if isinstance(model, nn.DataParallel):
         for attr in model_attrs:

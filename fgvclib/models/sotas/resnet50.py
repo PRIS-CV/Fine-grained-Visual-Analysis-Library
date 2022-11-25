@@ -7,8 +7,8 @@ from fgvclib.transforms import CutMix, MixUp
 
 class ResNet50(FGVCSOTA):
     
-    def __init__(self, backbone: nn.Module, encoding: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
-        super().__init__(backbone, encoding, necks, heads, criterions)
+    def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+        super().__init__(backbone, encoder, necks, heads, criterions)
     
     def forward(self, x, targets=None):
         x = self.infer(x)

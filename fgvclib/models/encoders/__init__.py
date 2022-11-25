@@ -1,11 +1,26 @@
-from .pooling import global_max_pooling, global_avg_pooling, max_pooling_2d
+__all__ = ["get_encoder"]
 
-__all__ = [
-    'global_avg_pooling', 'global_max_pooling', 'max_pooling_2d'
-]
 
-def get_encoding(encoding_name):
-    """Return the backbone with the given name."""
-    if encoding_name not in globals():
-        raise NotImplementedError(f"Encoding not found: {encoding_name}\nAvailable encodings: {__all__}")
-    return globals()[encoding_name]
+import importlib
+import os
+
+
+__ENCODING_DICT__ = {}
+
+
+def get_encoder(name):
+    return __ENCODING_DICT__[name]
+
+def encoder(name):
+    
+    def register_function_fn(cls):
+        if name in __ENCODING_DICT__:
+            raise ValueError("Name %s already registered!" % name)
+        __ENCODING_DICT__[name] = cls
+        return cls
+    return register_function_fn
+
+for file in os.listdir(os.path.dirname(__file__)):
+    if file.endswith('.py') and not file.startswith('_'):
+        module_name = file[:file.find('.py')]
+        module = importlib.import_module('fgvclib.models.encoders.' + module_name)

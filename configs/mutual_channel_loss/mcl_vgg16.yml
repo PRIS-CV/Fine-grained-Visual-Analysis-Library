@@ -10,7 +10,7 @@ LOGGER:
   NAME: "txt_logger"
 
 DATASET:
-  ROOT: "/data/wangxinran/dataset/"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
   NAME: "CUB_200_2011"
   TRAIN: 
     BATCH_SIZE: 32
@@ -49,7 +49,7 @@ MODEL:
         - "features.24.weight"
         - "features.28.weight"
         - "features.28.bias"
-  ENCODING:
+  ENCODER:
     NAME: "max_pooling_2d"
     ARGS: 
       - kernel_size: 2
@@ -105,7 +105,7 @@ OPTIMIZER:
   MOMENTUM: 0.9
   LR: 
     backbone: 0.001
-    encoding: 0.01
+    encoder: 0.01
     necks: 0.01
     heads: 0.01
 

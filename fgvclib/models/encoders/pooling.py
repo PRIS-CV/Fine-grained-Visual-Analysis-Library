@@ -2,6 +2,8 @@
 import torch
 import torch.nn as nn
 
+from fgvclib.models.encoders import encoder
+
 class GlobalMaxPooling(nn.Module):
 
     def __init__(self):
@@ -53,20 +55,28 @@ class GlobalAvgPooling(nn.Module):
         
         return outs
 
-def global_avg_pooling(cfg:dict=None):
+
+@encoder("global_avg_pooling")
+def global_avg_pooling(cfg: dict = None):
     return GlobalAvgPooling()
 
-def global_max_pooling(cfg:dict=None):
+
+@encoder("global_max_pooling")
+def global_max_pooling(cfg: dict = None):
     return GlobalMaxPooling()
 
-def max_pooling_2d(cfg:dict):
+
+@encoder("max_pooling_2d")
+def max_pooling_2d(cfg: dict):
     assert 'kernel_size' in cfg.keys()
     assert isinstance(cfg['kernel_size'], int) 
     assert 'stride' in cfg.keys()
     assert isinstance(cfg['stride'], int)
     return nn.MaxPool2d(kernel_size=cfg['kernel_size'], stride=cfg['stride'])
 
-def max_pooling_2d(cfg:dict):
+
+@encoder("avg_pooling_2d")
+def avg_pooling_2d(cfg: dict):
     assert 'kernel_size' in cfg.keys()
     assert isinstance(cfg['kernel_size'], int) 
     assert 'stride' in cfg.keys()

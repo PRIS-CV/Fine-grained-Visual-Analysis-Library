@@ -4,7 +4,7 @@ import torch
 
 
 from .resnet import BasicBlock, Bottleneck, conv1x1, model_urls
-
+from fgvclib.models.backbones import backbone
 
 class ResNetBC(nn.Module):
 
@@ -167,9 +167,11 @@ def _resnet_bc(arch, inplanes, planes, cfg, progress, **kwargs):
         for key in del_keys:
             del state_dict[key]        
         missing_keys, unexpected_keys = model.load_state_dict(state_dict, strict=False)
+    print(f"Missing keys: {missing_keys}")
+    print(f"Unexpected keys: {unexpected_keys}")
     return model
 
-
+@backbone("resnet50_bc")
 def resnet50_bc(cfg, progress=True, **kwargs):
     """Constructs a ResNet-50 model.
     Args:
@@ -180,7 +182,7 @@ def resnet50_bc(cfg, progress=True, **kwargs):
     return _resnet_bc('resnet50', Bottleneck, [3, 4, 6, 3], cfg, progress,
                    **kwargs)
 
-
+@backbone("resnet101_bc")
 def resnet101_bc(cfg, progress=True, **kwargs):
     """Constructs a ResNet-101 model.
     Args:

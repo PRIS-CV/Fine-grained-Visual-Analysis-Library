@@ -11,8 +11,9 @@ class PMG(FGVCSOTA):
     """
     
     
-    def __init__(self, backbone: nn.Module, encoding: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
-        super().__init__(backbone, encoding, necks, heads, criterions)
+    def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+        super().__init__(backbone, encoder, necks, heads, criterions)
+        
         self.outputs_num = 4
     
     def infer(self, x):
