@@ -1,8 +1,11 @@
 import torch.nn as nn
 
-from .sota import FGVCSOTA
+from fgvclib.models.sotas.sota import FGVCSOTA
 from fgvclib.criterions import LossItem
+from fgvclib.models.sotas import fgvcmodel
 
+
+@fgvcmodel("PMG_V2")
 class PMG_V2(FGVCSOTA):
     r"""
         Code of "Progressive Learning of Category-Consistent Multi-Granularity Features for Fine-Grained Visual Classification". 
@@ -42,7 +45,7 @@ class PMG_V2(FGVCSOTA):
         x = tuple([f3, f4, f5])
         f = tuple([f3_, f4_, f5_])
         x = self.necks(x)
-        x = self.encoding(x)
+        x = self.encoder(x)
         x = self.heads(x)
 
         return x, f

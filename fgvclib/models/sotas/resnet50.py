@@ -1,10 +1,12 @@
 import torch.nn as nn
 
-from .sota import FGVCSOTA
+from fgvclib.models.sotas.sota import FGVCSOTA
+from fgvclib.models.sotas import fgvcmodel
 from fgvclib.criterions.utils import LossItem
 from fgvclib.transforms import CutMix, MixUp
 
 
+@fgvcmodel("ResNet50")
 class ResNet50(FGVCSOTA):
     
     def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
@@ -22,11 +24,12 @@ class ResNet50(FGVCSOTA):
     def infer(self, x):
         f1, f2, f3, f4, f5 = self.backbone(x)
         x = tuple([f5])
-        x = self.encoding(x)
+        x = self.encoder(x)
         x = self.heads(x)
         return x
 
 
+@fgvcmodel("ResNet50_MixUp")
 class ResNet50_MixUp(ResNet50):
 
     def __init__(self, backbone: nn.Module, encoding: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
@@ -47,6 +50,7 @@ class ResNet50_MixUp(ResNet50):
         return x
 
 
+@fgvcmodel("ResNet50_CutMix")
 class ResNet50_CutMix(ResNet50):
 
     def __init__(self, backbone: nn.Module, encoding: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):

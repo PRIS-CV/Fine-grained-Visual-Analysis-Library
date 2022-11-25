@@ -1,9 +1,12 @@
 import torch.nn as nn
 import random
 
-from .sota import FGVCSOTA
+from fgvclib.models.sotas.sota import FGVCSOTA
 from fgvclib.criterions.utils import LossItem
+from fgvclib.models.sotas import fgvcmodel
 
+
+@fgvcmodel("PMG")
 class PMG(FGVCSOTA):
     r"""
         Code of Fine-Grained Visual Classiﬁcation via Progressive Multi-Granularity Training of Jigsaw Patches (ECCV2020).
@@ -20,7 +23,7 @@ class PMG(FGVCSOTA):
         _, _, f3, f4, f5 = self.backbone(x)
         x = tuple([f3, f4, f5])
         x = self.necks(x)
-        x = self.encoding(x, concat=True)
+        x = self.encoder(x, concat=True)
         x = self.heads(x)
         return x
     

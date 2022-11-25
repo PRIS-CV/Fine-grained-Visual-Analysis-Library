@@ -1,8 +1,8 @@
 from torch import nn
 from  torch.utils.model_zoo import load_url as load_state_dict_from_url
 
-
 from fgvclib.models.backbones import backbone
+
 
 # official pretrain weights
 model_urls = {
@@ -11,6 +11,7 @@ model_urls = {
     'vgg16': 'https://download.pytorch.org/models/vgg16-397923af.pth',
     'vgg19': 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth'
 }
+
 
 cfgs = {
     'vgg11': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
@@ -80,6 +81,7 @@ def _vgg(model_name="vgg16", cfg={"pretrained": True}, progress=True, **kwargs):
     print(f"Missing keys: {missing_keys}")
     print(f"Unexpected keys: {unexpected_keys}")
     return model
+
 
 @backbone("vgg11")
 def vgg11(cfg, progress=True):

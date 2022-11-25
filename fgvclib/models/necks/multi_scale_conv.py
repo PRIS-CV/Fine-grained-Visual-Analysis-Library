@@ -1,7 +1,7 @@
 # Copyright (c) PRIS-CV. All rights reserved.
-import torch
 import torch.nn as nn
-from ..utils import BasicConv
+from fgvclib.models.utils import BasicConv
+from fgvclib.models.necks import neck
 
 class MultiScaleConv(nn.Module):
 
@@ -27,6 +27,7 @@ class MultiScaleConv(nn.Module):
         
         return tuple(outputs)
 
+@neck("multi_scale_conv")        
 def multi_scale_conv(cfg: dict) -> MultiScaleConv:
     
     if cfg is not None:

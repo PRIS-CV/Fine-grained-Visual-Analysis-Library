@@ -15,7 +15,7 @@ class FGVCSOTA(nn.Module):
 
     def get_structure(self):
         ss = f"\n{'=' * 30}\n" + f"\nThe Structure of {self.__class__.__name__}:\n" + f"\n{'=' * 30}\n\n"
-        for s in ['backbone', 'encoding', 'necks', 'heads']:
+        for s in ['backbone', 'encoder', 'necks', 'heads']:
             m = getattr(self, s)
             ss += f"{s}: {m.__class__.__name__}\n"
         ss += f"\n{'=' * 30}\n"

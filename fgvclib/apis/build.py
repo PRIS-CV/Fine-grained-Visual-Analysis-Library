@@ -41,9 +41,9 @@ def build_model(model_cfg: CfgNode) -> FGVCSOTA:
     backbone_builder = get_backbone(model_cfg.BACKBONE.NAME)
     backbone = backbone_builder(cfg=tltd(model_cfg.BACKBONE.ARGS))
 
-    if model_cfg.ENCODING.NAME:
-        encoder_builder = get_encoder(model_cfg.ENCODING.NAME)
-        encoder = encoder_builder(cfg=tltd(model_cfg.ENCODING.ARGS))
+    if model_cfg.ENCODER.NAME:
+        encoder_builder = get_encoder(model_cfg.ENCODER.NAME)
+        encoder = encoder_builder(cfg=tltd(model_cfg.ENCODER.ARGS))
     else:
         encoder = None
 

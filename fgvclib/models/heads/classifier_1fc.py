@@ -2,6 +2,8 @@
 import torch
 import torch.nn as nn
 
+from fgvclib.models.heads import head
+
 class Classifier_1FC(nn.Module):
     r"""Classifier with one fully connected layer.
 
@@ -35,6 +37,8 @@ class Classifier_1FC(nn.Module):
     def get_class_num(self):
         return self.class_num
 
+
+@head("classifier_1fc")
 def classifier_1fc(cfg: dict, class_num: int) -> Classifier_1FC:
     
     assert 'in_dim' in cfg.keys()

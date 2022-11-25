@@ -1,9 +1,11 @@
 
 from torch import nn
 
-from .sota import FGVCSOTA
+from fgvclib.models.sotas.sota import FGVCSOTA
+from fgvclib.models.sotas import fgvcmodel
 from fgvclib.criterions import LossItem
 
+@fgvcmodel("MCL")
 class MCL(FGVCSOTA):
     r"""
         Code of "The Devil is in the Channels: Mutual-Channel Loss for Fine-Grained Image Classification".
@@ -13,13 +15,13 @@ class MCL(FGVCSOTA):
     def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
         super().__init__(backbone, encoder, necks, heads, criterions)
 
-    def forward(self, x, targets):
+    def forward(self, x, targets=None):
         x = self.backbone(x)
         if self.training:
             losses = list()
             losses.extend(self.criterions['mutual_channel_loss']['fn'](x, targets, self.heads.get_class_num()))
         
-        x = self.encoding(x)
+        x = self.encoder(x)
         x = x.view(x.size(0), -1)
         x = tuple([x])
         x = self.heads(x)

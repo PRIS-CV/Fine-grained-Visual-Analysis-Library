@@ -1,14 +1,15 @@
-from .pmg import PMG
-from .pmg_v2 import PMG_V2
-from .resnet50 import ResNet50, ResNet50_CutMix, ResNet50_MixUp
-from .mcl import MCL
-
-__all__ = [
-    'PMG_ResNet50', 'PMG_V2_ResNet50', 'Baseline_ResNet50', 'MCL'
-]
+__all__ = ["get_model"]
 
 
-def get_model(model_name):
+import importlib
+import os
+
+from fgvclib.models.sotas.sota import FGVCSOTA
+
+__MODEL_DICT__ = {}
+
+
+def get_model(name):
     r"""Return the FGVC model with the given name.
 
         Args: 
@@ -18,8 +19,22 @@ def get_model(model_name):
         Return: 
             The model contructor method.
     """
-    
-    if model_name not in globals():
-        raise NotImplementedError(f"Model {model_name} not found!\nAvailable models: {__all__}")
-    return globals()[model_name]
+    return __MODEL_DICT__[name]
 
+
+def fgvcmodel(name):
+    
+    def register_function_fn(cls):
+        if name in __MODEL_DICT__:
+            raise ValueError("Name %s already registered!" % name)
+        if not issubclass(cls, FGVCSOTA):
+            raise ValueError("Class %s is not a subclass of %s" % (cls, FGVCSOTA))
+        __MODEL_DICT__[name] = cls
+        return cls
+    return register_function_fn
+
+
+for file in os.listdir(os.path.dirname(__file__)):
+    if file.endswith('.py') and not file.startswith('_'):
+        module_name = file[:file.find('.py')]
+        module = importlib.import_module('fgvclib.models.sotas.' + module_name)

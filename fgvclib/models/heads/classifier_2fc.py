@@ -1,6 +1,9 @@
 # Copyright (c) PRIS-CV. All rights reserved.
 import torch.nn as nn
 
+from fgvclib.models.heads import head
+
+
 class Classifier_2FC(nn.Module):
     r"""Classifier with one fully connected layer.
 
@@ -39,7 +42,7 @@ class Classifier_2FC(nn.Module):
     def get_class_num(self):
         return self.class_num
 
-
+@head("classifier_2fc")
 def classifier_2fc(cfg: dict, class_num: int) -> Classifier_2FC:
     assert 'in_dim' in cfg.keys()
     assert isinstance(cfg['in_dim'], list)
