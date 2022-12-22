@@ -9,7 +9,7 @@ from fgvclib.transforms import CutMix, MixUp
 @fgvcmodel("ResNet50")
 class ResNet50(FGVCSOTA):
     
-    def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+    def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: dict):
         super().__init__(backbone, encoder, necks, heads, criterions)
     
     def forward(self, x, targets=None):
@@ -21,8 +21,15 @@ class ResNet50(FGVCSOTA):
         
         return x
 
+    # def forward(self, x, targets=None):
+    #     x = self.infer(x)
+    #     if self.training:
+    #         return self.criterions['cross_entropy_loss']['fn'](x, targets)
+        
+    #     return x
+
     def infer(self, x):
-        f1, f2, f3, f4, f5 = self.backbone(x)
+        _, _, _, _, f5 = self.backbone(x)
         x = tuple([f5])
         x = self.encoder(x)
         x = self.heads(x)

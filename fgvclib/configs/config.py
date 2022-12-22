@@ -27,6 +27,8 @@ class FGVCConfig(object):
 
         # Use cuda
         self.cfg.USE_CUDA = True
+        self.cfg.DISTRIBUTED = False
+        self.cfg.GPU = None
 
         # Logger
         self.cfg.LOGGER = CN()
@@ -126,7 +128,7 @@ class FGVCConfig(object):
     def load(self,config_file):
         self.cfg.defrost()
         self.cfg.merge_from_file(config_file)
-        self.cfg.freeze()
+        # self.cfg.freeze()
     
     def stringfy():
         return 

@@ -4,10 +4,10 @@ import torch
 from tqdm import tqdm
 from yacs.config import CfgNode
 
+
 from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
-from fgvclib.utils.lr_schedules import cosine_anneal_schedule
-from fgvclib.utils.visualization import VOXEL
+from fgvclib.utils import cosine_anneal_schedule, init_distributed_mode
 
 
 def train(cfg: CfgNode):
@@ -23,28 +23,51 @@ def train(cfg: CfgNode):
     if cfg.RESUME_WEIGHT:
         assert os.path.exists(cfg.RESUME_WEIGHT), f"The resume weight {cfg.RESUME_WEIGHT} dosn't exists."
         model.load_state_dict(torch.load(cfg.RESUME_WEIGHT, map_location="cpu"))
-
+    
     if cfg.USE_CUDA:
-        assert torch.cuda.is_available(), f"Cuda is not available."
-        model = torch.nn.DataParallel(model)
+        device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
     
     train_transforms = build_transforms(cfg.TRANSFORMS.TRAIN)
     test_transforms = build_transforms(cfg.TRANSFORMS.TEST)
 
-    train_loader = build_dataset(
+    train_set = build_dataset(
         name=cfg.DATASET.NAME, 
         root=cfg.DATASET.ROOT, 
         mode="train", 
         mode_cfg=cfg.DATASET.TRAIN, 
-        transforms=train_transforms
+        transforms=train_transforms,
     )
 
-    test_loader = build_dataset(
+    test_set = build_dataset(
         name=cfg.DATASET.NAME, 
         root=cfg.DATASET.ROOT, 
         mode="test", 
         mode_cfg=cfg.DATASET.TEST, 
         transforms=test_transforms
+    )
+
+    model.to(device)
+    if cfg.DISTRIBUTED:
+        model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters=True, device_ids=[cfg.GPU])
+        train_sampler = torch.utils.data.distributed.DistributedSampler(train_set)
+        test_sampler = torch.utils.data.distributed.DistributedSampler(test_set)
+    else:
+        train_sampler = torch.utils.data.RandomSampler(train_set)
+        test_sampler = torch.utils.data.SequentialSampler(test_set)
+        
+
+    train_loader = build_dataloader(
+        dataset=train_set, 
+        mode_cfg=cfg.DATASET.TRAIN,
+        sampler=train_sampler
+    )
+
+    test_loader = build_dataloader(
+        dataset=test_set, 
+        mode_cfg=cfg.DATASET.TEST,
+        sampler=test_sampler
     )
 
     optimizer = build_optimizer(cfg.OPTIMIZER, model)
@@ -54,7 +77,8 @@ def train(cfg: CfgNode):
     metrics = build_metrics(cfg.METRICS)
 
     for epoch in range(cfg.START_EPOCH, cfg.EPOCH_NUM):
-        
+        if args.distributed:
+            train_sampler.set_epoch(epoch)
         train_bar = tqdm(train_loader)
         train_bar.set_description(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Training')
 
@@ -108,13 +132,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=str, help='the path of configuration file')
     parser.add_argument('--task', type=str, help='the path of configuration file', default="train")
+    parser.add_argument('--device', default='cuda', type=str, help='device', choices=['cuda', 'cpu'])
+    parser.add_argument('--world-size', default=4, type=int, help='number of distributed processes')
+    parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
     args = parser.parse_args()
 
-    # load config
+    init_distributed_mode(args)
+    print(args)
     config = FGVCConfig()
     config.load(args.config)
     cfg = config.cfg
+    cfg.DISTRIBUTED = args.distributed
+    cfg.GPU = args.gpu
     print(cfg)
+
 
     # start task
     if args.task == "train":

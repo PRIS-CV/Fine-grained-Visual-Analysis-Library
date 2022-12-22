@@ -8,14 +8,15 @@ import torch
 from torch import nn
 import torch.optim as optim
 from torch.optim.optimizer import Optimizer
+from torch.utils.data import Sampler
 import torchvision.transforms as T
-from torch.utils.data import DataLoader
 import typing as t
 from yacs.config import CfgNode
 
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
 from fgvclib.datasets import get_dataset
+from fgvclib.datasets.datasets import FGVCDataset
 from fgvclib.metrics import get_metric
 from fgvclib.models.sotas import get_model
 from fgvclib.models.sotas.sota import FGVCSOTA
@@ -87,23 +88,35 @@ def build_transforms(transforms_cfg: CfgNode) -> T.Compose:
 
     return T.Compose([get_transform(item['name'])(item) for item in transforms_cfg])
 
-def build_dataset(name:str, root:str, mode_cfg: CfgNode, mode:str, transforms:T.Compose) -> DataLoader:
+def build_dataset(name:str, root:str, mode_cfg: CfgNode, mode:str, transforms:T.Compose) -> FGVCDataset:
     r"""Build a dataloader for training or evaluation.
 
     Args:
         name (str): The dataset name.
         root (str): The directory of dataset.
-        cfg (CfgNode): The mode config of the dataset config.
+        mode_cfg (CfgNode): The mode config of the dataset config.
         mode (str): The split of the dataset.
-        transforms: Pytorch Transformer Compose.
+        transforms (torchvision.transforms.Compose): Pytorch Transformer Compose.
     Returns:
-        DataLoader: A Pytorch Dataloader.
+        A FGVCDataset.
     """
 
     dataset = get_dataset(name)(root=root, mode=mode, download=True, transforms=transforms, positive=mode_cfg.POSITIVE)
-    data_loader = torch.utils.data.DataLoader(dataset, batch_size=mode_cfg.BATCH_SIZE, shuffle=mode_cfg.SHUFFLE, num_workers=mode_cfg.NUM_WORKERS)
 
-    return data_loader
+    return dataset
+
+def build_dataloader(dataset: FGVCDataset, mode_cfg: CfgNode, sampler=None):
+    r"""Build a dataloader for training or evaluation.
+
+    Args:
+        dataset (FGVCDataset): A FGVCDataset.
+        mode_cfg (CfgNode): The mode config of the dataset config.
+        sampler (Sampler): The dataloder sampler.
+    Returns:
+        DataLoader: A Pytorch Dataloader.
+    """
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=mode_cfg.BATCH_SIZE, sampler=sampler, num_workers=mode_cfg.NUM_WORKERS)
+    return dataloader
 
 def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel]) -> Optimizer:
     r"""Build a optimizer for training.
@@ -117,7 +130,7 @@ def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel
     params= list()
     model_attrs = ["backbone", "encoder", "necks", "heads"]
 
-    if isinstance(model, nn.DataParallel):
+    if isinstance(model, nn.DataParallel) or isinstance(model, nn.parallel.DistributedDataParallel):
         for attr in model_attrs:
             if getattr(model.module, attr) and optim_cfg.LR[attr]:
                 params.append({
@@ -125,6 +138,7 @@ def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel
                     'lr': optim_cfg.LR[attr]
                 })
                 print(attr, optim_cfg.LR[attr])
+
     else:
         for attr in model_attrs:
             if getattr(model, attr) and optim_cfg.LR[attr]:
