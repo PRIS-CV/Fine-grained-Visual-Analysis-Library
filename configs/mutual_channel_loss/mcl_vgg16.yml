@@ -1,0 +1,142 @@
+EXP_NAME: "Mutual-Channel-Loss"
+
+RESUME_WEIGHT: ~
+
+WEIGHT:
+  NAME: "mutual_channel_loss_vgg16.pth"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib/"
+
+LOGGER: 
+  NAME: "txt_logger"
+
+DATASET:
+  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
+  NAME: "CUB_200_2011"
+  TRAIN: 
+    BATCH_SIZE: 32
+    POSITIVE: 0
+    PIN_MEMORY: True
+    SHUFFLE: True
+    NUM_WORKERS: 4
+  TEST: 
+    BATCH_SIZE: 32
+    POSITIVE: 0
+    PIN_MEMORY: False
+    SHUFFLE: False
+    NUM_WORKERS: 4
+
+MODEL:
+  NAME: "MCL"
+  CLASS_NUM: 200
+  CRITERIONS: 
+  - name: "mutual_channel_loss"
+    args: 
+      - height: 14
+      - cnum: 3
+      - div_weight: 20
+      - dis_weight: 1.5
+    w: 1.0
+  - name: "cross_entropy_loss"
+    args: []
+    w: 1.0
+  BACKBONE:
+    NAME: "vgg16"
+    ARGS: 
+      - pretrained: True
+      - del_keys: 
+        - "features.21.weight"
+        - "features.21.bias"
+        - "features.24.weight"
+        - "features.28.weight"
+        - "features.28.bias"
+  ENCODER:
+    NAME: "max_pooling_2d"
+    ARGS: 
+      - kernel_size: 2
+      - stride: 2
+  NECKS:
+    NAME: ~
+  HEADS:
+    NAME: "classifier_2fc"
+    ARGS:
+      - in_dim: 
+        - 29400
+      - hid_dim: 512
+
+TRANSFORMS: 
+  TRAIN: 
+    - name: "resize"
+      size: 
+        - 224
+        - 224
+    - name: "random_crop"
+      size: 224
+      padding: 4
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+  TEST:
+    - name: "resize"
+      size: 
+        - 224
+        - 224
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+
+OPTIMIZER:
+  NAME: SGD
+  MOMENTUM: 0.9
+  LR: 
+    backbone: 0.001
+    encoder: 0.01
+    necks: 0.01
+    heads: 0.01
+
+ITERATION_NUM: ~
+EPOCH_NUM: 200
+START_EPOCH: 0
+UPDATE_STRATEGY: "general_updating"
+
+# Validation details
+PER_ITERATION: ~
+PER_EPOCH: ~
+METRICS: 
+  - name: "accuracy(topk=1)"
+    metric: "accuracy"
+    top_k: 1
+    threshold: ~
+  - name: "accuracy(topk=5)"
+    metric: "accuracy"
+    top_k: 5
+    threshold: ~
+  - name: "recall(threshold=0.5)"
+    metric: "recall"
+    top_k: ~
+    threshold: 0.5
+  - name: "precision(threshold=0.5)"
+    metric: "precision"
+    top_k: ~
+    threshold: 0.5
+    
+INTERPRETER:
+  NAME: "cam"
+  METHOD: "gradcam"
+  TARGET_LAYERS: 
+    - "layer4"

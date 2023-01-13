@@ -1,0 +1,148 @@
+EXP_NAME: "PMG_V2_ResNet50"
+
+RESUME_WEIGHT: ~
+
+WEIGHT:
+  NAME: "pmg_v2_resnet50.pth"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/model/fgvclib/"
+
+LOGGER: 
+  NAME: "txt_logger"
+
+DATASET:
+  NAME: "CUB_200_2011"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
+  TRAIN: 
+    BATCH_SIZE: 16
+    POSITIVE: 1
+    PIN_MEMORY: True
+    SHUFFLE: True
+    NUM_WORKERS: 4
+  TEST: 
+    BATCH_SIZE: 16
+    POSITIVE: 0
+    PIN_MEMORY: False
+    SHUFFLE: False
+    NUM_WORKERS: 4
+
+MODEL:
+  NAME: "PMG_V2"
+  CLASS_NUM: 200
+  CRITERIONS: 
+    - name: "cross_entropy_loss"
+      args: []
+      w: ~
+    - name: "mean_square_error_loss"
+      args: []
+      w: ~
+  BACKBONE:
+    NAME: "resnet50_bc"
+    ARGS: 
+      - pretrained: True
+      - del_keys: []
+  ENCODER:
+    NAME: "global_max_pooling"
+  NECKS:
+    NAME: "multi_scale_conv"
+    ARGS:
+      - scale_num: 3
+      - in_dim: 
+        - 512
+        - 1024
+        - 2048
+      - hid_dim:
+        - 512
+        - 512
+        - 512
+      - out_dim:
+        - 1024
+        - 1024
+        - 1024
+  HEADS:
+    NAME: "classifier_2fc"
+    ARGS:
+      - in_dim: 
+        - 1024
+        - 1024
+        - 1024
+      - hid_dim: 512
+
+TRANSFORMS: 
+  TRAIN: 
+    - name: "resize"
+      size: 
+        - 600
+        - 600
+    - name: "random_crop"
+      size: 448
+      padding: 8
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+  TEST:
+    - name: "resize"
+      size: 
+        - 600
+        - 600
+    - name: "center_crop"
+      size: 448
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+
+OPTIMIZER:
+  NAME: "SGD"
+  MOMENTUM: 0.9
+  LR: 
+    backbone: 0.0005
+    encoder: ~
+    necks: 0.005
+    heads: 0.005
+
+ITERATION_NUM: ~
+EPOCH_NUM: 10
+START_EPOCH: 0
+UPDATE_STRATEGY: "progressive_updating_consistency_constraint"
+
+# Validation details
+PER_ITERATION: ~
+PER_EPOCH: ~
+METRICS: 
+  - name: "accuracy(topk=1)"
+    metric: "accuracy"
+    top_k: 1
+    threshold: ~
+  - name: "accuracy(topk=5)"
+    metric: "accuracy"
+    top_k: 5
+    threshold: ~
+  - name: "recall(threshold=0.5)"
+    metric: "recall"
+    top_k: ~
+    threshold: 0.5
+  - name: "precision(threshold=0.5)"
+    metric: "precision"
+    top_k: ~
+    threshold: 0.5
+
+INTERPRETER:
+  NAME: "cam"
+  METHOD: "gradcam"
+  TARGET_LAYERS: 
+    - "layer4"

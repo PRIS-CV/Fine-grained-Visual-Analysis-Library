@@ -1,0 +1,128 @@
+EXP_NAME: "ResNet50_CutMix"
+
+RESUME_WEIGHT: ~
+
+WEIGHT:
+  NAME: "resnet50.pth"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib/"
+  
+LOGGER: 
+  NAME: "txt_logger"
+
+DATASET:
+  NAME: "CUB_200_2011"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
+  TRAIN: 
+    BATCH_SIZE: 64
+    POSITIVE: 0
+    PIN_MEMORY: True
+    SHUFFLE: True
+    NUM_WORKERS: 4
+  TEST: 
+    BATCH_SIZE: 64
+    POSITIVE: 0
+    PIN_MEMORY: False
+    SHUFFLE: False
+    NUM_WORKERS: 4
+
+MODEL:
+  NAME: "ResNet50_CutMix"
+  CLASS_NUM: 200
+  CRITERIONS: 
+    - name: "cross_entropy_loss"
+      args: []
+      w: 1.0
+  BACKBONE:
+    NAME: "resnet50"
+    ARGS:
+      - pretrained: True
+      - del_keys: []
+  ENCODER:
+    NAME: "global_avg_pooling"
+  NECKS:
+    NAME: ~
+  HEADS:
+    NAME: "classifier_1fc"
+    ARGS:
+      - in_dim: 
+        - 2048
+
+TRANSFORMS: 
+  TRAIN: 
+    - name: "resize"
+      size: 
+        - 600
+        - 600
+    - name: "random_crop"
+      size: 448
+      padding: 8
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+  TEST:
+    - name: "resize"
+      size: 
+        - 600
+        - 600
+    - name: "center_crop"
+      size: 448
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.5
+         - 0.5
+         - 0.5
+      std: 
+        - 0.5
+        - 0.5
+        - 0.5
+
+OPTIMIZER:
+  NAME: "SGD"
+  MOMENTUM: 0.9
+  LR: 
+    backbone: 0.0002
+    encoder: 0.002
+    necks: 0.002
+    heads: 0.002
+
+ITERATION_NUM: ~
+EPOCH_NUM: 1
+START_EPOCH: 0
+UPDATE_STRATEGY: "general_updating"
+
+# Validation details
+PER_ITERATION: ~
+PER_EPOCH: ~
+METRICS: 
+  - name: "accuracy(topk=1)"
+    metric: "accuracy"
+    top_k: 1
+    threshold: ~
+  - name: "accuracy(topk=5)"
+    metric: "accuracy"
+    top_k: 5
+    threshold: ~
+  - name: "recall(threshold=0.5)"
+    metric: "recall"
+    top_k: ~
+    threshold: 0.5
+  - name: "precision(threshold=0.5)"
+    metric: "precision"
+    top_k: ~
+    threshold: 0.5
+
+INTERPRETER:
+  NAME: "cam"
+  METHOD: "gradcam"
+  TARGET_LAYERS: 
+    - "backbone.layer4"
