@@ -1,0 +1,143 @@
+EXP_NAME: "APINet-Resnet101"
+
+RESUME_WEIGHT: ~
+
+WEIGHT:
+  NAME: "APINet_resnet101_new.pth"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
+
+LOGGER: 
+  NAME: "txt_logger"
+
+DATASET:
+  NAME: "CUB_200_2011"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset"
+  TRAIN: 
+    BATCH_SIZE: 2
+    POSITIVE: 0
+    PIN_MEMORY: True
+    SHUFFLE: True
+    NUM_WORKERS: 10
+  TEST: 
+    BATCH_SIZE: 100
+    POSITIVE: 0
+    PIN_MEMORY: True
+    SHUFFLE: False
+    NUM_WORKERS: 10
+
+MODEL:
+  NAME: "APINet"
+  CLASS_NUM: 200
+  CRITERIONS: 
+  - name: "score_rank_regular_loss"
+    args: []
+    w: 1.0
+  - name: "cross_entropy_loss"
+    args: []
+    w: 1.0
+  BACKBONE:
+    NAME: "resnet101"
+    ARGS: 
+      - pretrained: True
+      - del_keys: []
+  ENCODER:
+    NAME: "avg_pooling_2d"
+    ARGS: 
+      - kernel_size: 14
+      - stride: 1
+  NECKS:
+    NAME: "pairwise_interaction"
+    ARGS:
+      - in_dim: 4096
+      - hid_dim: 512
+      - out_dim: 2048
+  HEADS:
+    NAME: "classifier_drop_1fc"
+    ARGS:
+      - in_dim:
+        - 2048
+
+TRANSFORMS: 
+  TRAIN: 
+    - name: "resize"
+      size: 
+        - 512
+        - 512
+    - name: "random_crop"
+      size: 
+        - 448
+        - 448
+      padding: ~
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.485
+         - 0.456
+         - 0.406
+      std: 
+        - 0.229
+        - 0.224
+        - 0.225
+  TEST:
+    - name: "resize"
+      size: 
+        - 512
+        - 512
+    - name: "center_crop"
+      size: 
+        - 448
+        - 448
+    - name: "to_tensor"
+    - name: "normalize"
+      mean: 
+         - 0.485
+         - 0.456
+         - 0.406
+      std: 
+        - 0.229
+        - 0.224
+        - 0.225
+
+OPTIMIZER:
+  NAME: "SGD"
+  MOMENTUM: 0.9
+  LR: 
+    backbone: 0.002
+    encoder: 0.01
+    necks: 0.01
+    heads: 0.01
+
+ITERATION_NUM: ~
+EPOCH_NUM: 100
+START_EPOCH: 0
+UPDATE_STRATEGY: "general_updating"
+
+
+# Validation details
+PER_ITERATION: ~
+PER_EPOCH: ~
+METRICS: 
+  - name: "accuracy(topk=1)"
+    metric: "accuracy"
+    top_k: 1
+    threshold: ~
+  - name: "accuracy(topk=5)"
+    metric: "accuracy"
+    top_k: 5
+    threshold: ~
+  - name: "recall(threshold=0.5)"
+    metric: "recall"
+    top_k: 1
+    threshold: 0.5
+  - name: "precision(threshold=0.5)"
+    metric: "precision"
+    top_k: 1
+    threshold: 0.5
+
+INTERPRETER:
+  NAME: "cam"
+  METHOD: "gradcam"
+  TARGET_LAYERS: 
+    - "backbone.layer4"

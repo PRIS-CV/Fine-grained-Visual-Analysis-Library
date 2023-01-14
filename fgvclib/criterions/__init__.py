@@ -1,11 +1,35 @@
-from .base_loss import *
-from .mutual_channel_loss import mutual_channel_loss
-from .utils import LossItem, compute_loss_value, detach_loss_value
+import os
+import importlib
+import typing as t
 
-__all__ = ['cross_entropy_loss', 'binary_cross_entropy_loss', 'mean_square_error_loss', 'mutual_channel_loss', 'LossItem', 'compute_loss_value', 'detach_loss_value']
+from .utils import *
 
-def get_criterion(criterion_name):
-    """Return the criterion with the given name."""
-    if criterion_name not in globals():
-        raise NotImplementedError(f"Criterion {criterion_name} not found!\nAvailable criterions: {__all__}")
-    return globals()[criterion_name]
+
+__CRITERION_DICT__ = {}
+
+
+def get_criterion(name) -> t.Callable:
+    r"""Return the criterion with the given name.
+        Args: 
+            name (str): 
+                The name of criterion.
+        Return: 
+            (FGVCDataset): The criterion contructor method.
+    """
+    
+    return __CRITERION_DICT__[name]
+
+def criterion(name):
+    
+    def register_function_fn(cls):
+        if name in __CRITERION_DICT__:
+            raise ValueError("Name %s already registered!" % name)
+        __CRITERION_DICT__[name] = cls
+        return cls
+
+    return register_function_fn
+
+for file in os.listdir(os.path.dirname(__file__)):
+    if file.endswith('.py') and not file.startswith('_'):
+        module_name = file[:file.find('.py')]
+        module = importlib.import_module('fgvclib.criterions.' + module_name)   
