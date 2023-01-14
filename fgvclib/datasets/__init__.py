@@ -8,6 +8,7 @@ from fgvclib.datasets.datasets import FGVCDataset, available_datasets
 
 __DATASET_DICT__ = {}
 
+
 def get_dataset(name) -> FGVCDataset:
     r"""Return the dataset with the given name.
         Args: 
