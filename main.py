@@ -142,8 +142,9 @@ if __name__ == "__main__":
     config = FGVCConfig()
     config.load(args.config)
     cfg = config.cfg
-    cfg.DISTRIBUTED = args.distributed
-    cfg.GPU = args.gpu
+    if args.distributed:
+        cfg.DISTRIBUTED = args.distributed
+        cfg.GPU = args.gpu
     print(cfg)
 
 
