@@ -1,9 +1,15 @@
 import os
 import importlib
-from torch.utils.data.sampler import Sampler
+from torch.utils.data.sampler import *
 
 
-__SAMPLER_DICT__ = {}
+__SAMPLER_DICT__ = {
+    "BatchSampler": BatchSampler,
+    "RandomSampler": RandomSampler,
+    "SequentialSampler": SequentialSampler,
+    "SubsetRandomSampler": SubsetRandomSampler,
+    "WeightedRandomSampler": WeightedRandomSampler,
+}
 
 
 def get_sampler(name) -> Sampler:

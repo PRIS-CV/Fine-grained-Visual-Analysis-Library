@@ -11,7 +11,7 @@ class BalancedBatchSampler(BatchSampler):
         self.labels = []
         for i in range(len(dataset.samples)):
             # self.labels.append(dataset.samples[i][1])
-            _, label=dataset.__getitem__(index=i)
+            _, label = dataset.__getitem__(index=i)
             self.labels.append(label)
         self.labels = np.array(self.labels)
         self.labels = torch.LongTensor(self.labels)
