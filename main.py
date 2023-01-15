@@ -54,20 +54,24 @@ def train(cfg: CfgNode):
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_set)
         test_sampler = torch.utils.data.distributed.DistributedSampler(test_set)
     else:
-        train_sampler = torch.utils.data.RandomSampler(train_set)
-        test_sampler = torch.utils.data.SequentialSampler(test_set)
-        
+        sampler_cfg = cfg.SAMPLER
+        train_sampler = build_sampler(sampler_cfg.TRAIN)(train_set, **tltd(sampler_cfg.TRAIN.ARGS))
+        test_sampler = build_sampler(sampler_cfg.TEST)(test_set, **tltd(sampler_cfg.TEST.ARGS))
+    
+    
 
     train_loader = build_dataloader(
         dataset=train_set, 
         mode_cfg=cfg.DATASET.TRAIN,
-        sampler=train_sampler
+        sampler=train_sampler,
+        is_batch_sampler=sampler_cfg.TRAIN.IS_BATCH_SAMPLER
     )
 
     test_loader = build_dataloader(
         dataset=test_set, 
         mode_cfg=cfg.DATASET.TEST,
-        sampler=test_sampler
+        sampler=test_sampler,
+        is_batch_sampler=sampler_cfg.TEST.IS_BATCH_SAMPLER
     )
 
     optimizer = build_optimizer(cfg.OPTIMIZER, model)
@@ -75,6 +79,8 @@ def train(cfg: CfgNode):
     logger = build_logger(cfg)
 
     metrics = build_metrics(cfg.METRICS)
+
+    lr_schedule = build_lr_schedule(cfg.LR_SCHEDULE)
 
     for epoch in range(cfg.START_EPOCH, cfg.EPOCH_NUM):
         if args.distributed:
@@ -84,8 +90,13 @@ def train(cfg: CfgNode):
 
         logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Training')
 
-        cosine_anneal_schedule(optimizer, epoch, cfg.EPOCH_NUM)
-        update_model(model, optimizer, train_bar, strategy=cfg.UPDATE_STRATEGY, use_cuda=cfg.USE_CUDA, logger=logger)
+       
+        
+        update_model(
+            model, optimizer, train_bar, 
+            strategy=cfg.UPDATE_STRATEGY, use_cuda=cfg.USE_CUDA, lr_schedule=lr_schedule, 
+            logger=logger, epoch=epoch, total_epoch=cfg.EPOCH_NUM
+        )
         
         test_bar = tqdm(test_loader)
         test_bar.set_description(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Testing ')
@@ -97,7 +108,11 @@ def train(cfg: CfgNode):
         logger("Evalution Result:")
         logger(acc)
     
-    save_model(cfg=cfg, model=model.module, logger=logger)
+    if cfg.DISTRIBUTED:
+        model_with_ddp = model.module
+    else:
+        model_with_ddp = model
+    save_model(cfg=cfg, model=model, logger=logger)
     logger.finish()
 
 def predict(cfg: CfgNode):
@@ -142,10 +157,10 @@ if __name__ == "__main__":
     config = FGVCConfig()
     config.load(args.config)
     cfg = config.cfg
-    cfg.DISTRIBUTED = args.distributed
-    cfg.GPU = args.gpu
+    if args.distributed:
+        cfg.DISTRIBUTED = args.distributed
+        cfg.GPU = args.gpu
     print(cfg)
-
 
     # start task
     if args.task == "train":

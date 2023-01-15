@@ -5,18 +5,18 @@ import importlib
 import os
 
 
-__ENCODING_DICT__ = {}
+__ENCODER_DICT__ = {}
 
 
 def get_encoder(name):
-    return __ENCODING_DICT__[name]
+    return __ENCODER_DICT__[name]
 
 def encoder(name):
     
     def register_function_fn(cls):
-        if name in __ENCODING_DICT__:
+        if name in __ENCODER_DICT__:
             raise ValueError("Name %s already registered!" % name)
-        __ENCODING_DICT__[name] = cls
+        __ENCODER_DICT__[name] = cls
         return cls
     return register_function_fn
 

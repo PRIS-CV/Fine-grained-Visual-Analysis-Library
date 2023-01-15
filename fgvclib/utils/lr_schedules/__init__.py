@@ -1,21 +1,37 @@
-from .cosine_anneal_schedule import cosine_anneal_schedule
+import os
+import importlib
 
-__all__ = [
-    'cosine_anneal_schedule'
-]
+from fgvclib.utils.lr_schedules.lr_schedule import LRSchedule
 
 
-def get_lr_schedule(lr_schedule_name):
-    r"""Return the learning rate schedule with the given name.
+__LR_SCHEDULE_DICT__ = {}
 
+
+def get_lr_schedule(name) -> LRSchedule:
+    r"""Return the dataset with the given name.
         Args: 
-            lr_schedule_name (str): 
-                The name of learning rate schedule.
-        
+            name (str): 
+                The name of dataset.
         Return: 
-            The learning rate schedule contructor method.
+            (FGVCDataset): The dataset contructor method.
     """
+    
+    return __LR_SCHEDULE_DICT__[name]
 
-    if lr_schedule_name not in globals():
-        raise NotImplementedError(f"Learning rate schedule not found: {lr_schedule_name}\nAvailable learning rate schedules: {__all__}")
-    return globals()[lr_schedule_name]
+def lr_schedule(name):
+    
+    def register_function_fn(cls):
+        if name in __LR_SCHEDULE_DICT__:
+            raise ValueError("Name %s already registered!" % name)
+        if not issubclass(cls, LRSchedule):
+            raise ValueError("Class %s is not a subclass of %s" % (cls, LRSchedule))
+        __LR_SCHEDULE_DICT__[name] = cls
+        return cls
+
+    return register_function_fn
+
+for file in os.listdir(os.path.dirname(__file__)):
+    if file.endswith('.py') and not file.startswith('_'):
+        module_name = file[:file.find('.py')]
+        module = importlib.import_module('fgvclib.utils.lr_schedules.' + module_name)    
+

@@ -1,21 +1,37 @@
-from .base_transforms import *
+import os
+import importlib
 from .mixup import MixUp
 from .cutmix import CutMix
 
-__all__ = ["resize", "center_crop", "random_crop", "random_horizontal_flip", "to_tensor", "normalize"]
+
+__all__ = ["get_transform"]
 
 
-def get_transform(transform_name):
-    r"""Return the transform with the given name.
+__TRANSFORM_DICT__ = {}
 
+
+def get_transform(name):
+    r"""Return the dataset with the given name.
         Args: 
-            transform_name (str): 
-                The name of interpreter.
-        
+            name (str): 
+                The name of dataset.
         Return: 
-            The transform contructor method.
+            (FGVCDataset): The dataset contructor method.
     """
+    
+    return __TRANSFORM_DICT__[name]
 
-    if transform_name not in globals():
-        raise NotImplementedError(f"Transform not found: {transform_name}\nAvailable transforms: {__all__}")
-    return globals()[transform_name]
+def transform(name):
+    
+    def register_function_fn(cls):
+        if name in __TRANSFORM_DICT__:
+            raise ValueError("Name %s already registered!" % name)
+        __TRANSFORM_DICT__[name] = cls
+        return cls
+
+    return register_function_fn
+
+for file in os.listdir(os.path.dirname(__file__)):
+    if file.endswith('.py') and not file.startswith('_'):
+        module_name = file[:file.find('.py')]
+        module = importlib.import_module('fgvclib.transforms.' + module_name)    

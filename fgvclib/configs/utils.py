@@ -11,4 +11,4 @@ def turn_list_to_dict(arg_list:list):
             d.update(arg)
         return d
     else:
-        return None
+        return {}

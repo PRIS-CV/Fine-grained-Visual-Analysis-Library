@@ -8,7 +8,7 @@ from fgvclib.criterions import compute_loss_value, detach_loss_value
 BLOCKS = [[8, 8, 0, 0], [4, 4, 4, 0], [2, 2, 2, 2]]
 alpha = [0.01, 0.05, 0.1]
 
-def progressive_updating_consistency_constraint(model:nn.Module, train_data:t.Tuple[Tensor, Tensor, Tensor], optimizer, use_cuda=True) -> t.Dict:
+def progressive_updating_consistency_constraint(model:nn.Module, train_data:t.Tuple[Tensor, Tensor, Tensor], optimizer, use_cuda=True, **kwargs) -> t.Dict:
     inputs, positive_inputs, targets = train_data
     batch_size = inputs.size(0)
     positive_inputs = positive_inputs[0]
