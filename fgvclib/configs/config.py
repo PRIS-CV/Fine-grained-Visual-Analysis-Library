@@ -57,11 +57,22 @@ class FGVCConfig(object):
         self.cfg.DATASET.TEST.SHUFFLE = False
         self.cfg.DATASET.TEST.NUM_WORKERS = 0
 
+        self.cfg.SAMPLER = CN()
+        self.cfg.SAMPLER.TRAIN = CN()
+        self.cfg.SAMPLER.TEST = CN()
+        
+        self.cfg.SAMPLER.TRAIN.NAME = "RandomSampler"
+        self.cfg.SAMPLER.TRAIN.ARGS = None
+
+        self.cfg.SAMPLER.TEST.NAME = "SequentialSampler"
+        self.cfg.SAMPLER.TEST.ARGS = None
+
         # Model architecture
         self.cfg.MODEL = CN()
         self.cfg.MODEL.NAME = None
         self.cfg.MODEL.CLASS_NUM = None
         self.cfg.MODEL.CRITERIONS = None
+        self.cfg.MODEL.ARGS = None
 
         # Standard modulars of each model
         self.cfg.MODEL.BACKBONE = CN()
@@ -106,6 +117,9 @@ class FGVCConfig(object):
         self.cfg.EPOCH_NUM = None
         self.cfg.START_EPOCH = None
         self.cfg.UPDATE_STRATEGY = None
+        self.cfg.LR_SCHEDULE = CN()
+        self.cfg.LR_SCHEDULE.NAME = "cosine_anneal_schedule"
+        self.cfg.LR_SCHEDULE.ARGS = None
         
         # Validation
         self.cfg.PER_ITERATION = None

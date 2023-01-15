@@ -3,7 +3,7 @@ from torch.autograd import Variable
 
 from fgvclib.criterions import compute_loss_value, detach_loss_value
 
-def progressive_updating_with_jigsaw(model, train_data, optimizer, use_cuda=True):
+def progressive_updating_with_jigsaw(model, train_data, optimizer, use_cuda=True, **kwargs):
     inputs, targets = train_data
     if use_cuda:
         inputs, targets = inputs.cuda(), targets.cuda()

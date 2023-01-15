@@ -1,71 +1,61 @@
-EXP_NAME: "APINet-Resnet101"
+EXP_NAME: "CAL"
 
-RESUME_WEIGHT: ~
+RESUME_WEIGHT: ""
 
 WEIGHT:
-  NAME: "APINet_resnet101_new.pth"
-  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
+  NAME: "cal_resnet101_new.pth"
+  SAVE_DIR: "/home/wangxinran/weight/fgvclib"
 
 LOGGER: 
   NAME: "txt_logger"
 
 DATASET:
+  ROOT: "/home/wangxinran/dataset"
   NAME: "CUB_200_2011"
-  ROOT: "/mnt/sdb/data/wangxinran/dataset"
   TRAIN: 
-    BATCH_SIZE: 2
+    BATCH_SIZE: 8
     POSITIVE: 0
     PIN_MEMORY: True
     SHUFFLE: True
-    NUM_WORKERS: 10
+    NUM_WORKERS: 1
   TEST: 
-    BATCH_SIZE: 100
+    BATCH_SIZE: 16
     POSITIVE: 0
     PIN_MEMORY: True
     SHUFFLE: False
-    NUM_WORKERS: 10
-
-SAMPLER:
-  TRAIN:
-    NAME: "BalancedBatchSampler"
-    ARGS: 
-      - n_samples: 2
-      - n_classes: 10
-  TEST:
-    NAME: "SequentialSampler"
-    ARGS: ~
+    NUM_WORKERS: 1
 
 MODEL:
-  NAME: "APINet"
+  NAME: "WSDAN_CAL"
   CLASS_NUM: 200
   CRITERIONS: 
-  - name: "score_rank_regular_loss"
+  - name: "center_loss"
     args: []
     w: 1.0
   - name: "cross_entropy_loss"
     args: []
     w: 1.0
   BACKBONE:
-    NAME: "resnet101"
+    NAME: "resnet101_cbam"
     ARGS: 
       - pretrained: True
       - del_keys: []
+      - cbam: False
   ENCODER:
-    NAME: "avg_pooling_2d"
+    NAME: "bilinear_att_pooling"
     ARGS: 
-      - kernel_size: 14
-      - stride: 1
+      - pool: "GAP"
   NECKS:
-    NAME: "pairwise_interaction"
-    ARGS:
-      - in_dim: 4096
-      - hid_dim: 512
-      - out_dim: 2048
+    NAME: "conv"
+    ARGS: 
+      - num_features: 2048
+      - num_attentions: 32
+      - kernel_size: 1
   HEADS:
-    NAME: "classifier_drop_1fc"
+    NAME: "classifier_1fc"
     ARGS:
-      - in_dim:
-        - 2048
+      - in_dim: 
+        - 65536
 
 TRANSFORMS: 
   TRAIN: 
@@ -78,6 +68,9 @@ TRANSFORMS:
         - 448
         - 448
       padding: ~
+    - name: "color_jitter"
+      brightness: 0.126
+      saturation: 0.5
     - name: "random_horizontal_flip"
       prob: 0.5
     - name: "to_tensor"
@@ -111,19 +104,19 @@ TRANSFORMS:
         - 0.225
 
 OPTIMIZER:
-  NAME: "SGD"
+  NAME: SGD
   MOMENTUM: 0.9
+  WEIGHT_DECAY: 1e-5
   LR: 
-    backbone: 0.002
-    encoder: 0.01
-    necks: 0.01
-    heads: 0.01
+    backbone: 0.001
+    encoder: 0.001
+    necks: 0.001
+    heads: 0.001
 
 ITERATION_NUM: ~
-EPOCH_NUM: 100
-START_EPOCH: 0
+EPOCH_NUM: 160
+START_EPOCH: 71
 UPDATE_STRATEGY: "general_updating"
-
 
 # Validation details
 PER_ITERATION: ~
@@ -145,9 +138,9 @@ METRICS:
     metric: "precision"
     top_k: 1
     threshold: 0.5
-
+    
 INTERPRETER:
   NAME: "cam"
   METHOD: "gradcam"
   TARGET_LAYERS: 
-    - "backbone.layer4"
+    - "layer4"

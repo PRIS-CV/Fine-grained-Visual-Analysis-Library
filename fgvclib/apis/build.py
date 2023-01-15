@@ -16,6 +16,7 @@ from yacs.config import CfgNode
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
 from fgvclib.datasets import get_dataset
+from fgvclib.samplers import get_sampler
 from fgvclib.datasets.datasets import FGVCDataset
 from fgvclib.metrics import get_metric
 from fgvclib.models.sotas import get_model
@@ -27,6 +28,7 @@ from fgvclib.models.heads import get_head
 from fgvclib.transforms import get_transform
 from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
+from fgvclib.utils.lr_schedules import get_lr_schedule, LRSchedule
 from fgvclib.metrics.metrics import NamedMetric
 
 
@@ -105,7 +107,7 @@ def build_dataset(name:str, root:str, mode_cfg: CfgNode, mode:str, transforms:T.
 
     return dataset
 
-def build_dataloader(dataset: FGVCDataset, mode_cfg: CfgNode, sampler=None):
+def build_dataloader(dataset: FGVCDataset, mode_cfg: CfgNode, sampler=None, batch_sampler=None):
     r"""Build a dataloader for training or evaluation.
 
     Args:
@@ -115,8 +117,22 @@ def build_dataloader(dataset: FGVCDataset, mode_cfg: CfgNode, sampler=None):
     Returns:
         DataLoader: A Pytorch Dataloader.
     """
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=mode_cfg.BATCH_SIZE, sampler=sampler, num_workers=mode_cfg.NUM_WORKERS)
-    return dataloader
+
+    if batch_sampler is not None:
+        return torch.utils.data.DataLoader(
+            dataset, 
+            # batch_size=mode_cfg.BATCH_SIZE, 
+            batch_sampler=sampler, 
+            num_workers=mode_cfg.NUM_WORKERS,
+            pin_memory=mode_cfg.PIN_MEMORY)
+    
+    else:
+        return torch.utils.data.DataLoader(
+            dataset, 
+            batch_size=mode_cfg.BATCH_SIZE, 
+            sampler=sampler, 
+            num_workers=mode_cfg.NUM_WORKERS,
+            pin_memory=mode_cfg.PIN_MEMORY)
 
 def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel]) -> Optimizer:
     r"""Build a optimizer for training.
@@ -146,6 +162,7 @@ def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel
                     'params': getattr(model, attr).parameters(), 
                     'lr': optim_cfg.LR[attr]
                 })
+    
     optimizer = optim.SGD(params=params, momentum=optim_cfg.MOMENTUM, weight_decay=optim_cfg.WEIGHT_DECAY)
     
     return optimizer
@@ -190,3 +207,29 @@ def build_metrics(metrics_cfg: CfgNode, use_cuda:bool=True) -> t.List[NamedMetri
             metric = metric.cuda()
         metrics.append(metric)
     return metrics
+
+def build_sampler(sampler_cfg: CfgNode) -> Sampler:
+    r"""Build sampler for dataloader.
+
+    Args:
+        sampler_cfg (CfgNode): The sampler config node of root config node.
+    Returns:
+        Sampler: A dataset sampler.
+    
+    """
+    
+    return get_sampler(sampler_cfg.NAME)
+
+
+def build_lr_schedule(schedule_cfg: CfgNode) -> LRSchedule:
+    r"""Build metrics for evaluation.
+
+    Args:
+        schedule_cfg (CfgNode): The schedule config node of root config node.
+    Returns:
+        LRSchedule: A lr schedule.
+    
+    """
+
+
+    return get_lr_schedule(schedule_cfg.NAME)(schedule_cfg.ARGS)
