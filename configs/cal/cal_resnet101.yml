@@ -4,13 +4,13 @@ RESUME_WEIGHT: ""
 
 WEIGHT:
   NAME: "cal_resnet101_new.pth"
-  SAVE_DIR: "/home/wangxinran/weight/fgvclib"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
 
 LOGGER: 
   NAME: "txt_logger"
 
 DATASET:
-  ROOT: "/home/wangxinran/dataset"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset"
   NAME: "CUB_200_2011"
   TRAIN: 
     BATCH_SIZE: 8
@@ -52,7 +52,7 @@ MODEL:
       - num_attentions: 32
       - kernel_size: 1
   HEADS:
-    NAME: "classifier_1fc"
+    NAME: "cal_head"
     ARGS:
       - in_dim: 
         - 65536
@@ -115,8 +115,15 @@ OPTIMIZER:
 
 ITERATION_NUM: ~
 EPOCH_NUM: 160
-START_EPOCH: 71
+START_EPOCH: 0
 UPDATE_STRATEGY: "general_updating"
+LR_SCHEDULE:
+  NAME: "adjusting_schedule"
+  ARGS: 
+    - base_lr: 0.001
+    - base_duration: 2.0
+    - base_rate: 0.9
+    - update_level: "batch_update"
 
 # Validation details
 PER_ITERATION: ~

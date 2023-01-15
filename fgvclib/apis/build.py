@@ -107,7 +107,7 @@ def build_dataset(name:str, root:str, mode_cfg: CfgNode, mode:str, transforms:T.
 
     return dataset
 
-def build_dataloader(dataset: FGVCDataset, mode_cfg: CfgNode, sampler=None, batch_sampler=None):
+def build_dataloader(dataset: FGVCDataset, mode_cfg: CfgNode, sampler=None, is_batch_sampler=False):
     r"""Build a dataloader for training or evaluation.
 
     Args:
@@ -118,10 +118,9 @@ def build_dataloader(dataset: FGVCDataset, mode_cfg: CfgNode, sampler=None, batc
         DataLoader: A Pytorch Dataloader.
     """
 
-    if batch_sampler is not None:
+    if is_batch_sampler:
         return torch.utils.data.DataLoader(
             dataset, 
-            # batch_size=mode_cfg.BATCH_SIZE, 
             batch_sampler=sampler, 
             num_workers=mode_cfg.NUM_WORKERS,
             pin_memory=mode_cfg.PIN_MEMORY)
@@ -232,4 +231,4 @@ def build_lr_schedule(schedule_cfg: CfgNode) -> LRSchedule:
     """
 
 
-    return get_lr_schedule(schedule_cfg.NAME)(schedule_cfg.ARGS)
+    return get_lr_schedule(schedule_cfg.NAME)(tltd(schedule_cfg.ARGS))

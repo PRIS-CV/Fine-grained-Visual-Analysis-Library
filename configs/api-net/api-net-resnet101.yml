@@ -28,11 +28,13 @@ DATASET:
 SAMPLER:
   TRAIN:
     NAME: "BalancedBatchSampler"
+    IS_BATCH_SAMPLER: True
     ARGS: 
       - n_samples: 2
       - n_classes: 10
   TEST:
     NAME: "SequentialSampler"
+    IS_BATCH_SAMPLER: False
     ARGS: ~
 
 MODEL:

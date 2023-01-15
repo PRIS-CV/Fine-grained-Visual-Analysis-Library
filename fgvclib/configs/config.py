@@ -57,15 +57,20 @@ class FGVCConfig(object):
         self.cfg.DATASET.TEST.SHUFFLE = False
         self.cfg.DATASET.TEST.NUM_WORKERS = 0
 
+
+        
+        # sampler for dataloader
         self.cfg.SAMPLER = CN()
         self.cfg.SAMPLER.TRAIN = CN()
         self.cfg.SAMPLER.TEST = CN()
         
         self.cfg.SAMPLER.TRAIN.NAME = "RandomSampler"
         self.cfg.SAMPLER.TRAIN.ARGS = None
+        self.cfg.SAMPLER.TRAIN.IS_BATCH_SAMPLER = False
 
         self.cfg.SAMPLER.TEST.NAME = "SequentialSampler"
         self.cfg.SAMPLER.TEST.ARGS = None
+        self.cfg.SAMPLER.TEST.IS_BATCH_SAMPLER = False
 
         # Model architecture
         self.cfg.MODEL = CN()

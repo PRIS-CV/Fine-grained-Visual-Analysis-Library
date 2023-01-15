@@ -54,20 +54,24 @@ def train(cfg: CfgNode):
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_set)
         test_sampler = torch.utils.data.distributed.DistributedSampler(test_set)
     else:
-        train_sampler = build_sampler(cfg.SAMPLER.TRAIN)(train_set, **tltd(cfg.SAMPLER.TRAIN.ARGS))
-        test_sampler = build_sampler(cfg.SAMPLER.TEST)(test_set, **tltd(cfg.SAMPLER.TEST.ARGS))
-        
+        sampler_cfg = cfg.SAMPLER
+        train_sampler = build_sampler(sampler_cfg.TRAIN)(train_set, **tltd(sampler_cfg.TRAIN.ARGS))
+        test_sampler = build_sampler(sampler_cfg.TEST)(test_set, **tltd(sampler_cfg.TEST.ARGS))
+    
+    
 
     train_loader = build_dataloader(
         dataset=train_set, 
         mode_cfg=cfg.DATASET.TRAIN,
         sampler=train_sampler,
+        is_batch_sampler=sampler_cfg.TRAIN.IS_BATCH_SAMPLER
     )
 
     test_loader = build_dataloader(
         dataset=test_set, 
         mode_cfg=cfg.DATASET.TEST,
-        sampler=test_sampler
+        sampler=test_sampler,
+        is_batch_sampler=sampler_cfg.TEST.IS_BATCH_SAMPLER
     )
 
     optimizer = build_optimizer(cfg.OPTIMIZER, model)

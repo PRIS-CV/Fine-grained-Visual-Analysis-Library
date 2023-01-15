@@ -7,6 +7,7 @@ from fgvclib.samplers import sampler
 
 @sampler("BalancedBatchSampler")
 class BalancedBatchSampler(BatchSampler):
+    
     def __init__(self, dataset, n_classes, n_samples):
         print("Initializing Balanced Batch Sampler ...")
         self.labels = []
@@ -40,7 +41,6 @@ class BalancedBatchSampler(BatchSampler):
                 if self.used_label_indices_count[class_] + self.n_samples > len(self.label_to_indices[class_]):
                     np.random.shuffle(self.label_to_indices[class_])
                     self.used_label_indices_count[class_] = 0
-            print(indices)
             yield indices
             self.count += self.n_classes * self.n_samples
 

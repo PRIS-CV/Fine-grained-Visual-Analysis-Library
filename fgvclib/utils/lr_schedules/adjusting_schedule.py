@@ -6,9 +6,9 @@ class Adjusting_Schedule(LRSchedule):
     
     def __init__(self, cfg) -> None:
         super().__init__(cfg)
-        self.base_rate = 0.9
-        self.base_duration = 2.0
-        self.base_lr = 1e-3
+        self.base_rate = cfg["base_rate"]
+        self.base_duration = cfg["base_duration"]
+        self.base_lr = cfg["base_lr"]
         self.update_level = 'batch_update'
 
     def step(self, optimizer, batch_idx, current_epoch, batch_size, **kwargs):
