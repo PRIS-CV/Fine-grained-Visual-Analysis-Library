@@ -16,9 +16,10 @@ from yacs.config import CfgNode
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
 from fgvclib.datasets import get_dataset
-from fgvclib.samplers import get_sampler
 from fgvclib.datasets.datasets import FGVCDataset
+from fgvclib.samplers import get_sampler
 from fgvclib.metrics import get_metric
+from fgvclib.metrics.metrics import NamedMetric
 from fgvclib.models.sotas import get_model
 from fgvclib.models.sotas.sota import FGVCSOTA
 from fgvclib.models.backbones import get_backbone
@@ -29,7 +30,6 @@ from fgvclib.transforms import get_transform
 from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
 from fgvclib.utils.lr_schedules import get_lr_schedule, LRSchedule
-from fgvclib.metrics.metrics import NamedMetric
 
 
 def build_model(model_cfg: CfgNode) -> FGVCSOTA:
@@ -64,7 +64,7 @@ def build_model(model_cfg: CfgNode) -> FGVCSOTA:
         criterions.update({item["name"]: {"fn": build_criterion(item), "w": item["w"]}})
     
     model_builder = get_model(model_cfg.NAME)
-    model = model_builder(backbone=backbone, encoder=encoder, necks=necks, heads=heads, criterions=criterions)
+    model = model_builder(cfg=model_cfg, backbone=backbone, encoder=encoder, necks=necks, heads=heads, criterions=criterions)
     
     return model
 

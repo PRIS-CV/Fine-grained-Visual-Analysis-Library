@@ -17,6 +17,9 @@ class FGVCConfig(object):
         # Name of experiment
         self.cfg.EXP_NAME = None
 
+        # Random Seed
+        self.cfg.SEED = 0
+
         # Resume last train
         self.cfg.RESUME_WEIGHT = None
 
@@ -57,7 +60,6 @@ class FGVCConfig(object):
         self.cfg.DATASET.TEST.SHUFFLE = False
         self.cfg.DATASET.TEST.NUM_WORKERS = 0
 
-
         
         # sampler for dataloader
         self.cfg.SAMPLER = CN()
@@ -71,6 +73,7 @@ class FGVCConfig(object):
         self.cfg.SAMPLER.TEST.NAME = "SequentialSampler"
         self.cfg.SAMPLER.TEST.ARGS = None
         self.cfg.SAMPLER.TEST.IS_BATCH_SAMPLER = False
+
 
         # Model architecture
         self.cfg.MODEL = CN()
@@ -125,6 +128,7 @@ class FGVCConfig(object):
         self.cfg.LR_SCHEDULE = CN()
         self.cfg.LR_SCHEDULE.NAME = "cosine_anneal_schedule"
         self.cfg.LR_SCHEDULE.ARGS = None
+        self.cfg.AMP = True
         
         # Validation
         self.cfg.PER_ITERATION = None

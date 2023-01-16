@@ -7,7 +7,8 @@ from yacs.config import CfgNode
 
 from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
-from fgvclib.utils import cosine_anneal_schedule, init_distributed_mode
+from fgvclib.utils import init_distributed_mode
+from fgvclib.utils.update_function.general_update import general_update
 
 
 def train(cfg: CfgNode):
@@ -90,12 +91,10 @@ def train(cfg: CfgNode):
 
         logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Training')
 
-       
-        
-        update_model(
+        general_update(
             model, optimizer, train_bar, 
             strategy=cfg.UPDATE_STRATEGY, use_cuda=cfg.USE_CUDA, lr_schedule=lr_schedule, 
-            logger=logger, epoch=epoch, total_epoch=cfg.EPOCH_NUM
+            logger=logger, epoch=epoch, total_epoch=cfg.EPOCH_NUM, amp=cfg.AMP
         )
         
         test_bar = tqdm(test_loader)
@@ -112,7 +111,7 @@ def train(cfg: CfgNode):
         model_with_ddp = model.module
     else:
         model_with_ddp = model
-    save_model(cfg=cfg, model=model, logger=logger)
+    save_model(cfg=cfg, model=model_with_ddp, logger=logger)
     logger.finish()
 
 def predict(cfg: CfgNode):
@@ -157,6 +156,7 @@ if __name__ == "__main__":
     config = FGVCConfig()
     config.load(args.config)
     cfg = config.cfg
+    set_seed(cfg.SEED)
     if args.distributed:
         cfg.DISTRIBUTED = args.distributed
         cfg.GPU = args.gpu

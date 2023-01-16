@@ -1,0 +1,161 @@
+EXP_NAME: "TransFG"
+
+RESUME_WEIGHT: ~
+
+WEIGHT:
+  NAME: "transFG_ViT_B16.pth"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
+
+LOGGER:
+  NAME: "txt_logger"
+
+DATASET:
+  ROOT: "/mnt/sdb/data/wangxinran/dataset"
+  NAME: "CUB_200_2011"
+  TRAIN:
+    BATCH_SIZE: 8
+    POSITIVE: 0
+    PIN_MEMORY: True
+    SHUFFLE: True
+    NUM_WORKERS: 4
+  TEST:
+    BATCH_SIZE: 8
+    POSITIVE: 0
+    PIN_MEMORY: False
+    SHUFFLE: False
+    NUM_WORKERS: 4
+
+MODEL:
+  NAME: "TransFG"
+  CLASS_NUM: 200
+  ARGS: 
+    - smoothing_value: 0
+    - zero_head: True
+    - classifier: 'token'
+    - part_head_in_channels: 768
+    - pretrained_weight: "/mnt/sdb/data/wangxinran/weight/pretraining/transFG/ViT-B_16.npz"
+
+  CRITERIONS:
+  - name: "nll_loss_labelsmoothing"
+    args:
+      - smoothing_value: 0.0
+    w: 1.0
+  - name: "cross_entropy_loss"
+    args: []
+    w: 1.0
+  BACKBONE:
+    NAME: "vit16"
+    ARGS:
+      - patch_size: 16
+      - image_size: 448
+      - split: 'non-overlap'
+      - slide_step: 12
+      - hidden_size: 768
+      - representation_size: None
+      - dropout_rate: 0.1
+  ENCODER:
+    NAME: "transformer_encoder"
+    ARGS:
+      - num_layers: 12
+      - img_size: 448
+      - num_heads: 12
+      - attention_dropout_rate: 0.0
+      - hidden_size: 768
+      - mlp_dim: 3072
+      - dropout_rate: 0.1
+      - patch_size: 16
+      - split: 'non-overlap'
+      - slide_step: 12
+      - mlp_dim: 3072
+  NECKS:
+    NAME: ~
+  HEADS:
+    NAME: "mlp"
+    ARGS:
+      - hidden_size: 768
+      - mlp_dim: 3072
+      - dropout_rate: 0.1
+
+TRANSFORMS:
+  TRAIN:
+    - name: "resize"
+      size:
+        - 600
+        - 600
+    - name: "random_crop"
+      size: 448
+      padding: 0
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "to_tensor"
+    - name: "normalize"
+      mean:
+         - 0.485
+         - 0.456
+         - 0.406
+      std:
+        - 0.229
+        - 0.224
+        - 0.225
+  TEST:
+    - name: "resize"
+      size:
+        - 600
+        - 600
+    - name: "center_crop"
+      size: 448
+    - name: "to_tensor"
+    - name: "normalize"
+      mean:
+         - 0.485
+         - 0.456
+         - 0.406
+      std:
+        - 0.229
+        - 0.224
+        - 0.225
+
+OPTIMIZER:
+  NAME: SGD
+  MOMENTUM: 0.9
+  WEIGHT_DECAY: 0.0
+  LR:
+    backbone: 0.08
+    encoder: 0.08
+    necks: 0.08
+    heads: 0.08
+
+WARMUP_STEPS: 500
+NUM_STEPS: 10000
+ITERATION_NUM: ~
+EPOCH_NUM: 100
+START_EPOCH: 0
+UPDATE_STRATEGY: "vit_updating"
+
+
+# Validation details
+PER_ITERATION: ~
+PER_EPOCH: ~
+METRICS:
+  - name: "accuracy(topk=1)"
+    metric: "accuracy"
+    top_k: 1
+    threshold: ~
+  - name: "accuracy(topk=5)"
+    metric: "accuracy"
+    top_k: 5
+    threshold: ~
+  - name: "recall(threshold=0.5)"
+    metric: "recall"
+    top_k: ~
+    threshold: 0.5
+  - name: "precision(threshold=0.5)"
+    metric: "precision"
+    top_k: ~
+    threshold: 0.5
+
+INTERPRETER:
+  NAME: "cam"
+  METHOD: "gradcam"
+  TARGET_LAYERS:
+    - "layer4"

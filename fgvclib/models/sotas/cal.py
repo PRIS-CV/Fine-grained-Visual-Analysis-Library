@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from yacs.config import CfgNode
 
 from .sota import FGVCSOTA
 from fgvclib.criterions.utils import LossItem
@@ -67,13 +68,14 @@ class WSDAN_CAL(FGVCSOTA):
         Link: https://github.com/raoyongming/CAL 
     """
 
-    def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: dict):
-        super().__init__(backbone, encoder, necks, heads, criterions)
-        self.num_classes = 200
+    def __init__(self, cfg: CfgNode, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+        super().__init__(cfg, backbone, encoder, necks, heads, criterions)
+        
+        self.out_channels = 2048
+        self.num_classes = cfg.NUM_CLASS
         self.M = 32
         self.net = 'resnet101'
-
-        self.register_buffer('feature_center', torch.zeros(self.num_classes, self.M * 2048))   # 32 * 2048
+        self.register_buffer('feature_center', torch.zeros(self.num_classes, self.M * self.out_channels))   # 32 * 2048
 
 
     def infer(self, x):
