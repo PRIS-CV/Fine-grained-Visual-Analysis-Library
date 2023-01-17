@@ -1,5 +1,6 @@
 import os
 import importlib
+from torch.optim.lr_scheduler import _LRScheduler
 
 from fgvclib.utils.lr_schedules.lr_schedule import LRSchedule
 
@@ -23,8 +24,8 @@ def lr_schedule(name):
     def register_function_fn(cls):
         if name in __LR_SCHEDULE_DICT__:
             raise ValueError("Name %s already registered!" % name)
-        if not issubclass(cls, LRSchedule):
-            raise ValueError("Class %s is not a subclass of %s" % (cls, LRSchedule))
+        # if not issubclass(cls, LRSchedule) and not issubclass(cls, _LRScheduler):
+        #     raise ValueError("Class %s is not a subclass of %s or %s" % (cls, LRSchedule, _LRScheduler))
         __LR_SCHEDULE_DICT__[name] = cls
         return cls
 

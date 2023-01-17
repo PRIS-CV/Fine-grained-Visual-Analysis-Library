@@ -125,12 +125,15 @@ OPTIMIZER:
     necks: 0.08
     heads: 0.08
 
-WARMUP_STEPS: 500
-NUM_STEPS: 10000
-ITERATION_NUM: ~
 EPOCH_NUM: 100
 START_EPOCH: 0
-UPDATE_STRATEGY: "vit_updating"
+UPDATE_STRATEGY: "vit_update_strategy"
+LR_SCHEDULE:
+  NAME: "warmup_linear_schedule"
+  ARGS: 
+    - warmup_steps: 500
+    - total_steps: 10000
+AMP: True
 
 
 # Validation details

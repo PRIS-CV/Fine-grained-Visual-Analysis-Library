@@ -1,7 +1,7 @@
 class LRSchedule:
 
-    def __init__(self, cfg) -> None:
-        self.cfg = cfg
+    def __init__(self, optimizer) -> None:
+        self.optimizer = optimizer
 
-    def step(**kwargs):
+    def step(self):
         raise NotImplementedError("Eacbh subclass of LRSchedule should implemented the step method.")

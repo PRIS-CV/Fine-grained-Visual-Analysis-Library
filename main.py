@@ -81,7 +81,9 @@ def train(cfg: CfgNode):
 
     metrics = build_metrics(cfg.METRICS)
 
-    lr_schedule = build_lr_schedule(cfg.LR_SCHEDULE)
+    lr_schedule = build_lr_schedule(optimizer, cfg.LR_SCHEDULE)
+
+    update_fn = build_update_function(cfg)
 
     for epoch in range(cfg.START_EPOCH, cfg.EPOCH_NUM):
         if args.distributed:
@@ -91,7 +93,7 @@ def train(cfg: CfgNode):
 
         logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Training')
 
-        general_update(
+        update_fn(
             model, optimizer, train_bar, 
             strategy=cfg.UPDATE_STRATEGY, use_cuda=cfg.USE_CUDA, lr_schedule=lr_schedule, 
             logger=logger, epoch=epoch, total_epoch=cfg.EPOCH_NUM, amp=cfg.AMP

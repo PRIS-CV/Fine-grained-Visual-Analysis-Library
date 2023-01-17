@@ -124,7 +124,8 @@ class FGVCConfig(object):
         self.cfg.ITERATION_NUM = None
         self.cfg.EPOCH_NUM = None
         self.cfg.START_EPOCH = None
-        self.cfg.UPDATE_STRATEGY = None
+        self.cfg.UPDATE_FUNCTION = "general_update"
+        self.cfg.UPDATE_STRATEGY = "general_strategy"
         self.cfg.LR_SCHEDULE = CN()
         self.cfg.LR_SCHEDULE.NAME = "cosine_anneal_schedule"
         self.cfg.LR_SCHEDULE.ARGS = None

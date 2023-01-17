@@ -30,6 +30,7 @@ from fgvclib.transforms import get_transform
 from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
 from fgvclib.utils.lr_schedules import get_lr_schedule, LRSchedule
+from fgvclib.utils.update_function import get_update_function
 
 
 def build_model(model_cfg: CfgNode) -> FGVCSOTA:
@@ -220,8 +221,8 @@ def build_sampler(sampler_cfg: CfgNode) -> Sampler:
     return get_sampler(sampler_cfg.NAME)
 
 
-def build_lr_schedule(schedule_cfg: CfgNode) -> LRSchedule:
-    r"""Build metrics for evaluation.
+def build_lr_schedule(optimizer, schedule_cfg: CfgNode) -> LRSchedule:
+    r"""Build lr_schedule for training.
 
     Args:
         schedule_cfg (CfgNode): The schedule config node of root config node.
@@ -231,4 +232,16 @@ def build_lr_schedule(schedule_cfg: CfgNode) -> LRSchedule:
     """
 
 
-    return get_lr_schedule(schedule_cfg.NAME)(tltd(schedule_cfg.ARGS))
+    return get_lr_schedule(schedule_cfg.NAME)(optimizer, tltd(schedule_cfg.ARGS))
+
+def build_update_function(cfg) -> t.Callable:
+    r"""Build metrics for evaluation.
+
+    Args:
+        cfg (CfgNode): The root config node.
+    Returns:
+        Callable: A update_function.
+    
+    """
+    
+    return get_update_function(cfg.UPDATE_FUNCTION)

@@ -2,10 +2,13 @@ from torch.autograd import Variable
 import typing as t
 from torch.cuda.amp import autocast, GradScaler
 
+from . import update_strategy
 from fgvclib.criterions import compute_loss_value, detach_loss_value
 
 
-def general_updating(model, train_data, optimizer, use_cuda=True, amp=False, **kwargs) -> t.Dict:
+
+@update_strategy("general_strategy")
+def general_strategy(model, train_data, optimizer, use_cuda=True, amp=False, **kwargs) -> t.Dict:
     if amp:
         scaler = GradScaler()
     inputs, targets = train_data

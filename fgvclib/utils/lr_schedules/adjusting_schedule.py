@@ -1,18 +1,24 @@
 from .lr_schedule import LRSchedule
 from . import lr_schedule
 
-@lr_schedule("adjusting_schedule")
+
 class Adjusting_Schedule(LRSchedule):
     
-    def __init__(self, cfg) -> None:
-        super().__init__(cfg)
-        self.base_rate = cfg["base_rate"]
-        self.base_duration = cfg["base_duration"]
-        self.base_lr = cfg["base_lr"]
-        self.update_level = 'batch_update'
+    def __init__(self, optimizer, base_rate, base_duration, base_lr) -> None:
+        super().__init__(optimizer)
+        
+        self.base_rate = base_rate
+        self.base_duration = base_duration
+        self.base_lr = base_lr
+        self.update_level = "batch"
 
-    def step(self, optimizer, batch_idx, current_epoch, batch_size, **kwargs):
-        iter = float(batch_idx) / batch_size
+    def step(self, optimizer, batch_idx, current_epoch, total_batch, **kwargs):
+        iter = float(batch_idx) / total_batch
         lr = self.base_lr * pow(self.base_rate, (current_epoch + iter) / self.base_duration)
         for pg in optimizer.param_groups:
            pg['lr'] = lr
+
+
+@lr_schedule("adjusting_schedule")
+def adjusting_schedule(optimizer, cfg:dict):
+    return Adjusting_Schedule(optimizer, **cfg)

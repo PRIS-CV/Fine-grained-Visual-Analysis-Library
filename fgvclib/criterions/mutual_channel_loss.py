@@ -7,6 +7,7 @@ from torch import Tensor
 from torch.nn.modules.utils import _pair
 
 from .utils import LossItem
+from . import criterion
 
 class MutualChannelLoss(nn.Module):
 
@@ -147,7 +148,7 @@ class _AvgPool2d(nn.Module):
             + ', count_include_pad=' + str(self.count_include_pad) + ')'
 
 
-
+@criterion("mutual_channel_loss")
 def mutual_channel_loss(cfg=None):
     assert 'height' in cfg.keys(),           'height must exist in parameters'
     assert 'cnum' in cfg.keys(),             'cnum must exist in parameters'

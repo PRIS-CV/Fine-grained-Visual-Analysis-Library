@@ -42,7 +42,7 @@ class Mlp(nn.Module):
 
 
 @head("mlp")
-def mlp(cfg: dict) -> Mlp:
+def mlp(cfg: dict, **kwargs) -> Mlp:
     assert 'hidden_size' in cfg.keys()
     assert 'mlp_dim' in cfg.keys()
     assert 'dropout_rate' in cfg.keys()

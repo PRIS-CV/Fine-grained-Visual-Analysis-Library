@@ -98,7 +98,7 @@ OPTIMIZER:
 ITERATION_NUM: ~
 EPOCH_NUM: 1
 START_EPOCH: 0
-UPDATE_STRATEGY: "general_updating"
+UPDATE_STRATEGY: "general_strategy"
 
 # Validation details
 PER_ITERATION: ~

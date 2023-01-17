@@ -1,9 +1,7 @@
 from torch.optim.lr_scheduler import LambdaLR
 
-from .lr_schedule import LRSchedule
 
-
-class ConstantSchedule(LambdaLR, LRSchedule):
+class ConstantSchedule(LambdaLR):
     """ Constant learning rate schedule.
     """
     def __init__(self, optimizer, total_epoch=-1):
