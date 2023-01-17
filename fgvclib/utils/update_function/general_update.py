@@ -33,7 +33,7 @@ def general_update(
     model.train()
     mean_loss = 0.
     for batch_idx, train_data in enumerate(pbar):
-        losses_info = get_update_strategy(strategy)(model, train_data, optimizer, use_cuda, amp)
+        losses_info = get_update_strategy(strategy)(model=model, train_data=train_data, optimizer=optimizer, use_cuda=use_cuda, amp=amp)
         mean_loss = (mean_loss * batch_idx + losses_info['iter_loss']) / (batch_idx + 1)
         losses_info.update({"mean_loss": mean_loss})
         logger(losses_info, step=batch_idx)

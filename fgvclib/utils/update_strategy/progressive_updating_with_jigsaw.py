@@ -5,7 +5,7 @@ from . import update_strategy
 from fgvclib.criterions import compute_loss_value, detach_loss_value
 
 
-@update_strategy("update_strategy")
+@update_strategy("progressive_updating_with_jigsaw")
 def progressive_updating_with_jigsaw(model, train_data, optimizer, use_cuda=True, **kwargs):
     inputs, targets = train_data
     if use_cuda:

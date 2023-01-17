@@ -17,10 +17,10 @@ class Swin_T(FGVCSOTA):
         num_classes = cfg.CLASS_NUM
         rand_in = torch.randn(1, 3, img_size, img_size)
         outs = self.backbone(rand_in)
-
+        fpn_size = self.args["fpn_size"]
         ### = = = = = FPN = = = = =
         self.fpn = self.encoder
-        fpn_size = 1536
+        
         self.build_fpn_classifier(outs, fpn_size, num_classes)
 
         ### = = = = = Selector = = = = =

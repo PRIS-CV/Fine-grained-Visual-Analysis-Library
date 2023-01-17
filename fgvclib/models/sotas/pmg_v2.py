@@ -1,4 +1,5 @@
 import torch.nn as nn
+from yacs.config import CfgNode
 
 from fgvclib.models.sotas.sota import FGVCSOTA
 from fgvclib.criterions import LossItem
@@ -16,11 +17,12 @@ class PMG_V2(FGVCSOTA):
     BLOCKS = [[8, 8, 0, 0], [4, 4, 4, 0], [2, 2, 2, 2]]
     alpha = [0.01, 0.05, 0.1]
     
-    def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
-        super().__init__(backbone, encoder, necks, heads, criterions)
-        
-        self.outputs_num = 3
-    
+    def __init__(self, cfg: CfgNode, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+        super().__init__(cfg, backbone, encoder, necks, heads, criterions)
+        self.BLOCKS = self.args["BLOCKS"]
+        self.outputs_num = self.args["outputs_num"]
+        self.alpha = self.args["alpha"]
+
     def forward(self, x, targets=None, step:int=None, batch_size:int=None):
         
         if step is not None:
