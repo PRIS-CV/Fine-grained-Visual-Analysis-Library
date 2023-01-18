@@ -27,10 +27,3 @@ def swint(cfg):
     backbone = timm.create_model('swin_large_patch4_window12_384_in22k', pretrained=cfg['pretrained'])
     backbone.train()
     return backbone
-
-
-def vit16(cfg):
-    backbone = timm.create_model('vit_base_patch16_224_miil_in21k', pretrained=False)
-    backbone = load_model_weights(backbone, cfg['pretrained'])
-    backbone.train()
-    return backbone

@@ -97,6 +97,6 @@ class GCNCombiner(nn.Module):
 
 
 @head("GCN_combiner")
-def GCN_combiner(cfg: dict):
+def GCN_combiner(cfg: dict, **kwargs):
     return GCNCombiner(total_num_selects=cfg['total_num_selects'], num_classes=cfg['num_classes'],
                        fpn_size=cfg['fpn_size'])

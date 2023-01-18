@@ -31,6 +31,19 @@ MODEL:
   ARGS:
     - img_size: 384
     - fpn_size: 1536
+    - lambda_s: 0.0
+    - lambda_n: 5.0
+    - lambda_b: 0.5
+    - lambda_c: 1.0
+    - update_freq: 2
+    - use_selection: True
+    - use_fpn: True
+    - use_combiner: True
+    - num_select:
+      - layer1: 2048
+      - layer2: 512
+      - layer3: 128
+      - layer4: 32
 
   CRITERIONS:
     - name: "cross_entropy_loss"
@@ -40,25 +53,13 @@ MODEL:
       args: []
       w: 1.0
   BACKBONE:
-    NAME: "swint"
+    NAME: "swin_large_patch4_window12_384_in22k"
     ARGS:
       - pretrained: True
   ENCODER:
-    NAME: "fpn"
-    ARGS:
-      - fpn_size: 1536
-      - proj_type: "Linear"
-      - upsample_type: "Conv"
+    NAME: ~
   NECKS:
-    NAME: "weakly_selector"
-    ARGS:
-      - num_classes: 200
-      - num_selects:
-        - layer1: 2048
-        - layer2: 512
-        - layer3: 128
-        - layer4: 32
-      - fpn_size: 1536
+    NAME: ~
   HEADS:
     NAME: "GCN_combiner"
     ARGS:
@@ -125,12 +126,17 @@ OPTIMIZER:
     heads: 0.005
   WEIGHT_DECAY: 0.0005
 
+LR_SCHEDULE:
+  NAME: "warmup_linear_schedule"
+  ARGS: 
+    - warmup_steps: 800
+    - total_steps: 10000
+    - MAX_LR: 0.005
+
 ITERATION_NUM: ~
-WARMUP_BATCHS: 800
-MAX_LR: 0.005
 EPOCH_NUM: 50
 START_EPOCH: 0
-USE_AMP: True
+AMP: True
 UPDATE_STRATEGY: ~
 
 

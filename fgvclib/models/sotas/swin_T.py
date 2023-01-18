@@ -5,7 +5,9 @@ from yacs.config import CfgNode
 
 from .sota import FGVCSOTA
 from fgvclib.models.sotas import fgvcmodel
-
+from fgvclib.criterions.utils import LossItem
+from fgvclib.models.encoders.fpn import FPN
+from fgvclib.models.necks.weakly_selector import WeaklySelector
 
 @fgvcmodel("Swin_T")
 class Swin_T(FGVCSOTA):
@@ -13,15 +15,44 @@ class Swin_T(FGVCSOTA):
         super().__init__(cfg, backbone, encoder, necks, heads, criterions)
 
         ### get hidden feartues size
-        img_size = self.args["img_size"]
-        num_classes = cfg.CLASS_NUM
-        rand_in = torch.randn(1, 3, img_size, img_size)
-        outs = self.backbone(rand_in)
-        fpn_size = self.args["fpn_size"]
+        
+        
+        self.num_classes = cfg.CLASS_NUM
+        self.use_fpn = self.args["use_fpn"]
+        self.lambda_s = self.args["lambda_s"]
+        self.lambda_n = self.args["lambda_n"]
+        self.lambda_b = self.args["lambda_b"]
+        self.lambda_c = self.args["lambda_c"]
+        self.use_combiner = self.args["use_combiner"]
+        self.update_freq = self.args["update_freq"]
+        num_select = self.args["num_select"]
+        num_select = {
+            "layer1": 2048,
+            "layer2": 512,
+            "layer3": 128,
+            "layer4": 32
+        }
+        
+        input_size = self.args["img_size"]
+        rand_in = torch.randn(1, 3, input_size, input_size)
+        backbone_outs = self.backbone(rand_in)
+        
+        if self.use_fpn:
+            
+            fpn_size = self.args["fpn_size"]
+            self.encoder = FPN(inputs=backbone_outs, fpn_size=fpn_size, proj_type="Linear", upsample_type="Conv")
+            fpn_outs = self.encoder(backbone_outs)
+        else:
+            fpn_outs = backbone_outs
+            fpn_size = None
+        
+        
+        self.necks = WeaklySelector(inputs=fpn_outs, num_classes=self.num_classes, num_select=num_select, fpn_size=fpn_size)
+
         ### = = = = = FPN = = = = =
         self.fpn = self.encoder
         
-        self.build_fpn_classifier(outs, fpn_size, num_classes)
+        self.build_fpn_classifier(backbone_outs, fpn_size, self.num_classes)
 
         ### = = = = = Selector = = = = =
         self.selector = self.necks
@@ -31,15 +62,15 @@ class Swin_T(FGVCSOTA):
 
         ### just original backbone
         if not self.fpn and (not self.combiner):
-            for name in outs:
-                fs_size = outs[name].size()
+            for name in backbone_outs:
+                fs_size = backbone_outs[name].size()
                 if len(fs_size) == 3:
                     out_size = fs_size.size(-1)
                 elif len(fs_size) == 4:
                     out_size = fs_size.size(1)
                 else:
                     raise ValueError("The size of output dimension of previous must be 3 or 4.")
-            self.classifier = nn.Linear(out_size, num_classes)
+            self.classifier = nn.Linear(out_size, self.num_classes)
 
     def build_fpn_classifier(self, inputs: dict, fpn_size: int, num_classes: int):
         for name in inputs:
@@ -69,7 +100,7 @@ class Swin_T(FGVCSOTA):
             logits[name] = getattr(self, "fpn_classifier_" + name)(logit)
             logits[name] = logits[name].transpose(1, 2).contiguous()  # transpose
 
-    def forward(self, x: torch.Tensor):
+    def infer(self, x: torch.Tensor):
 
         logits = {}
         x = self.forward_backbone(x)
@@ -86,7 +117,7 @@ class Swin_T(FGVCSOTA):
             logits['comb_outs'] = comb_outs
             return logits
 
-        if self.selector or self.fpn:
+        if self.selector or self.fpn:  
             return logits
 
         ### original backbone (only predict final selected layer)
@@ -102,3 +133,57 @@ class Swin_T(FGVCSOTA):
             logits['ori_out'] = logits
 
             return logits
+
+    def forward(self, x, target):
+        batch_size = x.shape[0]
+        device = x.device
+        logits = self.infer(x)
+        losses = list()
+
+        for name in logits:
+
+            if "select_" in name:
+                if not self.use_selection:
+                    raise ValueError("Selector not use here.")
+                if self.lambda_s != 0:
+                    S = logits[name].size(1)
+                    logit = logits[name].view(-1, self.num_classes).contiguous()
+                    loss_s = nn.CrossEntropyLoss()(logit, target.unsqueeze(1).repeat(1, S).flatten(0))
+                    losses.append(LossItem(name="loss_s", value=loss_s, weight=self.lambda_s))
+
+                
+
+            elif "drop_" in name:
+                if not self.use_selection:
+                    raise ValueError("Selector not use here.")
+
+                if self.lambda_n != 0:
+                    S = logits[name].size(1)
+                    logit = logits[name].view(-1, self.num_classes).contiguous()
+                    n_preds = nn.Tanh()(logit)
+                    labels_0 = (torch.zeros([batch_size * S, self.num_classes]) - 1).to(device)
+                    loss_n = nn.MSELoss()(n_preds, labels_0)
+                    losses.append(LossItem(name="loss_n", value=loss_n, weight=self.lambda_n))
+                
+
+            elif "layer" in name:
+                if not self.use_fpn:
+                    raise ValueError("FPN not use here.")
+                if self.lambda_b != 0:
+                    ### here using 'layer1'~'layer4' is default setting, you can change to your own
+                    loss_b = nn.CrossEntropyLoss()(logits[name].mean(1), target)
+                    losses.append(LossItem(name="loss_b", value=loss_b, weight=self.lambda_b))
+
+            elif "comb_outs" in name:
+                if not self.use_combiner:
+                    raise ValueError("Combiner not use here.")
+
+                if self.lambda_c != 0:
+                    loss_c = nn.CrossEntropyLoss()(logits[name], target)
+                    losses.append(LossItem(name="loss_c", value=loss_c, weight=self.lambda_c))
+
+            elif "ori_out" in name:
+                loss_ori = F.cross_entropy(logits[name], target)
+                losses.append(LossItem(name="loss_ori", value=loss_ori, weight=1.0))
+
+        return 
