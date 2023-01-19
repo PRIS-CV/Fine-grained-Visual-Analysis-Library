@@ -20,5 +20,5 @@ class Adjusting_Schedule(LRSchedule):
 
 
 @lr_schedule("adjusting_schedule")
-def adjusting_schedule(optimizer, cfg:dict):
+def adjusting_schedule(optimizer, batch_num_per_epoch, cfg:dict):
     return Adjusting_Schedule(optimizer, **cfg)

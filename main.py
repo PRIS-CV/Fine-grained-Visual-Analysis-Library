@@ -8,7 +8,6 @@ from yacs.config import CfgNode
 from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
 from fgvclib.utils import init_distributed_mode
-from fgvclib.utils.update_function.general_update import general_update
 
 
 def train(cfg: CfgNode):
@@ -81,9 +80,11 @@ def train(cfg: CfgNode):
 
     metrics = build_metrics(cfg.METRICS)
 
-    lr_schedule = build_lr_schedule(optimizer, cfg.LR_SCHEDULE)
+    lr_schedule = build_lr_schedule(optimizer, cfg.LR_SCHEDULE, train_loader)
 
     update_fn = build_update_function(cfg)
+
+    evaluate_fn = build_evaluate_function(cfg)
 
     for epoch in range(cfg.START_EPOCH, cfg.EPOCH_NUM):
         if args.distributed:
@@ -104,7 +105,7 @@ def train(cfg: CfgNode):
         
         logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Testing ')
 
-        acc = evaluate_model(model, test_bar, metrics=metrics, use_cuda=cfg.USE_CUDA)
+        acc = evaluate_fn(model, test_bar, metrics=metrics, use_cuda=cfg.USE_CUDA)
         print(acc)
         logger("Evalution Result:")
         logger(acc)
@@ -138,7 +139,8 @@ def predict(cfg: CfgNode):
     
     pbar = tqdm(loader)
     metrics = build_metrics(cfg.METRICS)
-    acc = evaluate_model(model, pbar, metrics=metrics, use_cuda=cfg.USE_CUDA)
+    evaluate_fn = build_evaluate_function(cfg)
+    acc = evaluate_fn(model, pbar, metrics=metrics, use_cuda=cfg.USE_CUDA)
 
     print(acc)
 

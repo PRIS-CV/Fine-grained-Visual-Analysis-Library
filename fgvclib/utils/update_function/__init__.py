@@ -1,19 +1,17 @@
 import os
 import importlib
 
-from fgvclib.utils.lr_schedules.lr_schedule import LRSchedule
-
 
 __UPDATE_FN_DICT__ = {}
 
 
-def get_update_function(name) -> LRSchedule:
-    r"""Return the dataset with the given name.
+def get_update_function(name):
+    r"""Return the update model function with the given name.
         Args: 
             name (str): 
-                The name of dataset.
+                The name of update function.
         Return: 
-            (FGVCDataset): The dataset contructor method.
+            (function): The update function.
     """
     
     return __UPDATE_FN_DICT__[name]

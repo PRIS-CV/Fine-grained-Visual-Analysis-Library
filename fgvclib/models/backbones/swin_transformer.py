@@ -703,3 +703,4 @@ def swin_large_patch4_window7_224_in22k(cfg, **kwargs):
     model_kwargs = dict(
         patch_size=4, window_size=7, embed_dim=192, depths=(2, 2, 18, 2), num_heads=(6, 12, 24, 48), **kwargs)
     return _create_swin_transformer('swin_large_patch4_window7_224_in22k', cfg, **model_kwargs)
+    

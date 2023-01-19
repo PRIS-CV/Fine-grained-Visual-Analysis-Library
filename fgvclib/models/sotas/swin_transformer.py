@@ -9,8 +9,8 @@ from fgvclib.criterions.utils import LossItem
 from fgvclib.models.encoders.fpn import FPN
 from fgvclib.models.necks.weakly_selector import WeaklySelector
 
-@fgvcmodel("Swin_T")
-class Swin_T(FGVCSOTA):
+@fgvcmodel("SwinTransformer")
+class SwinTransformer(FGVCSOTA):
     def __init__(self, cfg: CfgNode, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
         super().__init__(cfg, backbone, encoder, necks, heads, criterions)
 
@@ -25,13 +25,8 @@ class Swin_T(FGVCSOTA):
         self.lambda_c = self.args["lambda_c"]
         self.use_combiner = self.args["use_combiner"]
         self.update_freq = self.args["update_freq"]
+        self.use_selection = self.args["use_selection"]
         num_select = self.args["num_select"]
-        num_select = {
-            "layer1": 2048,
-            "layer2": 512,
-            "layer3": 128,
-            "layer4": 32
-        }
         
         input_size = self.args["img_size"]
         rand_in = torch.randn(1, 3, input_size, input_size)
@@ -134,56 +129,59 @@ class Swin_T(FGVCSOTA):
 
             return logits
 
-    def forward(self, x, target):
-        batch_size = x.shape[0]
-        device = x.device
+    def forward(self, x, target=None):
+        
         logits = self.infer(x)
-        losses = list()
 
-        for name in logits:
+        if not self.training:
+            return logits
+        else:
+        
+            losses = list()
+            batch_size = x.shape[0]
+            device = x.device
+            for name in logits:
 
-            if "select_" in name:
-                if not self.use_selection:
-                    raise ValueError("Selector not use here.")
-                if self.lambda_s != 0:
-                    S = logits[name].size(1)
-                    logit = logits[name].view(-1, self.num_classes).contiguous()
-                    loss_s = nn.CrossEntropyLoss()(logit, target.unsqueeze(1).repeat(1, S).flatten(0))
-                    losses.append(LossItem(name="loss_s", value=loss_s, weight=self.lambda_s))
+                if "select_" in name:
+                    if not self.use_selection:
+                        raise ValueError("Selector not use here.")
+                    if self.lambda_s != 0:
+                        S = logits[name].size(1)
+                        logit = logits[name].view(-1, self.num_classes).contiguous()
+                        loss_s = nn.CrossEntropyLoss()(logit, target.unsqueeze(1).repeat(1, S).flatten(0))
+                        losses.append(LossItem(name="loss_s", value=loss_s, weight=self.lambda_s))
 
-                
+                elif "drop_" in name:
+                    if not self.use_selection:
+                        raise ValueError("Selector not use here.")
 
-            elif "drop_" in name:
-                if not self.use_selection:
-                    raise ValueError("Selector not use here.")
+                    if self.lambda_n != 0:
+                        S = logits[name].size(1)
+                        logit = logits[name].view(-1, self.num_classes).contiguous()
+                        n_preds = nn.Tanh()(logit)
+                        labels_0 = (torch.zeros([batch_size * S, self.num_classes]) - 1).to(device)
+                        loss_n = nn.MSELoss()(n_preds, labels_0)
+                        losses.append(LossItem(name="loss_n", value=loss_n, weight=self.lambda_n))
+                    
 
-                if self.lambda_n != 0:
-                    S = logits[name].size(1)
-                    logit = logits[name].view(-1, self.num_classes).contiguous()
-                    n_preds = nn.Tanh()(logit)
-                    labels_0 = (torch.zeros([batch_size * S, self.num_classes]) - 1).to(device)
-                    loss_n = nn.MSELoss()(n_preds, labels_0)
-                    losses.append(LossItem(name="loss_n", value=loss_n, weight=self.lambda_n))
-                
+                elif "layer" in name:
+                    if not self.use_fpn:
+                        raise ValueError("FPN not use here.")
+                    if self.lambda_b != 0:
+                        ### here using 'layer1'~'layer4' is default setting, you can change to your own
+                        loss_b = nn.CrossEntropyLoss()(logits[name].mean(1), target)
+                        losses.append(LossItem(name="loss_b", value=loss_b, weight=self.lambda_b))
 
-            elif "layer" in name:
-                if not self.use_fpn:
-                    raise ValueError("FPN not use here.")
-                if self.lambda_b != 0:
-                    ### here using 'layer1'~'layer4' is default setting, you can change to your own
-                    loss_b = nn.CrossEntropyLoss()(logits[name].mean(1), target)
-                    losses.append(LossItem(name="loss_b", value=loss_b, weight=self.lambda_b))
+                elif "comb_outs" in name:
+                    if not self.use_combiner:
+                        raise ValueError("Combiner not use here.")
 
-            elif "comb_outs" in name:
-                if not self.use_combiner:
-                    raise ValueError("Combiner not use here.")
+                    if self.lambda_c != 0:
+                        loss_c = nn.CrossEntropyLoss()(logits[name], target)
+                        losses.append(LossItem(name="loss_c", value=loss_c, weight=self.lambda_c))
 
-                if self.lambda_c != 0:
-                    loss_c = nn.CrossEntropyLoss()(logits[name], target)
-                    losses.append(LossItem(name="loss_c", value=loss_c, weight=self.lambda_c))
+                elif "ori_out" in name:
+                    loss_ori = F.cross_entropy(logits[name], target)
+                    losses.append(LossItem(name="loss_ori", value=loss_ori, weight=1.0))
 
-            elif "ori_out" in name:
-                loss_ori = F.cross_entropy(logits[name], target)
-                losses.append(LossItem(name="loss_ori", value=loss_ori, weight=1.0))
-
-        return 
+            return logits, losses

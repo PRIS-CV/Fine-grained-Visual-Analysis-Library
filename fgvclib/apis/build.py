@@ -31,6 +31,7 @@ from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
 from fgvclib.utils.lr_schedules import get_lr_schedule, LRSchedule
 from fgvclib.utils.update_function import get_update_function
+from fgvclib.utils.evaluate_function import get_evaluate_function
 
 
 def build_model(model_cfg: CfgNode) -> FGVCSOTA:
@@ -221,7 +222,7 @@ def build_sampler(sampler_cfg: CfgNode) -> Sampler:
     return get_sampler(sampler_cfg.NAME)
 
 
-def build_lr_schedule(optimizer, schedule_cfg: CfgNode) -> LRSchedule:
+def build_lr_schedule(optimizer, schedule_cfg: CfgNode, train_loader) -> LRSchedule:
     r"""Build lr_schedule for training.
 
     Args:
@@ -230,18 +231,30 @@ def build_lr_schedule(optimizer, schedule_cfg: CfgNode) -> LRSchedule:
         LRSchedule: A lr schedule.
     
     """
+    batch_num_per_epoch = len(train_loader)
 
+    return get_lr_schedule(schedule_cfg.NAME)(optimizer, batch_num_per_epoch, tltd(schedule_cfg.ARGS))
 
-    return get_lr_schedule(schedule_cfg.NAME)(optimizer, tltd(schedule_cfg.ARGS))
-
-def build_update_function(cfg) -> t.Callable:
+def build_update_function(cfg):
     r"""Build metrics for evaluation.
 
     Args:
         cfg (CfgNode): The root config node.
     Returns:
-        Callable: A update_function.
+        function: A update model function.
     
     """
     
     return get_update_function(cfg.UPDATE_FUNCTION)
+
+
+def build_evaluate_function(cfg):
+    r"""Build metrics for evaluation.
+
+    Args:
+        cfg (CfgNode): The root config node.
+    Returns:
+        function: A evaluate model function.
+    
+    """
+    return get_evaluate_function(cfg.EVALUATE_FUNCTION)

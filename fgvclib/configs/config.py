@@ -135,6 +135,7 @@ class FGVCConfig(object):
         self.cfg.PER_ITERATION = None
         self.cfg.PER_EPOCH = None
         self.cfg.METRICS = None
+        self.cfg.EVALUATE_FUNCTION = "general_evaluate"
 
         # Inference
         self.cfg.FIFTYONE = CN()

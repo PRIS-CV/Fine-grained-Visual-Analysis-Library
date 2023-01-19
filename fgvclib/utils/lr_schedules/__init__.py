@@ -9,12 +9,12 @@ __LR_SCHEDULE_DICT__ = {}
 
 
 def get_lr_schedule(name) -> LRSchedule:
-    r"""Return the dataset with the given name.
+    r"""Return the learning rate schedule with the given name.
         Args: 
             name (str): 
-                The name of dataset.
+                The name of learning rate schedule.
         Return: 
-            (FGVCDataset): The dataset contructor method.
+            (LRSchedule): The learning rate schedule contructor.
     """
     
     return __LR_SCHEDULE_DICT__[name]

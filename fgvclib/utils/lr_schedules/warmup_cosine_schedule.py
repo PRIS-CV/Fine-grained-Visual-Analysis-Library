@@ -23,6 +23,6 @@ class WarmupLinearSchedule(LambdaLR):
 
 
 @lr_schedule("warmup_linear_schedule")
-def warmup_linear_schedule(optimizer, cfg:dict):
+def warmup_linear_schedule(optimizer, batch_num_per_epoch, cfg:dict):
     return WarmupLinearSchedule(optimizer=optimizer, **cfg)
 

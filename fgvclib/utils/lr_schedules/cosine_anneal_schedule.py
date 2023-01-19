@@ -6,7 +6,7 @@ from . import lr_schedule
 
 class CosineAnnealSchedule(LRSchedule):
     
-    def __init__(self, optimizer) -> None:
+    def __init__(self, optimizer, **kwargs) -> None:
         super().__init__(optimizer)
         self.update_level = 'epoch'
 
@@ -20,5 +20,5 @@ class CosineAnnealSchedule(LRSchedule):
             pg['lr'] = float(current_lr / 2 * cos_out)
 
 @lr_schedule("cosine_anneal_schedule")
-def cosine_anneal_schedule(optimizer, cfg:dict):
+def cosine_anneal_schedule(optimizer, batch_num_per_epoch, cfg:dict):
     return CosineAnnealSchedule(optimizer, **cfg)

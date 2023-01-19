@@ -26,7 +26,7 @@ DATASET:
     NUM_WORKERS: 1
 
 MODEL:
-  NAME: "Swin_T"
+  NAME: "SwinTransformer"
   CLASS_NUM: 200
   ARGS:
     - img_size: 384
@@ -127,19 +127,20 @@ OPTIMIZER:
   WEIGHT_DECAY: 0.0005
 
 LR_SCHEDULE:
-  NAME: "warmup_linear_schedule"
+  NAME: "warmup_cosine_decay_schedule"
   ARGS: 
     - warmup_steps: 800
-    - total_steps: 10000
-    - MAX_LR: 0.005
+    - max_lr: 0.005
+    - max_epochs: 50
+    - decay_type: 1
 
 ITERATION_NUM: ~
 EPOCH_NUM: 50
 START_EPOCH: 0
 AMP: True
-UPDATE_STRATEGY: ~
-
-
+UPDATE_STRATEGY: ""
+UPDATE_FUNCTION: "update_swin_transformer"
+EVALUATE_FUNCTION: "swin_transformer_evaluate"
 
 # Validation details
 PER_ITERATION: ~
