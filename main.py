@@ -58,8 +58,6 @@ def train(cfg: CfgNode):
         train_sampler = build_sampler(sampler_cfg.TRAIN)(train_set, **tltd(sampler_cfg.TRAIN.ARGS))
         test_sampler = build_sampler(sampler_cfg.TEST)(test_set, **tltd(sampler_cfg.TEST.ARGS))
     
-    
-
     train_loader = build_dataloader(
         dataset=train_set, 
         mode_cfg=cfg.DATASET.TRAIN,

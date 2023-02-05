@@ -26,6 +26,7 @@ from fgvclib.models.backbones import get_backbone
 from fgvclib.models.encoders import get_encoder
 from fgvclib.models.necks import get_neck
 from fgvclib.models.heads import get_head
+from fgvclib.optimizers import get_optimizer
 from fgvclib.transforms import get_transform
 from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
@@ -163,8 +164,8 @@ def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel
                     'params': getattr(model, attr).parameters(), 
                     'lr': optim_cfg.LR[attr]
                 })
-    
-    optimizer = optim.SGD(params=params, momentum=optim_cfg.MOMENTUM, weight_decay=optim_cfg.WEIGHT_DECAY)
+
+    optimizer = get_optimizer(optim_cfg.NAME)(params, tltd(optim_cfg.ARGS))
     
     return optimizer
 

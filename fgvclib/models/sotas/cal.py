@@ -72,7 +72,7 @@ class WSDAN_CAL(FGVCSOTA):
         super().__init__(cfg, backbone, encoder, necks, heads, criterions)
         
         self.out_channels = 2048
-        self.num_classes = cfg.NUM_CLASS
+        self.num_classes = cfg.CLASS_NUM
         self.M = 32
         self.net = 'resnet101'
         self.register_buffer('feature_center', torch.zeros(self.num_classes, self.M * self.out_channels))   # 32 * 2048
@@ -170,3 +170,36 @@ class WSDAN_CAL(FGVCSOTA):
 
         model_dict.update(pretrained_dict)
         super(WSDAN_CAL, self).load_state_dict(model_dict)
+
+    def infer_aux(self, x):
+        x_m = torch.flip(x, [3])
+
+        y_pred_raw, y_pred_aux_raw, _, attention_map = self.infer(x)
+        y_pred_raw_m, y_pred_aux_raw_m, _, attention_map_m = self.infer(x_m)
+        crop_images = batch_augment(x, attention_map, mode='crop', theta=0.3, padding_ratio=0.1)
+        y_pred_crop, y_pred_aux_crop, _, _ = self.infer(crop_images)
+
+        crop_images2 = batch_augment(x, attention_map, mode='crop', theta=0.2, padding_ratio=0.1)
+        y_pred_crop2, y_pred_aux_crop2, _, _ = self.infer(crop_images2)
+
+        crop_images3 = batch_augment(x, attention_map, mode='crop', theta=0.1, padding_ratio=0.05)
+        y_pred_crop3, y_pred_aux_crop3, _, _ = self.infer(crop_images3)
+
+        crop_images_m = batch_augment(x_m, attention_map_m, mode='crop', theta=0.3, padding_ratio=0.1)
+        y_pred_crop_m, y_pred_aux_crop_m, _, _ = self.infer(crop_images_m)
+
+        crop_images_m2 = batch_augment(x_m, attention_map_m, mode='crop', theta=0.2, padding_ratio=0.1)
+        y_pred_crop_m2, y_pred_aux_crop_m2, _, _ = self.infer(crop_images_m2)
+
+        crop_images_m3 = batch_augment(x_m, attention_map_m, mode='crop', theta=0.1, padding_ratio=0.05)
+        y_pred_crop_m3, y_pred_aux_crop_m3, _, _ = self.infer(crop_images_m3)
+
+        y_pred = (y_pred_raw + y_pred_crop + y_pred_crop2 + y_pred_crop3) / 4.
+        y_pred_m = (y_pred_raw_m + y_pred_crop_m + y_pred_crop_m2 + y_pred_crop_m3) / 4.
+        y_pred = (y_pred + y_pred_m) / 2.
+
+        y_pred_aux = (y_pred_aux_raw + y_pred_aux_crop + y_pred_aux_crop2 + y_pred_aux_crop3) / 4.
+        y_pred_aux_m = (y_pred_aux_raw_m + y_pred_aux_crop_m + y_pred_aux_crop_m2 + y_pred_aux_crop_m3) / 4.
+        y_pred_aux = (y_pred_aux + y_pred_aux_m) / 2.
+
+        return y_pred_aux

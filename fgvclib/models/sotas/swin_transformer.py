@@ -148,7 +148,7 @@ class SwinTransformer(FGVCSOTA):
                     if self.lambda_s != 0:
                         S = logits[name].size(1)
                         logit = logits[name].view(-1, self.num_classes).contiguous()
-                        loss_s = nn.CrossEntropyLoss()(logit, target.unsqueeze(1).repeat(1, S).flatten(0))
+                        loss_s = nn.CrossEntropyLoss()(logit.float(), target.unsqueeze(1).repeat(1, S).flatten(0))
                         losses.append(LossItem(name="loss_s", value=loss_s, weight=self.lambda_s))
 
                 elif "drop_" in name:
@@ -160,7 +160,7 @@ class SwinTransformer(FGVCSOTA):
                         logit = logits[name].view(-1, self.num_classes).contiguous()
                         n_preds = nn.Tanh()(logit)
                         labels_0 = (torch.zeros([batch_size * S, self.num_classes]) - 1).to(device)
-                        loss_n = nn.MSELoss()(n_preds, labels_0)
+                        loss_n = nn.MSELoss()(n_preds.float(), labels_0)
                         losses.append(LossItem(name="loss_n", value=loss_n, weight=self.lambda_n))
                     
 
@@ -169,7 +169,7 @@ class SwinTransformer(FGVCSOTA):
                         raise ValueError("FPN not use here.")
                     if self.lambda_b != 0:
                         ### here using 'layer1'~'layer4' is default setting, you can change to your own
-                        loss_b = nn.CrossEntropyLoss()(logits[name].mean(1), target)
+                        loss_b = nn.CrossEntropyLoss()(logits[name].mean(1).float(), target)
                         losses.append(LossItem(name="loss_b", value=loss_b, weight=self.lambda_b))
 
                 elif "comb_outs" in name:
@@ -177,11 +177,11 @@ class SwinTransformer(FGVCSOTA):
                         raise ValueError("Combiner not use here.")
 
                     if self.lambda_c != 0:
-                        loss_c = nn.CrossEntropyLoss()(logits[name], target)
+                        loss_c = nn.CrossEntropyLoss()(logits[name].float(), target)
                         losses.append(LossItem(name="loss_c", value=loss_c, weight=self.lambda_c))
 
                 elif "ori_out" in name:
-                    loss_ori = F.cross_entropy(logits[name], target)
+                    loss_ori = F.cross_entropy(logits[name].float(), target)
                     losses.append(LossItem(name="loss_ori", value=loss_ori, weight=1.0))
 
             return logits, losses

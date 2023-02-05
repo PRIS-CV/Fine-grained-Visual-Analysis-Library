@@ -112,8 +112,8 @@ class FGVCConfig(object):
         # Optimizer
         self.cfg.OPTIMIZER = CN()
         self.cfg.OPTIMIZER.NAME = "SGD"
-        self.cfg.OPTIMIZER.MOMENTUM = 0.9
-        self.cfg.OPTIMIZER.WEIGHT_DECAY = 5e-4
+        self.cfg.OPTIMIZER.ARGS = [{"momentum": 0.9}, {"weight_decay": 5e-4}]
+        
         self.cfg.OPTIMIZER.LR = CN()
         self.cfg.OPTIMIZER.LR.backbone = None
         self.cfg.OPTIMIZER.LR.encoder = None

@@ -12,10 +12,10 @@ class Adjusting_Schedule(LRSchedule):
         self.base_lr = base_lr
         self.update_level = "batch"
 
-    def step(self, optimizer, batch_idx, current_epoch, total_batch, **kwargs):
+    def step(self, batch_idx, current_epoch, total_batch, **kwargs):
         iter = float(batch_idx) / total_batch
         lr = self.base_lr * pow(self.base_rate, (current_epoch + iter) / self.base_duration)
-        for pg in optimizer.param_groups:
+        for pg in self.optimizer.param_groups:
            pg['lr'] = lr
 
 

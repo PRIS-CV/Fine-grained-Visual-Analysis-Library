@@ -118,7 +118,9 @@ TRANSFORMS:
 
 OPTIMIZER:
   NAME: "SGD"
-  MOMENTUM: 0.9
+  ARGS: 
+    - momentum: 0.9
+    - weight_decay: 0.0005
   LR: 
     backbone: 0.0005
     encoder: ~

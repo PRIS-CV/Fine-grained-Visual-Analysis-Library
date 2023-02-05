@@ -13,17 +13,17 @@ DATASET:
   NAME: "CUB_200_2011"
   ROOT: "/mnt/sdb/data/wangxinran/dataset"
   TRAIN:
-    BATCH_SIZE: 8
+    BATCH_SIZE: 16
     POSITIVE: 0
     PIN_MEMORY: True
     SHUFFLE: True
-    NUM_WORKERS: 2
+    NUM_WORKERS: 4
   TEST:
-    BATCH_SIZE: 8
+    BATCH_SIZE: 16
     POSITIVE: 0
     PIN_MEMORY: False
     SHUFFLE: True
-    NUM_WORKERS: 1
+    NUM_WORKERS: 4
 
 MODEL:
   NAME: "SwinTransformer"
@@ -117,20 +117,20 @@ TRANSFORMS:
         - 0.225
 
 OPTIMIZER:
-  NAME: "SGD"
-  MOMENTUM: 0.9
+  NAME: "AdamW"
+  ARGS: 
+    - weight_decay: 0.0005
   LR:
-    backbone: 0.005
-    encoder: 0.005
-    necks: 0.005
-    heads: 0.005
-  WEIGHT_DECAY: 0.0005
+    backbone: 0.0001
+    encoder: 0.0001
+    necks: 0.0001
+    heads: 0.0001
 
 LR_SCHEDULE:
   NAME: "warmup_cosine_decay_schedule"
   ARGS: 
     - warmup_steps: 800
-    - max_lr: 0.005
+    - max_lr: 0.0001
     - max_epochs: 50
     - decay_type: 1
 
