@@ -23,6 +23,13 @@ def update_swin_transformer(model: nn.Module, optimizer: Optimizer, pbar:Iterabl
 
     for batch_id, (inputs, targets) in enumerate(pbar):
         model.train()
+        if lr_schedule.update_level == "batch":
+            iteration = epoch * len(pbar) + batch_id
+            lr_schedule.step(iteration)
+
+        if lr_schedule.update_level == "epoch":
+            lr_schedule.step()
+
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs), Variable(targets)
@@ -44,26 +51,24 @@ def update_swin_transformer(model: nn.Module, optimizer: Optimizer, pbar:Iterabl
             """
             out, losses = model(inputs, targets)
             total_loss = compute_loss_value(losses)
-            total_loss /= model.update_freq
-            
+            if hasattr(model, 'update_freq'):
+                update_freq = model.update_freq
+            else:
+                update_freq = model.module.update_freq
+            total_loss /= update_freq
+
         if amp:
             scaler.scale(total_loss).backward()
         else:
             total_loss.backward()
-        
+
         losses_info = detach_loss_value(losses)
         losses_info.update({"iter_loss": total_loss.item()})
         pbar.set_postfix(losses_info)
-        if (batch_id + 1) % model.update_freq == 0:
+        if (batch_id + 1) % update_freq == 0:
             if amp:
                 scaler.step(optimizer)
                 scaler.update()  # next batch
             else:
                 optimizer.step()
             optimizer.zero_grad()
-        
-        if lr_schedule.update_level == "batch":
-            lr_schedule.step()
-
-    if lr_schedule.update_level == "epoch":
-        lr_schedule.step()  

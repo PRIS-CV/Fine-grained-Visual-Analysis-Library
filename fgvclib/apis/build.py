@@ -145,28 +145,56 @@ def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel
         Optimizer: A Pytorch Optimizer.
     """
 
-    params= list()
+    params = list()
     model_attrs = ["backbone", "encoder", "necks", "heads"]
 
-    if isinstance(model, nn.DataParallel) or isinstance(model, nn.parallel.DistributedDataParallel):
-        for attr in model_attrs:
-            if getattr(model.module, attr) and optim_cfg.LR[attr]:
-                params.append({
-                    'params': getattr(model.module, attr).parameters(), 
-                    'lr': optim_cfg.LR[attr]
-                })
-                print(attr, optim_cfg.LR[attr])
+    # if isinstance(model, nn.DataParallel) or isinstance(model, nn.parallel.DistributedDataParallel):
+    #     for attr in model_attrs:
+    #         if getattr(model.module, attr) and optim_cfg.LR[attr]:
+    #             params.append({
+    #                 'params': getattr(model.module, attr).parameters(), 
+    #                 'lr': optim_cfg.LR[attr]
+    #             })
+        
+    # else:
+    #     for attr in model_attrs:
+    #         if getattr(model, attr) and optim_cfg.LR[attr]:
+    #             params.append({
+    #                 'params': getattr(model, attr).parameters(), 
+    #                 'lr': optim_cfg.LR[attr]
+    #             })
 
-    else:
-        for attr in model_attrs:
-            if getattr(model, attr) and optim_cfg.LR[attr]:
-                params.append({
-                    'params': getattr(model, attr).parameters(), 
-                    'lr': optim_cfg.LR[attr]
-                })
-
-    optimizer = get_optimizer(optim_cfg.NAME)(params, tltd(optim_cfg.ARGS))
     
+
+    if isinstance(model, nn.DataParallel) or isinstance(model, nn.parallel.DistributedDataParallel):
+        m = model.module
+    else:
+        m = model
+    for n, p in m.named_parameters():
+        is_other = True
+        if p.requires_grad:
+            for attr in model_attrs:
+                if n.__contains__(attr):
+                    is_other = False
+                    params.append({
+                        'params': p, 
+                        'lr': optim_cfg.LR[attr]
+                    })
+
+            if is_other:
+                params.append({
+                    'params': p, 
+                    'lr': optim_cfg.LR["base"]
+                })
+        
+
+    
+    # for n, p in m.named_parameters():
+        
+    #     if n.__contains__()
+    
+    optimizer = get_optimizer(optim_cfg.NAME)(params, optim_cfg.LR.base, tltd(optim_cfg.ARGS))
+    # optimizer = AdamW(params=params, lr=0.0001, weight_decay=5e-4)
     return optimizer
 
 def build_criterion(criterion_cfg: CfgNode) -> nn.Module:

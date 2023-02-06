@@ -11,7 +11,7 @@ class WarmupCosineDecaySchedule(LRSchedule):
 
         total_batchs = max_epochs * batch_num_per_epoch
         iters = np.arange(total_batchs - warmup_steps)
-        self.last_iter = -1
+        
         self.update_level = 'batch'
 
         if decay_type == 1:
@@ -26,12 +26,11 @@ class WarmupCosineDecaySchedule(LRSchedule):
             schedule = np.concatenate((warmup_lr_schedule, schedule))
 
         self.schedule = schedule
-        self.step()
     
-    def step(self):
-        self.last_iter += 1
+    def step(self, iteration):
+
         for pg in self.optimizer.param_groups:
-           pg['lr'] = self.schedule[self.last_iter]
+           pg['lr'] = self.schedule[iteration]
         
 
 @lr_schedule("warmup_cosine_decay_schedule")

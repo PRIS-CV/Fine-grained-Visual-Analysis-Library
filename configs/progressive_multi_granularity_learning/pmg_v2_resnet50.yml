@@ -122,6 +122,7 @@ OPTIMIZER:
     - momentum: 0.9
     - weight_decay: 0.0005
   LR: 
+    base: 0.0005 
     backbone: 0.0005
     encoder: ~
     necks: 0.005

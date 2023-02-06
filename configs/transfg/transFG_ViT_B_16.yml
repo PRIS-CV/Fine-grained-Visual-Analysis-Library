@@ -120,6 +120,7 @@ OPTIMIZER:
   MOMENTUM: 0.9
   WEIGHT_DECAY: 0.0
   LR:
+    base: 0.08
     backbone: 0.08
     encoder: 0.08
     necks: 0.08

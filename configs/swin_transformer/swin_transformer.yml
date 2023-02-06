@@ -2,6 +2,8 @@ EXP_NAME: "SwinT"
 
 RESUME_WEIGHT: ~
 
+DISTRIBUTED: False
+
 WEIGHT:
   NAME: "swinT.pth"
   SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
@@ -121,6 +123,7 @@ OPTIMIZER:
   ARGS: 
     - weight_decay: 0.0005
   LR:
+    base: 0.0001
     backbone: 0.0001
     encoder: 0.0001
     necks: 0.0001

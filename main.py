@@ -62,14 +62,16 @@ def train(cfg: CfgNode):
         dataset=train_set, 
         mode_cfg=cfg.DATASET.TRAIN,
         sampler=train_sampler,
-        is_batch_sampler=sampler_cfg.TRAIN.IS_BATCH_SAMPLER
+        # is_batch_sampler=sampler_cfg.TRAIN.IS_BATCH_SAMPLER
+        is_batch_sampler=False
     )
 
     test_loader = build_dataloader(
         dataset=test_set, 
         mode_cfg=cfg.DATASET.TEST,
         sampler=test_sampler,
-        is_batch_sampler=sampler_cfg.TEST.IS_BATCH_SAMPLER
+        # is_batch_sampler=sampler_cfg.TEST.IS_BATCH_SAMPLER
+        is_batch_sampler=False
     )
 
     optimizer = build_optimizer(cfg.OPTIMIZER, model)
