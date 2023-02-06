@@ -49,12 +49,13 @@ def train(cfg: CfgNode):
     )
 
     model.to(device)
+    sampler_cfg = cfg.SAMPLER
     if cfg.DISTRIBUTED:
         model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters=True, device_ids=[cfg.GPU])
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_set)
         test_sampler = torch.utils.data.distributed.DistributedSampler(test_set)
+        sampler_cfg.TRAIN.IS_BATCH_SAMPLER = False
     else:
-        sampler_cfg = cfg.SAMPLER
         train_sampler = build_sampler(sampler_cfg.TRAIN)(train_set, **tltd(sampler_cfg.TRAIN.ARGS))
         test_sampler = build_sampler(sampler_cfg.TEST)(test_set, **tltd(sampler_cfg.TEST.ARGS))
     
@@ -62,16 +63,13 @@ def train(cfg: CfgNode):
         dataset=train_set, 
         mode_cfg=cfg.DATASET.TRAIN,
         sampler=train_sampler,
-        # is_batch_sampler=sampler_cfg.TRAIN.IS_BATCH_SAMPLER
-        is_batch_sampler=False
+        is_batch_sampler=sampler_cfg.TRAIN.IS_BATCH_SAMPLER
     )
 
     test_loader = build_dataloader(
         dataset=test_set, 
         mode_cfg=cfg.DATASET.TEST,
         sampler=test_sampler,
-        # is_batch_sampler=sampler_cfg.TEST.IS_BATCH_SAMPLER
-        is_batch_sampler=False
     )
 
     optimizer = build_optimizer(cfg.OPTIMIZER, model)
