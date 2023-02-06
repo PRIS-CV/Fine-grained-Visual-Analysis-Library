@@ -158,5 +158,5 @@ Thanks for your attention! If you have any suggestion or question, you can leave
 - mazhanyu@bupt.edu.cn
 
 ## Others 
-In addition to fgvclib, we have developed a practical mini program on fine-grained visual classification, which can be accessed by scanning the two-dimensional code below.
+Based on the fgvclib, we have developed an FGVC WeChat applet for fine-grained visual classification in practice, which can be accessed by searching "细粒度图像分类" in WeChat, and there is a demo: https://reurl.cc/rRZE7O.
 
