@@ -99,7 +99,7 @@ OPTIMIZER:
     heads: 0.002
 
 ITERATION_NUM: ~
-EPOCH_NUM: 1
+EPOCH_NUM: 50
 START_EPOCH: 0
 UPDATE_STRATEGY: "general_strategy"
 

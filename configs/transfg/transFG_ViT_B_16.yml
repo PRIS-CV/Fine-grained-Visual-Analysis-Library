@@ -157,9 +157,3 @@ METRICS:
     metric: "precision"
     top_k: ~
     threshold: 0.5
-
-INTERPRETER:
-  NAME: "cam"
-  METHOD: "gradcam"
-  TARGET_LAYERS:
-    - "layer4"
