@@ -140,7 +140,7 @@ Please see [get_started.md](https://pris-cv-fgvclib.readthedocs.io/en/latest/get
   </tbody>
 </table>
 
-## The Result of the SOTA
+<!-- ## The Result of the SOTA
 We used fgvclib to replicate the state-of-the-art model, and the following table shows the results of our experiment. 
 
 | SOTA       | Result of the paper | Result of the official code | Result of the FGVCLib |
@@ -148,7 +148,7 @@ We used fgvclib to replicate the state-of-the-art model, and the following table
 | API-Net    |        88.1         |            87.2             |         86.8          |
 | CAL        |        90.6         |            89.6             |         89.5          |
 | TransFG    |        91.7         |            91.1             |         89.3          |
-| PIM        |        92.8         |            91.9             |         91.4          |
+| PIM        |        92.8         |            91.9             |         91.4          | -->
 
 ## Contact
 
