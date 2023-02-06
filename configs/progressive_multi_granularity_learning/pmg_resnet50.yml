@@ -106,8 +106,11 @@ TRANSFORMS:
 
 OPTIMIZER:
   NAME: "SGD"
-  MOMENTUM: 0.9
+  ARGS: 
+    - momentum: 0.9
+    - weight_decay: 0.0005
   LR: 
+    base: 0.0002 
     backbone: 0.0002
     encoder: 0.002
     necks: 0.002
@@ -140,8 +143,3 @@ METRICS:
     top_k: ~
     threshold: 0.5
 
-INTERPRETER:
-  NAME: "cam"
-  METHOD: "gradcam"
-  TARGET_LAYERS: 
-    - "layer4"

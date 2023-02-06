@@ -105,9 +105,11 @@ TRANSFORMS:
 
 OPTIMIZER:
   NAME: SGD
-  MOMENTUM: 0.9
-  WEIGHT_DECAY: 1e-5
+  ARGS: 
+    - momentum: 0.9
+    - weight_decay: 0.0005
   LR: 
+    base: 0.001
     backbone: 0.001
     encoder: 0.001
     necks: 0.001
@@ -116,14 +118,14 @@ OPTIMIZER:
 ITERATION_NUM: ~
 EPOCH_NUM: 160
 START_EPOCH: 0
-UPDATE_STRATEGY: "general_updating"
+UPDATE_STRATEGY: "general_strategy"
 LR_SCHEDULE:
   NAME: "adjusting_schedule"
   ARGS: 
     - base_lr: 0.001
     - base_duration: 2.0
     - base_rate: 0.9
-    - update_level: "batch_update"
+    # - update_level: "batch_update"
 
 # Validation details
 PER_ITERATION: ~

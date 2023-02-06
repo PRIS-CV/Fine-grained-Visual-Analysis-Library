@@ -114,8 +114,11 @@ TRANSFORMS:
 
 OPTIMIZER:
   NAME: "SGD"
-  MOMENTUM: 0.9
+  ARGS: 
+    - momentum: 0.9
+    - weight_decay: 0.0005
   LR: 
+    base: 0.002
     backbone: 0.002
     encoder: 0.01
     necks: 0.01
@@ -124,7 +127,7 @@ OPTIMIZER:
 ITERATION_NUM: ~
 EPOCH_NUM: 100
 START_EPOCH: 0
-UPDATE_STRATEGY: "general_updating"
+UPDATE_STRATEGY: "general_strategy"
 
 
 # Validation details

@@ -16,20 +16,23 @@ from yacs.config import CfgNode
 from fgvclib.configs.utils import turn_list_to_dict as tltd
 from fgvclib.criterions import get_criterion
 from fgvclib.datasets import get_dataset
-from fgvclib.samplers import get_sampler
 from fgvclib.datasets.datasets import FGVCDataset
+from fgvclib.samplers import get_sampler
 from fgvclib.metrics import get_metric
+from fgvclib.metrics.metrics import NamedMetric
 from fgvclib.models.sotas import get_model
 from fgvclib.models.sotas.sota import FGVCSOTA
 from fgvclib.models.backbones import get_backbone
 from fgvclib.models.encoders import get_encoder
 from fgvclib.models.necks import get_neck
 from fgvclib.models.heads import get_head
+from fgvclib.optimizers import get_optimizer
 from fgvclib.transforms import get_transform
 from fgvclib.utils.logger import get_logger, Logger
 from fgvclib.utils.interpreter import get_interpreter, Interpreter
 from fgvclib.utils.lr_schedules import get_lr_schedule, LRSchedule
-from fgvclib.metrics.metrics import NamedMetric
+from fgvclib.utils.update_function import get_update_function
+from fgvclib.utils.evaluate_function import get_evaluate_function
 
 
 def build_model(model_cfg: CfgNode) -> FGVCSOTA:
@@ -64,7 +67,7 @@ def build_model(model_cfg: CfgNode) -> FGVCSOTA:
         criterions.update({item["name"]: {"fn": build_criterion(item), "w": item["w"]}})
     
     model_builder = get_model(model_cfg.NAME)
-    model = model_builder(backbone=backbone, encoder=encoder, necks=necks, heads=heads, criterions=criterions)
+    model = model_builder(cfg=model_cfg, backbone=backbone, encoder=encoder, necks=necks, heads=heads, criterions=criterions)
     
     return model
 
@@ -142,28 +145,56 @@ def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel
         Optimizer: A Pytorch Optimizer.
     """
 
-    params= list()
+    params = list()
     model_attrs = ["backbone", "encoder", "necks", "heads"]
 
-    if isinstance(model, nn.DataParallel) or isinstance(model, nn.parallel.DistributedDataParallel):
-        for attr in model_attrs:
-            if getattr(model.module, attr) and optim_cfg.LR[attr]:
-                params.append({
-                    'params': getattr(model.module, attr).parameters(), 
-                    'lr': optim_cfg.LR[attr]
-                })
-                print(attr, optim_cfg.LR[attr])
+    # if isinstance(model, nn.DataParallel) or isinstance(model, nn.parallel.DistributedDataParallel):
+    #     for attr in model_attrs:
+    #         if getattr(model.module, attr) and optim_cfg.LR[attr]:
+    #             params.append({
+    #                 'params': getattr(model.module, attr).parameters(), 
+    #                 'lr': optim_cfg.LR[attr]
+    #             })
+        
+    # else:
+    #     for attr in model_attrs:
+    #         if getattr(model, attr) and optim_cfg.LR[attr]:
+    #             params.append({
+    #                 'params': getattr(model, attr).parameters(), 
+    #                 'lr': optim_cfg.LR[attr]
+    #             })
 
+    
+
+    if isinstance(model, nn.DataParallel) or isinstance(model, nn.parallel.DistributedDataParallel):
+        m = model.module
     else:
-        for attr in model_attrs:
-            if getattr(model, attr) and optim_cfg.LR[attr]:
+        m = model
+    for n, p in m.named_parameters():
+        is_other = True
+        if p.requires_grad:
+            for attr in model_attrs:
+                if n.__contains__(attr):
+                    is_other = False
+                    params.append({
+                        'params': p, 
+                        'lr': optim_cfg.LR[attr]
+                    })
+
+            if is_other:
                 params.append({
-                    'params': getattr(model, attr).parameters(), 
-                    'lr': optim_cfg.LR[attr]
+                    'params': p, 
+                    'lr': optim_cfg.LR["base"]
                 })
+        
+
     
-    optimizer = optim.SGD(params=params, momentum=optim_cfg.MOMENTUM, weight_decay=optim_cfg.WEIGHT_DECAY)
+    # for n, p in m.named_parameters():
+        
+    #     if n.__contains__()
     
+    optimizer = get_optimizer(optim_cfg.NAME)(params, optim_cfg.LR.base, tltd(optim_cfg.ARGS))
+    # optimizer = AdamW(params=params, lr=0.0001, weight_decay=5e-4)
     return optimizer
 
 def build_criterion(criterion_cfg: CfgNode) -> nn.Module:
@@ -220,8 +251,8 @@ def build_sampler(sampler_cfg: CfgNode) -> Sampler:
     return get_sampler(sampler_cfg.NAME)
 
 
-def build_lr_schedule(schedule_cfg: CfgNode) -> LRSchedule:
-    r"""Build metrics for evaluation.
+def build_lr_schedule(optimizer, schedule_cfg: CfgNode, train_loader) -> LRSchedule:
+    r"""Build lr_schedule for training.
 
     Args:
         schedule_cfg (CfgNode): The schedule config node of root config node.
@@ -229,6 +260,30 @@ def build_lr_schedule(schedule_cfg: CfgNode) -> LRSchedule:
         LRSchedule: A lr schedule.
     
     """
+    batch_num_per_epoch = len(train_loader)
+
+    return get_lr_schedule(schedule_cfg.NAME)(optimizer, batch_num_per_epoch, tltd(schedule_cfg.ARGS))
+
+def build_update_function(cfg):
+    r"""Build metrics for evaluation.
+
+    Args:
+        cfg (CfgNode): The root config node.
+    Returns:
+        function: A update model function.
+    
+    """
+    
+    return get_update_function(cfg.UPDATE_FUNCTION)
 
 
-    return get_lr_schedule(schedule_cfg.NAME)(tltd(schedule_cfg.ARGS))
+def build_evaluate_function(cfg):
+    r"""Build metrics for evaluation.
+
+    Args:
+        cfg (CfgNode): The root config node.
+    Returns:
+        function: A evaluate model function.
+    
+    """
+    return get_evaluate_function(cfg.EVALUATE_FUNCTION)

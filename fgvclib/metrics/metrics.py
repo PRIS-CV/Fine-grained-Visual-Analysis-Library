@@ -84,7 +84,7 @@ def recall(name:str="recall(threshold=0.5)", top_k:int=None, threshold:float=0.5
                 top_k (int): 
                     Number of the highest probability or logit score predictions considered finding the correct label.
                 
-                threshhold (float, optional): 
+                threshold (float, optional): 
                     Threshold for transforming probability or logit predictions to binary (0,1) predictions, in the case
                     of binary or multi-label inputs.
 

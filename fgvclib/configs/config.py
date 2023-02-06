@@ -17,6 +17,9 @@ class FGVCConfig(object):
         # Name of experiment
         self.cfg.EXP_NAME = None
 
+        # Random Seed
+        self.cfg.SEED = 0
+
         # Resume last train
         self.cfg.RESUME_WEIGHT = None
 
@@ -57,7 +60,6 @@ class FGVCConfig(object):
         self.cfg.DATASET.TEST.SHUFFLE = False
         self.cfg.DATASET.TEST.NUM_WORKERS = 0
 
-
         
         # sampler for dataloader
         self.cfg.SAMPLER = CN()
@@ -71,6 +73,7 @@ class FGVCConfig(object):
         self.cfg.SAMPLER.TEST.NAME = "SequentialSampler"
         self.cfg.SAMPLER.TEST.ARGS = None
         self.cfg.SAMPLER.TEST.IS_BATCH_SAMPLER = False
+
 
         # Model architecture
         self.cfg.MODEL = CN()
@@ -109,9 +112,10 @@ class FGVCConfig(object):
         # Optimizer
         self.cfg.OPTIMIZER = CN()
         self.cfg.OPTIMIZER.NAME = "SGD"
-        self.cfg.OPTIMIZER.MOMENTUM = 0.9
-        self.cfg.OPTIMIZER.WEIGHT_DECAY = 5e-4
+        self.cfg.OPTIMIZER.ARGS = [{"momentum": 0.9}, {"weight_decay": 5e-4}]
+        
         self.cfg.OPTIMIZER.LR = CN()
+        self.cfg.OPTIMIZER.LR.base = None
         self.cfg.OPTIMIZER.LR.backbone = None
         self.cfg.OPTIMIZER.LR.encoder = None
         self.cfg.OPTIMIZER.LR.necks = None
@@ -121,15 +125,18 @@ class FGVCConfig(object):
         self.cfg.ITERATION_NUM = None
         self.cfg.EPOCH_NUM = None
         self.cfg.START_EPOCH = None
-        self.cfg.UPDATE_STRATEGY = None
+        self.cfg.UPDATE_FUNCTION = "general_update"
+        self.cfg.UPDATE_STRATEGY = "general_strategy"
         self.cfg.LR_SCHEDULE = CN()
         self.cfg.LR_SCHEDULE.NAME = "cosine_anneal_schedule"
         self.cfg.LR_SCHEDULE.ARGS = None
+        self.cfg.AMP = True
         
         # Validation
         self.cfg.PER_ITERATION = None
         self.cfg.PER_EPOCH = None
         self.cfg.METRICS = None
+        self.cfg.EVALUATE_FUNCTION = "general_evaluate"
 
         # Inference
         self.cfg.FIFTYONE = CN()

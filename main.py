@@ -7,7 +7,7 @@ from yacs.config import CfgNode
 
 from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
-from fgvclib.utils import cosine_anneal_schedule, init_distributed_mode
+from fgvclib.utils import init_distributed_mode
 
 
 def train(cfg: CfgNode):
@@ -49,17 +49,16 @@ def train(cfg: CfgNode):
     )
 
     model.to(device)
+    sampler_cfg = cfg.SAMPLER
     if cfg.DISTRIBUTED:
         model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters=True, device_ids=[cfg.GPU])
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_set)
         test_sampler = torch.utils.data.distributed.DistributedSampler(test_set)
+        sampler_cfg.TRAIN.IS_BATCH_SAMPLER = False
     else:
-        sampler_cfg = cfg.SAMPLER
         train_sampler = build_sampler(sampler_cfg.TRAIN)(train_set, **tltd(sampler_cfg.TRAIN.ARGS))
         test_sampler = build_sampler(sampler_cfg.TEST)(test_set, **tltd(sampler_cfg.TEST.ARGS))
     
-    
-
     train_loader = build_dataloader(
         dataset=train_set, 
         mode_cfg=cfg.DATASET.TRAIN,
@@ -71,7 +70,6 @@ def train(cfg: CfgNode):
         dataset=test_set, 
         mode_cfg=cfg.DATASET.TEST,
         sampler=test_sampler,
-        is_batch_sampler=sampler_cfg.TEST.IS_BATCH_SAMPLER
     )
 
     optimizer = build_optimizer(cfg.OPTIMIZER, model)
@@ -80,7 +78,11 @@ def train(cfg: CfgNode):
 
     metrics = build_metrics(cfg.METRICS)
 
-    lr_schedule = build_lr_schedule(cfg.LR_SCHEDULE)
+    lr_schedule = build_lr_schedule(optimizer, cfg.LR_SCHEDULE, train_loader)
+
+    update_fn = build_update_function(cfg)
+
+    evaluate_fn = build_evaluate_function(cfg)
 
     for epoch in range(cfg.START_EPOCH, cfg.EPOCH_NUM):
         if args.distributed:
@@ -90,12 +92,10 @@ def train(cfg: CfgNode):
 
         logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Training')
 
-       
-        
-        update_model(
+        update_fn(
             model, optimizer, train_bar, 
             strategy=cfg.UPDATE_STRATEGY, use_cuda=cfg.USE_CUDA, lr_schedule=lr_schedule, 
-            logger=logger, epoch=epoch, total_epoch=cfg.EPOCH_NUM
+            logger=logger, epoch=epoch, total_epoch=cfg.EPOCH_NUM, amp=cfg.AMP
         )
         
         test_bar = tqdm(test_loader)
@@ -103,7 +103,7 @@ def train(cfg: CfgNode):
         
         logger(f'Epoch: {epoch + 1} / {cfg.EPOCH_NUM} Testing ')
 
-        acc = evaluate_model(model, test_bar, metrics=metrics, use_cuda=cfg.USE_CUDA)
+        acc = evaluate_fn(model, test_bar, metrics=metrics, use_cuda=cfg.USE_CUDA)
         print(acc)
         logger("Evalution Result:")
         logger(acc)
@@ -112,7 +112,7 @@ def train(cfg: CfgNode):
         model_with_ddp = model.module
     else:
         model_with_ddp = model
-    save_model(cfg=cfg, model=model, logger=logger)
+    save_model(cfg=cfg, model=model_with_ddp, logger=logger)
     logger.finish()
 
 def predict(cfg: CfgNode):
@@ -137,7 +137,8 @@ def predict(cfg: CfgNode):
     
     pbar = tqdm(loader)
     metrics = build_metrics(cfg.METRICS)
-    acc = evaluate_model(model, pbar, metrics=metrics, use_cuda=cfg.USE_CUDA)
+    evaluate_fn = build_evaluate_function(cfg)
+    acc = evaluate_fn(model, pbar, metrics=metrics, use_cuda=cfg.USE_CUDA)
 
     print(acc)
 
@@ -157,6 +158,7 @@ if __name__ == "__main__":
     config = FGVCConfig()
     config.load(args.config)
     cfg = config.cfg
+    set_seed(cfg.SEED)
     if args.distributed:
         cfg.DISTRIBUTED = args.distributed
         cfg.GPU = args.gpu

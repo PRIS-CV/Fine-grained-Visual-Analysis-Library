@@ -14,8 +14,8 @@ class APINet(FGVCSOTA):
         Link: https://github.com/PeiqinZhuang/API-Net 
     """
 
-    def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: dict):
-        super().__init__(backbone, encoder, necks, heads, criterions)
+    def __init__(self, cfg: dict, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+        super().__init__(cfg, backbone, encoder, necks, heads, criterions)
 
 
     def forward(self, images, targets=None):

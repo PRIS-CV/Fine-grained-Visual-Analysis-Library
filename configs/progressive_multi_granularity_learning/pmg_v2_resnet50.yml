@@ -28,6 +28,16 @@ DATASET:
 MODEL:
   NAME: "PMG_V2"
   CLASS_NUM: 200
+  ARGS: 
+    - outputs_num: 3
+    - BLOCKS: 
+      - [8, 8, 0, 0]
+      - [4, 4, 4, 0]
+      - [2, 2, 2, 2]
+    - alpha: 
+      - 0.01
+      - 0.05
+      - 0.1
   CRITERIONS: 
     - name: "cross_entropy_loss"
       args: []
@@ -108,8 +118,11 @@ TRANSFORMS:
 
 OPTIMIZER:
   NAME: "SGD"
-  MOMENTUM: 0.9
+  ARGS: 
+    - momentum: 0.9
+    - weight_decay: 0.0005
   LR: 
+    base: 0.0005 
     backbone: 0.0005
     encoder: ~
     necks: 0.005
@@ -140,9 +153,3 @@ METRICS:
     metric: "precision"
     top_k: ~
     threshold: 0.5
-
-INTERPRETER:
-  NAME: "cam"
-  METHOD: "gradcam"
-  TARGET_LAYERS: 
-    - "layer4"

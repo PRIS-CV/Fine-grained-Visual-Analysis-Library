@@ -1,0 +1,168 @@
+EXP_NAME: "SwinT"
+
+RESUME_WEIGHT: ~
+
+DISTRIBUTED: False
+
+WEIGHT:
+  NAME: "swinT.pth"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
+
+LOGGER:
+  NAME: "txt_logger"
+
+DATASET:
+  NAME: "CUB_200_2011"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset"
+  TRAIN:
+    BATCH_SIZE: 16
+    POSITIVE: 0
+    PIN_MEMORY: True
+    SHUFFLE: True
+    NUM_WORKERS: 4
+  TEST:
+    BATCH_SIZE: 16
+    POSITIVE: 0
+    PIN_MEMORY: False
+    SHUFFLE: True
+    NUM_WORKERS: 4
+
+MODEL:
+  NAME: "SwinTransformer"
+  CLASS_NUM: 200
+  ARGS:
+    - img_size: 384
+    - fpn_size: 1536
+    - lambda_s: 0.0
+    - lambda_n: 5.0
+    - lambda_b: 0.5
+    - lambda_c: 1.0
+    - update_freq: 2
+    - use_selection: True
+    - use_fpn: True
+    - use_combiner: True
+    - num_select:
+      - layer1: 2048
+      - layer2: 512
+      - layer3: 128
+      - layer4: 32
+
+  CRITERIONS:
+    - name: "cross_entropy_loss"
+      args: []
+      w: 1.0
+    - name: "mean_square_error_loss"
+      args: []
+      w: 1.0
+  BACKBONE:
+    NAME: "swin_large_patch4_window12_384_in22k"
+    ARGS:
+      - pretrained: True
+  ENCODER:
+    NAME: ~
+  NECKS:
+    NAME: ~
+  HEADS:
+    NAME: "GCN_combiner"
+    ARGS:
+      - num_selects:
+        - layer1: 2048
+        - layer2: 512
+        - layer3: 128
+        - layer4: 32
+      - total_num_selects: 2720
+      - num_classes: 200
+      - fpn_size: 1536
+
+TRANSFORMS:
+  TRAIN:
+    - name: "resize"
+      size:
+        - 510
+        - 510
+    - name: "random_crop"
+      size: 384
+      padding: 0
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "randomApply_gaussianBlur"
+      prob: 0.1
+    - name: "randomAdjust_sharpness"
+      sharpness_factor: 1.5
+      prob: 0.1
+    - name: "to_tensor"
+    - name: "normalize"
+      mean:
+         - 0.485
+         - 0.456
+         - 0.406
+      std:
+        - 0.229
+        - 0.224
+        - 0.225
+  TEST:
+    - name: "resize"
+      size:
+        - 510
+        - 510
+    - name: "center_crop"
+      size: 384
+    - name: "to_tensor"
+    - name: "normalize"
+      mean:
+         - 0.485
+         - 0.456
+         - 0.406
+      std:
+        - 0.229
+        - 0.224
+        - 0.225
+
+OPTIMIZER:
+  NAME: "AdamW"
+  ARGS: 
+    - weight_decay: 0.0005
+  LR:
+    base: 0.0001
+    backbone: 0.0001
+    encoder: 0.0001
+    necks: 0.0001
+    heads: 0.0001
+
+LR_SCHEDULE:
+  NAME: "warmup_cosine_decay_schedule"
+  ARGS: 
+    - warmup_steps: 800
+    - max_lr: 0.0001
+    - max_epochs: 50
+    - decay_type: 1
+
+ITERATION_NUM: ~
+EPOCH_NUM: 50
+START_EPOCH: 0
+AMP: True
+UPDATE_STRATEGY: ""
+UPDATE_FUNCTION: "update_swin_transformer"
+EVALUATE_FUNCTION: "swin_transformer_evaluate"
+
+# Validation details
+PER_ITERATION: ~
+PER_EPOCH: ~
+METRICS:
+  - name: "accuracy(topk=1)"
+    metric: "accuracy"
+    top_k: 1
+    threshold: ~
+  - name: "accuracy(topk=5)"
+    metric: "accuracy"
+    top_k: 5
+    threshold: ~
+  - name: "recall(threshold=0.5)"
+    metric: "recall"
+    top_k: ~
+    threshold: 0.5
+  - name: "precision(threshold=0.5)"
+    metric: "precision"
+    top_k: ~
+    threshold: 0.5
+  

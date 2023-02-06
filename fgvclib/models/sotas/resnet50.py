@@ -1,4 +1,5 @@
 import torch.nn as nn
+from yacs.config import CfgNode
 
 from fgvclib.models.sotas.sota import FGVCSOTA
 from fgvclib.models.sotas import fgvcmodel
@@ -9,8 +10,8 @@ from fgvclib.transforms import CutMix, MixUp
 @fgvcmodel("ResNet50")
 class ResNet50(FGVCSOTA):
     
-    def __init__(self, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: dict):
-        super().__init__(backbone, encoder, necks, heads, criterions)
+    def __init__(self, cfg: CfgNode, backbone: nn.Module, encoder: nn.Module, necks: nn.Module, heads: nn.Module, criterions: nn.Module):
+        super().__init__(cfg, backbone, encoder, necks, heads, criterions)
     
     def forward(self, x, targets=None):
         x = self.infer(x)

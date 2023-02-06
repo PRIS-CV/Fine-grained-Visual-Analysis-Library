@@ -30,3 +30,11 @@ def normalize(cfg: dict):
 @transform("color_jitter")
 def color_jitter(cfg: dict):
     return transforms.ColorJitter(brightness=cfg['brightness'], saturation=cfg['saturation'])
+
+@transform('randomApply_gaussianBlur')
+def randomApply_gaussianBlur(cfg: dict):
+    return transforms.RandomApply([transforms.GaussianBlur(kernel_size=(5, 5), sigma=(0.1, 5))], p=cfg['prob'])
+
+@transform('randomAdjust_sharpness')
+def randomAdjust_sharpness(cfg:dict):
+    return transforms.RandomAdjustSharpness(sharpness_factor=cfg['sharpness_factor'], p=cfg['prob'])
