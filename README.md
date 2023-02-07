@@ -15,7 +15,7 @@ For more details and the tutorials about the FGVCLib, see [FGVCLib](https://pris
   We decompose the detection framework into different components and one can easily construct a customized object detection framework by combining different modules.
 
 - **State of the art**
-  We implement state-of-the-art methods by the FGVCLib, [PMG](https://arxiv.org/abs/2003.03836v3), [MCL](https://arxiv.org/abs/2002.04264), [API-Net](https://arxiv.org/abs/2002.10191), [CAL](https://ieeexplore.ieee.org/document/9710619), [TransFG](https://ieeexplore.ieee.org/document/9710619), [PIM](https://arxiv.org/abs/2202.03822). 
+  We implement state-of-the-art methods by the FGVCLib, [PMG](https://arxiv.org/abs/2003.03836v3), [PMG_V2](https://ieeexplore.ieee.org/abstract/document/9609669), [MCL](https://arxiv.org/abs/2002.04264), [API-Net](https://arxiv.org/abs/2002.10191), [CAL](https://ieeexplore.ieee.org/document/9710619), [TransFG](https://ieeexplore.ieee.org/document/9710619), [PIM](https://arxiv.org/abs/2202.03822). 
 
 
 ## Installation
