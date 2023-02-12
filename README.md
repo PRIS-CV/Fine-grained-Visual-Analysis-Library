@@ -160,3 +160,19 @@ Thanks for your attention! If you have any suggestion or question, you can leave
 ## Others 
 Based on the fgvclib, we have developed an FGVC WeChat applet for fine-grained visual classification in practice, which can be accessed by searching "细粒度图像分类" in WeChat, and there is a demo: https://reurl.cc/rRZE7O.
 
+
+## Citation
+If you find this library useful in your research, please consider citing:
+```
+@misc{Chang2023,
+  author = {Dongliang Chang, Ruoyi Du, Xinran Wang, Yuqi Yang, Yi-Zhe Song, Zhanyu Ma},
+  title = {Fine-grained Visual Analysis Library},
+  year = {2023},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/PRIS-CV/Fine-grained-Visual-Analysis-Library}}
+}
+```
+
+
+
