@@ -165,7 +165,7 @@ Based on the fgvclib, we have developed an FGVC WeChat applet for fine-grained v
 If you find this library useful in your research, please consider citing:
 ```
 @misc{Chang2023,
-  author = {Dongliang Chang, Ruoyi Du, Xinran Wang, Yuqi Yang, Yi-Zhe Song, Zhanyu Ma},
+  author = {Dongliang, Chang and Ruoyi, Du and Xinran, Wang and Yuqi, Yang and Yi-Zhe, Song and Zhanyu, Ma},
   title = {Fine-grained Visual Analysis Library},
   year = {2023},
   publisher = {GitHub},
