@@ -3,7 +3,7 @@ import os
 import torch
 from tqdm import tqdm
 from yacs.config import CfgNode
-
+from apex import amp
 
 from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
@@ -50,6 +50,7 @@ def train(cfg: CfgNode):
 
     model.to(device)
     sampler_cfg = cfg.SAMPLER
+
     if cfg.DISTRIBUTED:
         model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters=True, device_ids=[cfg.GPU])
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_set)
@@ -83,6 +84,12 @@ def train(cfg: CfgNode):
     update_fn = build_update_function(cfg)
 
     evaluate_fn = build_evaluate_function(cfg)
+
+    if args.fp16:
+        model, optimizer = amp.initialize(models=model.module,
+                                          optimizers=optimizer,
+                                          opt_level=args.fp16_opt_level)
+        amp._amp_state.loss_scalers[0]._loss_scale = 2 ** 20
 
     for epoch in range(cfg.START_EPOCH, cfg.EPOCH_NUM):
         if args.distributed:
@@ -151,6 +158,11 @@ if __name__ == "__main__":
     parser.add_argument('--device', default='cuda', type=str, help='device', choices=['cuda', 'cpu'])
     parser.add_argument('--world-size', default=4, type=int, help='number of distributed processes')
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
+    parser.add_argument('--fp16', type=bool, default=True,
+                        help="Whether to use 16-bit float precision instead of 32-bit")
+    parser.add_argument('--fp16_opt_level', type=str, default='O2',
+                        help="For fp16: Apex AMP optimization level selected in ['O0', 'O1', 'O2', and 'O3']."
+                             "See details at https://nvidia.github.io/apex/amp.html")
     args = parser.parse_args()
 
     init_distributed_mode(args)
