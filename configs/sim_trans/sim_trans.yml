@@ -1,0 +1,168 @@
+EXP_NAME: "SIM_Trans"
+
+RESUME_WEIGHT: ~
+
+WEIGHT:
+  NAME: "SIM_Trans.pth"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
+
+LOGGER:
+  NAME: "txt_logger"
+
+DATASET:
+  ROOT: "/mnt/sdb/data/wangxinran/dataset"
+  NAME: "CUB_200_2011"
+  TRAIN:
+    BATCH_SIZE: 5
+    POSITIVE: 0
+    PIN_MEMORY: False
+    SHUFFLE: True
+    NUM_WORKERS: 4
+  TEST:
+    BATCH_SIZE: 4
+    POSITIVE: 0
+    PIN_MEMORY: False
+    SHUFFLE: False
+    NUM_WORKERS: 4
+
+MODEL:
+  NAME: "SIM_Trans"
+  CLASS_NUM: 200
+  ARGS: 
+    - img_size: 448
+    - zero_head: True
+    - smoothing_value: 0.0
+    - classifier: 'token'
+    - hidden_size: 768
+    - pretrained_weight: "/mnt/sdb/data/wangxinran/weight/pretraining/sim_Trans/ViT-B_16.npz"
+
+  CRITERIONS:
+  - name: "nll_loss_labelsmoothing"
+    args:
+      - smoothing_value: 0.0
+    w: 1.0
+  - name: "con_lr_loss"
+    args:
+      - eps: 0.000001
+      - margin: 0.3
+    w: 1.0
+  - name: "cross_entropy_loss"
+    args: [ ]
+    w: 1.0
+
+  BACKBONE:
+    NAME: "vision_transformer"
+    ARGS:
+      - patch_size: 16
+      - split: 'overlap'
+      - slide_step: 12
+      - hidden_size: 768
+      - dropout_rate: 0.1
+      - image_size: 448
+  ENCODER:
+    NAME: "sim_trans_encoder"
+    ARGS:
+      - num_layers: 12
+      - img_size: 448
+      - num_heads: 12
+      - attention_dropout_rate: 0.0
+      - hidden_size: 768
+      - mlp_dim: 3072
+      - dropout_rate: 0.1
+      - patch_size: 16
+      - split: 'overlap'
+      - slide_step: 12
+      - mlp_dim: 3072
+  NECKS:
+    NAME: ~
+  HEADS:
+    NAME: "mlp"
+    ARGS:
+      - hidden_size: 768
+      - mlp_dim: 3072
+      - dropout_rate: 0.1
+
+TRANSFORMS:
+  TRAIN:
+    - name: "resize"
+      size:
+        - 600
+        - 600
+    - name: "random_crop"
+      size: 448
+      padding: 0
+    - name: "random_horizontal_flip"
+      prob: 0.5
+    - name: "to_tensor"
+    - name: "normalize"
+      mean:
+         - 0.485
+         - 0.456
+         - 0.406
+      std:
+        - 0.229
+        - 0.224
+        - 0.225
+  TEST:
+    - name: "resize"
+      size:
+        - 600
+        - 600
+    - name: "center_crop"
+      size: 448
+    - name: "to_tensor"
+    - name: "normalize"
+      mean:
+         - 0.485
+         - 0.456
+         - 0.406
+      std:
+        - 0.229
+        - 0.224
+        - 0.225
+
+OPTIMIZER:
+  NAME: SGD
+  ARGS: 
+    - momentum: 0.9
+    - weight_decay: 0.0
+  LR:
+    base: 0.03
+    backbone: 0.03
+    encoder: 0.03
+    necks: 0.03
+    heads: 0.03
+
+EPOCH_NUM: 100
+START_EPOCH: 0
+UPDATE_STRATEGY: "sim_vit_update_strategy"
+SEED: 42
+
+LR_SCHEDULE:
+  NAME: "warmup_cosine_schedule"
+  ARGS: 
+    - warmup_steps: 500
+    - total_steps: 10000
+AMP: True
+
+
+# Validation details
+PER_ITERATION: ~
+PER_EPOCH: ~
+METRICS:
+  - name: "accuracy(topk=1)"
+    metric: "accuracy"
+    top_k: 1
+    threshold: ~
+  - name: "accuracy(topk=5)"
+    metric: "accuracy"
+    top_k: 5
+    threshold: ~
+  - name: "recall(threshold=0.5)"
+    metric: "recall"
+    top_k: ~
+    threshold: 0.5
+  - name: "precision(threshold=0.5)"
+    metric: "precision"
+    top_k: ~
+    threshold: 0.5
