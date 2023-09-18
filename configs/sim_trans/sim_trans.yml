@@ -34,7 +34,7 @@ MODEL:
     - smoothing_value: 0.0
     - classifier: 'token'
     - hidden_size: 768
-    - pretrained_weight: "/mnt/sdb/data/wangxinran/weight/pretraining/sim_Trans/ViT-B_16.npz"
+    - pretrained_weight: "/mnt/sdb/data/wangxinran/weight/pretraining/simTrans/ViT-B_16.npz"
 
   CRITERIONS:
   - name: "nll_loss_labelsmoothing"
