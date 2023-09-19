@@ -143,7 +143,7 @@ LR_SCHEDULE:
   ARGS: 
     - warmup_steps: 500
     - total_steps: 10000
-FP16: True
+AMP = False
 
 
 # Validation details
