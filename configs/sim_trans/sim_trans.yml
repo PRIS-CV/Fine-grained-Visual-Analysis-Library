@@ -34,7 +34,7 @@ MODEL:
     - smoothing_value: 0.0
     - classifier: 'token'
     - hidden_size: 768
-    - pretrained_weight: "/mnt/sdb/data/wangxinran/weight/pretraining/sim_Trans/ViT-B_16.npz"
+    - pretrained_weight: "/mnt/sdb/data/wangxinran/weight/pretraining/simTrans/ViT-B_16.npz"
 
   CRITERIONS:
   - name: "nll_loss_labelsmoothing"
@@ -135,7 +135,7 @@ OPTIMIZER:
 
 EPOCH_NUM: 100
 START_EPOCH: 0
-UPDATE_STRATEGY: "sim_vit_update_strategy"
+UPDATE_STRATEGY: "vit_update_strategy"
 SEED: 42
 
 LR_SCHEDULE:
@@ -143,7 +143,7 @@ LR_SCHEDULE:
   ARGS: 
     - warmup_steps: 500
     - total_steps: 10000
-AMP: True
+AMP = False
 
 
 # Validation details

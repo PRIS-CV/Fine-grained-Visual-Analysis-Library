@@ -70,7 +70,7 @@ class SIM_Transformer(FGVCSOTA):
             losses.append(LossItem(name='contrast_loss', value=contrast_loss, weight=1.0))
             losses.append(LossItem(name='part_loss', value=part_loss, weight=1.0))
 
-            return losses, part_logits
+            return part_logits, losses
         else:
             return part_logits
 
