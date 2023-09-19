@@ -85,12 +85,6 @@ def train(cfg: CfgNode):
 
     evaluate_fn = build_evaluate_function(cfg)
 
-    if cfg.FP16:
-        model, optimizer = amp.initialize(models=model.module,
-                                          optimizers=optimizer,
-                                          opt_level='O2')
-        amp._amp_state.loss_scalers[0]._loss_scale = 2 ** 20
-
     for epoch in range(cfg.START_EPOCH, cfg.EPOCH_NUM):
         if args.distributed:
             train_sampler.set_epoch(epoch)
