@@ -131,7 +131,6 @@ class FGVCConfig(object):
         self.cfg.LR_SCHEDULE.NAME = "cosine_anneal_schedule"
         self.cfg.LR_SCHEDULE.ARGS = None
         self.cfg.AMP = True
-        self.cfg.FP16 = False
         
         # Validation
         self.cfg.PER_ITERATION = None
