@@ -1,19 +1,19 @@
 EXP_NAME: "SwinT"
 
-RESUME_WEIGHT: /data/ningwenxin/weight/fgvclib/swinT.pth
+RESUME_WEIGHT: ~
 
 DISTRIBUTED: True
 
 WEIGHT:
   NAME: "swinT.pth"
-  SAVE_DIR: "/data/ningwenxin/weight/fgvclib"
+  SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
 
 LOGGER:
   NAME: "txt_logger"
 
 DATASET:
   NAME: "CUB_200_2011"
-  ROOT: "/data/ningwenxin"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
   TRAIN:
     BATCH_SIZE: 4
     POSITIVE: 0
