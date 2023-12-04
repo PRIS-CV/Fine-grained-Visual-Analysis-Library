@@ -3,7 +3,7 @@ import os
 import torch
 from tqdm import tqdm
 from yacs.config import CfgNode
-
+from apex import amp
 
 from fgvclib.apis import *
 from fgvclib.configs import FGVCConfig
@@ -50,6 +50,7 @@ def train(cfg: CfgNode):
 
     model.to(device)
     sampler_cfg = cfg.SAMPLER
+
     if cfg.DISTRIBUTED:
         model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters=True, device_ids=[cfg.GPU])
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_set)
