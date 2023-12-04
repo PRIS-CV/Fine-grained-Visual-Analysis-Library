@@ -107,6 +107,11 @@ def train(cfg: CfgNode):
         print(acc)
         logger("Evalution Result:")
         logger(acc)
+        if cfg.DISTRIBUTED:
+            model_with_ddp = model.module
+        else:
+            model_with_ddp = model        
+        save_model(cfg=cfg, model=model_with_ddp, logger=logger)
     
     if cfg.DISTRIBUTED:
         model_with_ddp = model.module

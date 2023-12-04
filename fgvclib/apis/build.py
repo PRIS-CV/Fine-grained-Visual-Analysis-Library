@@ -134,7 +134,8 @@ def build_dataloader(dataset: FGVCDataset, mode_cfg: CfgNode, sampler=None, is_b
             batch_size=mode_cfg.BATCH_SIZE, 
             sampler=sampler, 
             num_workers=mode_cfg.NUM_WORKERS,
-            pin_memory=mode_cfg.PIN_MEMORY)
+            pin_memory=mode_cfg.PIN_MEMORY,
+            drop_last=mode_cfg.DROP_LAST)
 
 def build_optimizer(optim_cfg: CfgNode, model:t.Union[nn.Module, nn.DataParallel]) -> Optimizer:
     r"""Build a optimizer for training.

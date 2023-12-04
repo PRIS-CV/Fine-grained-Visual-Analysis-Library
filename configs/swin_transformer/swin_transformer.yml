@@ -13,7 +13,7 @@ LOGGER:
 
 DATASET:
   NAME: "CUB_200_2011"
-  ROOT: "/mnt/sdb/data/wangxinran/dataset"
+  ROOT: "/data/ningwenxin"
   TRAIN:
     BATCH_SIZE: 16
     POSITIVE: 0

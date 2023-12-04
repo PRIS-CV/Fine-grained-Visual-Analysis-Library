@@ -2,6 +2,7 @@ import os
 import importlib
 from .mixup import MixUp
 from .cutmix import CutMix
+from .mixup_cutmix import MixUpCutMix
 
 
 __all__ = ["get_transform"]
