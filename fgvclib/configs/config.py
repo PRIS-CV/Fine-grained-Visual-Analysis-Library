@@ -52,6 +52,7 @@ class FGVCConfig(object):
         self.cfg.DATASET.TRAIN.PIN_MEMORY = True
         self.cfg.DATASET.TRAIN.SHUFFLE = True
         self.cfg.DATASET.TRAIN.NUM_WORKERS = 0
+        self.cfg.DATASET.TRAIN.DROP_LAST = False
         
         # test dataset and data loder
         self.cfg.DATASET.TEST.BATCH_SIZE = 32
@@ -59,6 +60,7 @@ class FGVCConfig(object):
         self.cfg.DATASET.TEST.PIN_MEMORY = False
         self.cfg.DATASET.TEST.SHUFFLE = False
         self.cfg.DATASET.TEST.NUM_WORKERS = 0
+        self.cfg.DATASET.TEST.DROP_LAST = False
 
         
         # sampler for dataloader
@@ -131,6 +133,7 @@ class FGVCConfig(object):
         self.cfg.LR_SCHEDULE.NAME = "cosine_anneal_schedule"
         self.cfg.LR_SCHEDULE.ARGS = None
         self.cfg.AMP = True
+        self.cfg.CLIP_GRAD = None
         
         # Validation
         self.cfg.PER_ITERATION = None

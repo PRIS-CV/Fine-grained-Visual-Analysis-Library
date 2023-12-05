@@ -96,7 +96,7 @@ def train(cfg: CfgNode):
         update_fn(
             model, optimizer, train_bar, 
             strategy=cfg.UPDATE_STRATEGY, use_cuda=cfg.USE_CUDA, lr_schedule=lr_schedule, 
-            logger=logger, epoch=epoch, total_epoch=cfg.EPOCH_NUM, amp=cfg.AMP
+            logger=logger, epoch=epoch, total_epoch=cfg.EPOCH_NUM, amp=cfg.AMP, clip_grad=cfg.CLIP_GRAD
         )
         
         test_bar = tqdm(test_loader)
@@ -108,6 +108,11 @@ def train(cfg: CfgNode):
         print(acc)
         logger("Evalution Result:")
         logger(acc)
+        if cfg.DISTRIBUTED:
+            model_with_ddp = model.module
+        else:
+            model_with_ddp = model        
+        save_model(cfg=cfg, model=model_with_ddp, logger=logger)
     
     if cfg.DISTRIBUTED:
         model_with_ddp = model.module

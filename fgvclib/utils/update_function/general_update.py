@@ -14,7 +14,7 @@ from fgvclib.utils.lr_schedules import LRSchedule
 def general_update(
     model: nn.Module, optimizer: Optimizer, pbar:Iterable, lr_schedule:LRSchedule=None,
     strategy:str="general_updating", use_cuda:bool=True, logger:Logger=None, 
-    epoch:int=None, total_epoch:int=None, amp:bool=False, **kwargs
+    epoch:int=None, total_epoch:int=None, amp:bool=False, clip_grad:float=None, **kwargs
 ):
     r"""Update the FGVC model and record losses.
 
@@ -33,7 +33,7 @@ def general_update(
     model.train()
     mean_loss = 0.
     for batch_idx, train_data in enumerate(pbar):
-        losses_info = get_update_strategy(strategy)(model=model, train_data=train_data, optimizer=optimizer, use_cuda=use_cuda, amp=amp)
+        losses_info = get_update_strategy(strategy)(model=model, train_data=train_data, optimizer=optimizer, use_cuda=use_cuda, amp=amp, clip_grad=clip_grad)
         mean_loss = (mean_loss * batch_idx + losses_info['iter_loss']) / (batch_idx + 1)
         losses_info.update({"mean_loss": mean_loss})
         logger(losses_info, step=batch_idx)

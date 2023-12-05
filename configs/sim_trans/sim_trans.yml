@@ -137,6 +137,7 @@ EPOCH_NUM: 100
 START_EPOCH: 0
 UPDATE_STRATEGY: "vit_update_strategy"
 SEED: 42
+CLIP_GRAD: 1.0
 
 LR_SCHEDULE:
   NAME: "warmup_cosine_schedule"

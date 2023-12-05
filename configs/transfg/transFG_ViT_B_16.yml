@@ -135,6 +135,7 @@ LR_SCHEDULE:
     - warmup_steps: 500
     - total_steps: 10000
 AMP: True
+CLIP_GRAD: 1.0
 
 
 # Validation details
