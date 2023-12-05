@@ -10,7 +10,7 @@ LOGGER:
   NAME: "txt_logger"
 
 DATASET:
-  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset"
   NAME: "CUB_200_2011"
   TRAIN:
     BATCH_SIZE: 8
