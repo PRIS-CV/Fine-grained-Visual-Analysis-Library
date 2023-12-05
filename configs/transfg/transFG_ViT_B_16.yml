@@ -10,7 +10,7 @@ LOGGER:
   NAME: "txt_logger"
 
 DATASET:
-  ROOT: "/mnt/sdb/data/wangxinran/dataset"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
   NAME: "CUB_200_2011"
   TRAIN:
     BATCH_SIZE: 8
@@ -135,6 +135,7 @@ LR_SCHEDULE:
     - warmup_steps: 500
     - total_steps: 10000
 AMP: True
+CLIP_GRAD: 1.0
 
 
 # Validation details

@@ -5,7 +5,7 @@ RESUME_WEIGHT: ~
 DISTRIBUTED: True
 
 WEIGHT:
-  NAME: "swinT.pth"
+  NAME: "VitNet.pth"
   SAVE_DIR: "/mnt/sdb/data/wangxinran/weight/fgvclib"
 
 LOGGER:
@@ -13,7 +13,7 @@ LOGGER:
 
 DATASET:
   NAME: "CUB_200_2011"
-  ROOT: "/mnt/sdb/data/wangxinran/dataset/"
+  ROOT: "/mnt/sdb/data/wangxinran/dataset"
   TRAIN:
     BATCH_SIZE: 4
     POSITIVE: 0
@@ -126,9 +126,10 @@ LR_SCHEDULE:
 
 ITERATION_NUM: ~
 EPOCH_NUM: 30
-START_EPOCH: 15
-AMP: True
+START_EPOCH: 0
+AMP: False
 UPDATE_STRATEGY: "vit_update_strategy"
+CLIP_GRAD: 5.0
 
 # Validation details
 PER_ITERATION: ~

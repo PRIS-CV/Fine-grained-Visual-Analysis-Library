@@ -48,7 +48,7 @@ def accuracy(name:str="accuracy(top-1)", top_k:int=1, threshold:float=None) -> M
                 NamedMetirc: A torchmetrics metric with customed name.
     """
 
-    metric = Accuracy(top_k=top_k, threshold=threshold, task="multiclass", num_classes=200)
+    metric = Accuracy(top_k=top_k, threshold=threshold)
     return NamedMetric(name=name, metric=metric)
 
 
@@ -70,7 +70,7 @@ def precision(name:str="precision(threshold=0.5)", top_k:int=None, threshold:flo
                 NamedMetirc: A torchmetrics metric with customed name.
     """
 
-    metric = Precision(top_k=1, threshold=threshold, task="multiclass", num_classes=200)
+    metric = Precision(top_k=top_k, threshold=threshold)
     return NamedMetric(name=name, metric=metric)
 
 
@@ -92,5 +92,5 @@ def recall(name:str="recall(threshold=0.5)", top_k:int=None, threshold:float=0.5
                 NamedMetirc: A torchmetrics metric with customed name.
     """
 
-    metric = Recall(top_k=1, threshold=threshold, task="multiclass", num_classes=200)
+    metric = Recall(top_k=top_k, threshold=threshold)
     return NamedMetric(name=name, metric=metric)
